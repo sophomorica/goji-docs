@@ -55,14 +55,16 @@ Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanit
 
 - [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Anonymous auth enabled for credential-free phone app (2026-07-24).
 - [x] Run `goji_learner_app` on a real phone — platform dirs exist; phone runs (HUMAN_CHECKLIST 2026-08-01: partial). Multi-child “Child” assignment still a product gap.
-- [ ] End-to-end smoke test: pair → wizard/Start on phone → sync → School Mode + Today on Pi → progress/messages/journal on phone
+- [x] **Cloud wire smoke (2026-07-23):** live edge loop against `ocegvanepuefafyfmxyc` — active plan + `pending_start` → `plans-pull` → `school-session-push` active → `activity-upload` → `plan-status-push` all tasks done → plan `completed` + session `ended_how=all_tasks_done`. Pi hermetic suite green (`test_sync_agent` / `test_school_day` / `test_plans_device` / `test_live_cloud_client`, 42 passed). Flutter `verify_builders` dialect green.
+- [x] **Integrated e2e mock env (2026-07-23):** `goji_computer/backend/sync/mock_family_cloud.py` + `tests/integration/test_school_day_e2e_mock.py` — hermetic parent→cloud→Pi→parent loop (Start, complete, Release, messages) with no phone/Pi/Supabase. Landed on `kodi-computer` `#65`. Run: `cd goji_computer/backend && python -m sync.mock_family_cloud` / `pytest tests/integration/test_school_day_e2e_mock.py -v`
+- [ ] **UI e2e still open:** pair on real Pi → wizard/Start on phone → School Mode + Today on kiosk → progress/messages/journal visible on phone (needs paired device + parent auth session)
 - [x] Install `goji-sync.service` on the real Pi — **done 2026-08-01** (`HUMAN_CHECKLIST.md`). Firewall still open.
 - [x] GitHub repos created + pushed for all four repos (`goji-docs`, `kodi-computer`, `goji-cloud`, `goji-learner-app`); School Day feature branches all merged to `main` (verified 2026-08-01)
 - [x] **2026-07-25 audit deploy** — `sync_hardening` + 9 audit-edited edge functions + `device-unpair` **redeployed 2026-08-01**; Pi backend / `goji-sync` restarted; kiosk rebuilt (`HUMAN_CHECKLIST.md`). Follow-ups remain in §4 of the audit.
 
 ## Next — features
 
-- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — **cloud live**; Pi + Flutter **merged to main** and hardened by the 2026-07-25 sync audit; device + phone e2e smoke still open (multi-child "Child" assignment bugs seen on phone). Gaps: PDF today’s-work bookmark seeding, full hub message center (banner done)
+- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — **cloud live + wire-proven**; Pi + Flutter **merged to main** and hardened by the 2026-07-25 sync audit; device + phone UI e2e smoke still open (multi-child "Child" assignment bugs seen on phone). Gaps: PDF today’s-work bookmark seeding, full hub message center (banner done)
 - [ ] **Parent app: who is at the box during the school day** — device School Mode is now **per profile** (siblings stay unlocked so a finished child can play; each child may be on a different learning path). The parent app should know which child is signed in on the Goji and at what time. If a child whose school day is still open tries to switch to a profile that already finished, alert the parent — other profiles need to stay open. Do **not** re-lock the whole device.
 - [ ] **Parent → child messages + Goji message center**
   - Decisions locked: one-way text + canned reactions; non-blocking in-lesson banner; near-live via poll; full messenger shelved
@@ -126,7 +128,7 @@ Vision SoT: [`curriculum/VISION.md`](./curriculum/VISION.md) (pillars R/W/M, VA 
 - [x] 2026-07-21 — Phase 1 Pi: lesson-plan queue + auto-verify, Today tile, pairing (no secrets in image), sync agent
 - [x] 2026-07-22 — goji_learner/ reorg (3 repos), GOJI_* envs, pairing security hardening (register_secret; poll never leaks codes), plan-status-push (self-confirms reach parents)
 - [x] 2026-07-22 — Phase 2b: synced decks auto-import to Flashcards, Hub ParentQuizzes, OTA download/verify (streaming sha256 + Ed25519-over-digest), opt-in firewall installer + goji-sync.service
-- [x] 2026-07-23 — School Day contract locked (`SYNC_API.md` + privacy schema); cloud migration `school_day_sync` + RPCs/edge functions deployed to live project
+- [x] 2026-07-23 — School Day contract locked (`SYNC_API.md` + privacy schema); cloud migration `school_day_sync` + RPCs/edge functions deployed to live project; live cloud wire smoke passed (plans/session/activity/status-push); hermetic `MockFamilyCloud` e2e mock landed on Pi (`kodi-computer` `#65`); UI phone+Pi e2e still open
 - [x] 2026-07-25 — Full Pi↔cloud↔app sync audit: profile-switch stale plans, catalog prune, session/ack hardening, wizard draft duplication, PDF clamp — 33 files fixed (`SYNC_AUDIT_2026-07-25.md`); School Day branches merged to main; kiosk task deep-links (`navigateTo(appId, intent)` → PDF page / book)
 - [x] 2026-08-01 — Module-scoped math tasks contract + product spec landed (`SYNC_API.md` "Math modules", `PARENT_APP_PRODUCT.md` §5.1, `MATH_MODULE_TASKS_PLAN.md`); Household Tasks board grilled + docs landed (`PARENT_APP_PRODUCT.md` §10, `SYNC_API.md` "Household tasks")
 
