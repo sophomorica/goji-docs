@@ -20,7 +20,8 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] **Parent → child messages + Goji message center**
   - Decisions locked: one-way text + canned reactions; non-blocking in-lesson banner; near-live via poll; full messenger shelved
   - Cloud live (`messages` + pull/ack/reactions); Pi banner + local cache on `feat/school-day-sync`; full message-center UI still open
-- [ ] Parent app **brand parity polish** — family board / wizard / sign-in use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters
+- [ ] Parent app **brand parity polish** — family board / wizard / sign-in use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters; Flutter small sizes should use flat-seal variants
+- [ ] School Day follow-ups (**ticket, don’t block merge**): un-acked silently-dropped journal/catalog rows → infinite Pi retries; duplicate `local_id` batch 500s; journal family/child refresh on re-claim; wizard draft duplication; PDF page-range clamp
 - [ ] Reading quizzes tied to actual books (quiz references a book; completing it can auto-verify a plan task)
 - [ ] Lesson-suggestion payloads applying into plans with one parent tap (schema exists; apply path not built)
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
@@ -32,8 +33,8 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] OTA apply/install (check + download + signature verify exist; nothing installs yet) + `ota-releases` storage bucket + Ed25519 keypair ceremony (sign the sha256 digest — see `goji_cloud/SYNC_API.md`)
 - [ ] Pricing model decision (assumptions in `goji_computer/docs/specs/cloud-sync-product/`)
 - [ ] Multi-child / multi-device: cloud schema supports it; Pi still maps everything to local user 1
-- [ ] Kid-facing branding: keep "Codi" as the character or rename to Goji (affects hub UI, box, website)
-- [ ] Full CodeBox→Goji internal rename pass (env fallbacks, module names, service names on deployed Pis)
+- [ ] Kid-facing branding polish beyond hub wordmark (box, website, character naming)
+- [x] CodeBox→Goji env rename: `GOJI_*` only, no `CODEBOX_*` fallback (`NAMING.md`; landed on `feat/school-day-sync`)
 - [ ] Printed privacy one-pager for the box (draft: `goji_computer/docs/PRIVACY_SYNC_SCHEMA.md`)
 - [ ] Image build guard: fail the SD build if `cloud/` or `parent-app/` reappear in goji_computer
 - [ ] Goji website (separate track)

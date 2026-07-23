@@ -28,12 +28,13 @@ This folder is the whole product; each subfolder is its own git repo.
 4. **No secrets in any repo.** Supabase keys live in local `.env` files only.
    The flashed image contains no secrets; device identity is generated on first
    boot (see pairing design in `docs/CLOUD_SYNC_PLAN.md` §3).
-5. **Env vars:** canonical names are `GOJI_*`; `CODEBOX_*` is accepted as legacy
-   fallback (`env_goji()` in `goji_computer/backend/sync/cloud.py`). New code
-   documents only `GOJI_*`.
-6. **Naming:** product = Goji. Internal code identifiers, DB names, and the
-   kid-facing "Codi" hub branding are NOT yet renamed — that's a deliberate
-   deferred pass. Don't rename opportunistically.
+5. **Env vars:** `GOJI_*` only (`GOJI_CLOUD_URL`, `GOJI_SYNC_MODE`, …). No
+   `CODEBOX_*` fallback — see `goji_computer/NAMING.md` and `env_goji()` in
+   `goji_computer/backend/sync/cloud.py`.
+6. **Naming:** product = Goji. Kid-facing hub uses the Goji wordmark/seal (not
+   "Codi" as the primary brand mark). Internal DB/module identifiers may still
+   carry legacy names until a deliberate rename pass — don't rename
+   opportunistically beyond what `NAMING.md` already locked.
 7. Workspace-level TODOs / feature list: `TODO.md` next to this file.
    Repo-specific engineering TODOs stay in `goji_computer/TODO.md`.
 8. **Parent app product SoT:** `PARENT_APP_PRODUCT.md`. Do not re-litigate School Mode,
