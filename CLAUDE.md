@@ -3,15 +3,29 @@
 Goji is a family learning product by Narrow Road Studios: a self-contained
 Raspberry Pi learning computer for kids ("the Goji computer", on-device brand
 "Codi" for now), a parent phone app, and a small cloud that connects them.
-This folder is the whole product; each subfolder is its own git repo.
 
-| Repo | What it is | Read first |
-|------|-----------|------------|
-| `goji_computer/` | Everything on the device: Flask+SQLite backend, Svelte 5 kiosk frontend, sync agent, deployment | `goji_computer/CLAUDE.md` (role-based context rules), `docs/ARCHITECTURE.md`, `docs/CLOUD_SYNC_PLAN.md` |
-| `goji_cloud/` | Supabase-as-code: migrations, RLS, edge functions | `goji_cloud/README.md`, `SYNC_API.md` (**the sync contract — source of truth**), `HUMAN_CHECKLIST.md` |
-| `goji_learner_app/` | Flutter parent app (`goji_parent`): school-day remote + trust dashboard | `PARENT_APP_PRODUCT.md` (product SoT), `goji_learner_app/README.md`, `goji_learner_app/BRANDING.md` |
+**This repo (`goji-docs`) is docs/coordination only** — product SoT markdown for
+agents and humans. The three product codebases are separate GitHub remotes.
+Clone them as siblings under a local `goji_learner/` folder (or use a Cursor
+multi-repo Cloud Agent environment with all four selected).
 
-**Parent-folder coordination:** product decisions that span computer + app + cloud land in this repo (`PARENT_APP_PRODUCT.md`, `TODO.md`, this file). Agents should read those first, then work in the child repos in parallel without drifting.
+| Local path | GitHub remote | What it is | Read first |
+|------------|---------------|------------|------------|
+| *(this repo)* | [`sophomorica/goji-docs`](https://github.com/sophomorica/goji-docs) | Product SoT + agent entry (`PARENT_APP_PRODUCT.md`, `TODO.md`, this file) | this file, `PARENT_APP_PRODUCT.md`, `TODO.md` |
+| `goji_computer/` | [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-computer) | Device: Flask+SQLite backend, Svelte 5 kiosk, sync agent, deployment | `goji_computer/CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/CLOUD_SYNC_PLAN.md` |
+| `goji_cloud/` | [`sophomorica/goji-cloud`](https://github.com/sophomorica/goji-cloud) | Supabase-as-code: migrations, RLS, edge functions | `README.md`, **`SYNC_API.md`** (wire contract SoT), `HUMAN_CHECKLIST.md` |
+| `goji_learner_app/` | [`sophomorica/goji-learner-app`](https://github.com/sophomorica/goji-learner-app) | Flutter parent app (`goji_parent`): school-day remote + trust dashboard | `PARENT_APP_PRODUCT.md` (product SoT), `README.md`, `BRANDING.md` |
+
+```bash
+# Typical local layout after cloning all four:
+mkdir -p goji_learner && cd goji_learner
+git clone git@github.com:sophomorica/goji-docs.git .
+git clone git@github.com:sophomorica/kodi-computer.git goji_computer
+git clone git@github.com:sophomorica/goji-cloud.git goji_cloud
+git clone git@github.com:sophomorica/goji-learner-app.git goji_learner_app
+```
+
+**Parent-folder coordination:** product decisions that span computer + app + cloud land here (`PARENT_APP_PRODUCT.md`, `TODO.md`, this file). Agents should read those first, then work in the child repos in parallel without drifting.
 
 ## Cross-repo rules (apply to all work here)
 
