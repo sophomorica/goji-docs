@@ -8,18 +8,18 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 ## Now — get v1 live (human steps, ~1 evening)
 
-- [ ] Create Supabase project `goji-cloud` (org `narrow-road-books`, us-east-2) and run `goji_cloud/HUMAN_CHECKLIST.md` end to end (db push, deploy functions, email auth)
+- [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Remaining human: email auth if not done; see `goji_cloud/HUMAN_CHECKLIST.md`
 - [ ] `flutter create` + run `goji_learner_app` on a real phone
-- [ ] End-to-end smoke test: pair → build plan on phone → sync → Today tile on Pi → progress on phone
+- [ ] End-to-end smoke test: pair → wizard/Start on phone → sync → School Mode + Today on Pi → progress/messages/journal on phone
 - [ ] Install `goji-sync.service` on the real Pi; firewall `--dry-run` first, live later
-- [ ] Create GitHub repos + push `goji_cloud` and `goji_learner_app` (currently local-only — no backup!)
+- [ ] Create GitHub repos + push `goji_cloud` and `goji_learner_app` (currently local-only — no backup!). Feature branches ready: cloud `feat/school-day-sync-contract`, Pi `feat/school-day-sync`, app `feat/school-day-parent`
 
 ## Next — features
 
-- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — wizard + Start, per-child School Mode on Pi, family board dashboard, smart carry-forward, synced PDF/book catalogs, parent-authored quizzes, journal readable + optional sign-off
+- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — **cloud live**; Pi + Flutter on feature branches (merge + device smoke). Gaps: PDF today’s-work bookmark seeding, full hub message center (banner done), profile-switch PIN during School Mode
 - [ ] **Parent → child messages + Goji message center**
   - Decisions locked: one-way text + canned reactions; non-blocking in-lesson banner; near-live via poll; full messenger shelved
-  - Cloud: `messages` table + RLS; Pi pull + hub badge/banner; reactions back up
+  - Cloud live (`messages` + pull/ack/reactions); Pi banner + local cache on `feat/school-day-sync`; full message-center UI still open
 - [ ] Parent app **brand parity polish** — family board / wizard / sign-in use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters
 - [ ] Reading quizzes tied to actual books (quiz references a book; completing it can auto-verify a plan task)
 - [ ] Lesson-suggestion payloads applying into plans with one parent tap (schema exists; apply path not built)
@@ -44,6 +44,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [x] 2026-07-21 — Phase 1 Pi: lesson-plan queue + auto-verify, Today tile, pairing (no secrets in image), sync agent
 - [x] 2026-07-22 — goji_learner/ reorg (3 repos), GOJI_* envs, pairing security hardening (register_secret; poll never leaks codes), plan-status-push (self-confirms reach parents)
 - [x] 2026-07-22 — Phase 2b: synced decks auto-import to Flashcards, Hub ParentQuizzes, OTA download/verify (streaming sha256 + Ed25519-over-digest), opt-in firewall installer + goji-sync.service
+- [x] 2026-07-23 — School Day contract locked (`SYNC_API.md` + privacy schema); cloud migration `school_day_sync` + RPCs/edge functions deployed to live project; Pi + Flutter implementations on feature branches (not merged)
 
 ## Brand rollout follow-ups
 
