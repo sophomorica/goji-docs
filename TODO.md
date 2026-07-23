@@ -1,0 +1,55 @@
+# Goji — product TODO / feature list
+
+Workspace-level features and product decisions, spanning all three repos.
+Engineering-level TODOs for the device live in `goji_computer/TODO.md`.
+Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
+
+**Parent app product SoT (grilled 2026-07-22):** [`PARENT_APP_PRODUCT.md`](./PARENT_APP_PRODUCT.md) — school-day remote, School Mode, wizard, dashboard, messages, brand. Agents coordinating across repos start there.
+
+## Now — get v1 live (human steps, ~1 evening)
+
+- [ ] Create Supabase project `goji-cloud` (org `narrow-road-books`, us-east-2) and run `goji_cloud/HUMAN_CHECKLIST.md` end to end (db push, deploy functions, email auth)
+- [ ] `flutter create` + run `goji_learner_app` on a real phone
+- [ ] End-to-end smoke test: pair → build plan on phone → sync → Today tile on Pi → progress on phone
+- [ ] Install `goji-sync.service` on the real Pi; firewall `--dry-run` first, live later
+- [ ] Create GitHub repos + push `goji_cloud` and `goji_learner_app` (currently local-only — no backup!)
+
+## Next — features
+
+- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — wizard + Start, per-child School Mode on Pi, family board dashboard, smart carry-forward, synced PDF/book catalogs, parent-authored quizzes, journal readable + optional sign-off
+- [ ] **Parent → child messages + Goji message center**
+  - Decisions locked: one-way text + canned reactions; non-blocking in-lesson banner; near-live via poll; full messenger shelved
+  - Cloud: `messages` table + RLS; Pi pull + hub badge/banner; reactions back up
+- [ ] Parent app **brand parity polish** — family board / wizard / sign-in use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters
+- [ ] Reading quizzes tied to actual books (quiz references a book; completing it can auto-verify a plan task)
+- [ ] Lesson-suggestion payloads applying into plans with one parent tap (schema exists; apply path not built)
+- [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
+- [ ] Standing app lock/unlock + child unlock-requests (after school-day loop)
+- [ ] Parent app polish pass beyond brand (v1 screens are deliberately ugly functionally)
+
+## Later — pre-sale blockers (each is a real project)
+
+- [ ] OTA apply/install (check + download + signature verify exist; nothing installs yet) + `ota-releases` storage bucket + Ed25519 keypair ceremony (sign the sha256 digest — see `goji_cloud/SYNC_API.md`)
+- [ ] Pricing model decision (assumptions in `goji_computer/docs/specs/cloud-sync-product/`)
+- [ ] Multi-child / multi-device: cloud schema supports it; Pi still maps everything to local user 1
+- [ ] Kid-facing branding: keep "Codi" as the character or rename to Goji (affects hub UI, box, website)
+- [ ] Full CodeBox→Goji internal rename pass (env fallbacks, module names, service names on deployed Pis)
+- [ ] Printed privacy one-pager for the box (draft: `goji_computer/docs/PRIVACY_SYNC_SCHEMA.md`)
+- [ ] Image build guard: fail the SD build if `cloud/` or `parent-app/` reappear in goji_computer
+- [ ] Goji website (separate track)
+
+## Done (highlights)
+
+- [x] 2026-07-21 — Phase 0: unified activity_events stream (app sessions w/ idle-honest time, reading, research, journal) + daily summary API
+- [x] 2026-07-21 — Phase 1 Pi: lesson-plan queue + auto-verify, Today tile, pairing (no secrets in image), sync agent
+- [x] 2026-07-22 — goji_learner/ reorg (3 repos), GOJI_* envs, pairing security hardening (register_secret; poll never leaks codes), plan-status-push (self-confirms reach parents)
+- [x] 2026-07-22 — Phase 2b: synced decks auto-import to Flashcards, Hub ParentQuizzes, OTA download/verify (streaming sha256 + Ed25519-over-digest), opt-in firewall installer + goji-sync.service
+
+## Brand rollout follow-ups
+
+- [ ] Generate rasterized favicon set from `goji_computer/frontend/src/assets/brand/goji-seal-letters-flat.svg` (16/32/48 favicon.ico, 180 apple-touch, 192/512 PWA) and wire into `index.html`/manifest.
+- [ ] Launcher / OS icons for the kid device image: replace placeholder icons with the letters seal (flat variant <48px).
+- [ ] Website: adopt `goji-lockup.svg` for the header/banner and the face-seal signature rules from `goji_computer/docs/BRAND.md`.
+- [ ] Packaging: produce print-ready (CMYK/vector) files for the lockup and seal from the production SVGs.
+- [ ] Decide on Figtree as the shipped UI font (brand prototypes use it) vs current system stack; if adopted, self-host the woff2 (device is offline-first).
+- [ ] Flutter launcher icons via flutter_launcher_icons after `flutter create` (see `goji_learner_app/BRANDING.md`).

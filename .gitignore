@@ -1,0 +1,17 @@
+# Product repos — each has its own git history. This workspace root is only
+# an LLM / human entry point (CLAUDE.md, TODO.md, and other top-level docs).
+goji_cloud/
+goji_computer/
+goji_learner_app/
+
+# OS / editor noise at the workspace root
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Secrets must never land in any repo
+.env
+.env.*
+!.env.example
