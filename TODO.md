@@ -8,7 +8,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 ## Now — get v1 live (human steps, ~1 evening)
 
-- [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Remaining human: email auth if not done; see `goji_cloud/HUMAN_CHECKLIST.md`
+- [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Remaining human: enable Anonymous auth (phone has no email login); see `goji_cloud/HUMAN_CHECKLIST.md`
 - [ ] `flutter create` + run `goji_learner_app` on a real phone
 - [ ] End-to-end smoke test: pair → wizard/Start on phone → sync → School Mode + Today on Pi → progress/messages/journal on phone
 - [ ] Install `goji-sync.service` on the real Pi; firewall `--dry-run` first, live later
@@ -20,7 +20,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] **Parent → child messages + Goji message center**
   - Decisions locked: one-way text + canned reactions; non-blocking in-lesson banner; near-live via poll; full messenger shelved
   - Cloud live (`messages` + pull/ack/reactions); Pi banner + local cache on `feat/school-day-sync`; full message-center UI still open
-- [ ] Parent app **brand parity polish** — family board / wizard / sign-in use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters; Flutter small sizes should use flat-seal variants
+- [ ] Parent app **brand parity polish** — family board / wizard / splash use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters; Flutter small sizes should use flat-seal variants
 - [ ] School Day follow-ups (**ticket, don’t block merge**): un-acked silently-dropped journal/catalog rows → infinite Pi retries; duplicate `local_id` batch 500s; journal family/child refresh on re-claim; wizard draft duplication; PDF page-range clamp
 - [ ] Reading quizzes tied to actual books (quiz references a book; completing it can auto-verify a plan task)
 - [ ] Lesson-suggestion payloads applying into plans with one parent tap (schema exists; apply path not built)

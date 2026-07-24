@@ -24,7 +24,7 @@ The parent app is the family’s **school-day remote + trust dashboard**: run a 
 | At-the-box escape | **Household PIN** on the Goji | unchanged |
 | Direct phone ↔ Pi LAN control | Not required | Optional, not the default path |
 
-Pairing (not the PIN) maps **Goji → family**. Multiple equal parent accounts share that family. One **household PIN** on the device is for release / profile-switch at the box; it does not log anyone into the phone app.
+Pairing (not the PIN) maps **Goji → family**. The **phone app has no email/password login** — open it and use it. Under the hood the app keeps a silent on-device session so cloud RLS still works; parents never see credentials. Multiple equal parent phones can share that family (join path via pairing / invite — not a sign-in form). One **household PIN** on the device is for release / profile-switch at the box; it does not log anyone into the phone app. A future **web** client may require real login; that stays out of the phone UX.
 
 ---
 
@@ -144,7 +144,7 @@ The parent app and the Goji computer must **feel like one product**. Agents work
 ### Must use
 
 - **Letters seal** (`goji-seal-letters` / `-flat`) for app icon / primary brand mark.
-- **Wordmark** / **lockup** for sign-in and branded headers — product name stays lowercase **goji** in the mark.
+- **Wordmark** / **lockup** for splash / branded headers — product name stays lowercase **goji** in the mark.
 - **Face seal** for alive/waiting/pending states (sync pending, waiting on device), matching device semantics: face = working; letters = identity.
 - Tokens: seal red `#C6392F`, brand cream `#EFE8DC`, carve cream `#FBF6EE`, ink `#2A211E`, leaf green `#5A7C4C`. Card surface `#FFFDF9` where surfaces are needed.
 - Tagline where appropriate: elevating knowledge, one child at a time (see brand docs for casing/tracking on splash-like surfaces).
