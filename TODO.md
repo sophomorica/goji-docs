@@ -8,20 +8,24 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 ## Now — get v1 live (human steps, ~1 evening)
 
-- [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Remaining human: enable Anonymous auth (phone has no email login); see `goji_cloud/HUMAN_CHECKLIST.md`
+- [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Anonymous auth enabled for credential-free phone app (2026-07-24).
 - [ ] `flutter create` + run `goji_learner_app` on a real phone
 - [ ] End-to-end smoke test: pair → wizard/Start on phone → sync → School Mode + Today on Pi → progress/messages/journal on phone
 - [ ] Install `goji-sync.service` on the real Pi; firewall `--dry-run` first, live later
-- [ ] Create GitHub repos + push `goji_cloud` and `goji_learner_app` (currently local-only — no backup!). Feature branches ready: cloud `feat/school-day-sync-contract`, Pi `feat/school-day-sync`, app `feat/school-day-parent`
+- [x] GitHub repos created + pushed for all four repos (`goji-docs`, `kodi-computer`, `goji-cloud`, `goji-learner-app`); School Day feature branches all merged to `main` (verified 2026-08-01)
+- [ ] **Finish the 2026-07-25 audit deploy** — `sync_hardening` migration is on the live project (verified 2026-08-01) but still owed: re-deploy the 9 audit-edited edge functions **plus new `device-unpair`**; restart Pi backend / `goji-sync.service`; rebuild kiosk (`npm install && npm run build` — picks up `uqr`); `flutter test`. See `SYNC_AUDIT_2026-07-25.md` "Deploy steps"
 
 ## Next — features
 
-- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — **cloud live**; Pi + Flutter on feature branches (merge + device smoke). Gaps: PDF today’s-work bookmark seeding, full hub message center (banner done), profile-switch PIN during School Mode
+- [ ] **School Day v1** (see `PARENT_APP_PRODUCT.md`) — **cloud live**; Pi + Flutter **merged to main** and hardened by the 2026-07-25 sync audit; device + phone e2e smoke still open (multi-child "Child" assignment bugs seen on phone). Gaps: PDF today’s-work bookmark seeding, full hub message center (banner done), profile-switch PIN during School Mode
 - [ ] **Parent → child messages + Goji message center**
   - Decisions locked: one-way text + canned reactions; non-blocking in-lesson banner; near-live via poll; full messenger shelved
   - Cloud live (`messages` + pull/ack/reactions); Pi banner + local cache on `feat/school-day-sync`; full message-center UI still open
 - [ ] Parent app **brand parity polish** — family board / wizard / splash use seal + wordmark/lockup + tokens end-to-end (`goji_learner_app/BRANDING.md`); keep `assets/brand/` synced with computer masters; Flutter small sizes should use flat-seal variants
-- [ ] School Day follow-ups (**ticket, don’t block merge**): un-acked silently-dropped journal/catalog rows → infinite Pi retries; duplicate `local_id` batch 500s; journal family/child refresh on re-claim; wizard draft duplication; PDF page-range clamp
+- [ ] **Sync-audit open issues** (2026-07-25, ranked in `SYNC_AUDIT_2026-07-25.md` §4 — the previously-ticketed follow-ups here were all fixed in that audit): device-poll one-shot token loss can brick pairing; **multi-child attribution** (all uploads land on `devices.child_id` — needs `child_cloud_id` on the wire before multi-child is real); no session expiry (orphaned `pending_start` blocks Start until manual cancel); `device-register` squatting / no rate limit; **anonymous-session loss forks the family** (blocks the two-phones goal — needs invite/recovery code); profile-switch PIN during School Mode; parent `plan_tasks` RLS toggle bypasses completion side-effects; minor board/wizard items (§4.8–9)
+- [ ] **Household Tasks board** (grilled 2026-08-01 — product: `PARENT_APP_PRODUCT.md` §10; contract: `goji_cloud/SYNC_API.md` "Household tasks"; docs landed, no code) — standing **per-child** title-only chore board, fully separate from School Mode (audit/info only, never locks the device). Parent CRUD + reorder + Clear completed; kid/parent toggle open↔done; "all done" = in-app bird's-eye signal (no OS push v1); always-present cute **Tasks** hub on the Goji (School Mode exception, like `hub`); parent chrome becomes pair-first shell with **Family | Tasks | Content** + avatar → Settings (Pair + Computer move there). Build order: cloud migration/RLS + pull/push functions → Pi cache + sync + hub app → app nav/Tasks tab/Settings → tests
+- [ ] **Module-scoped math tasks** — parent assigns "30 problems of Times Tables at 90%", not "15 min math"; child deep-links into that drill; per-module progress surfaces in the wizard picker. Contract landed in `SYNC_API.md` ("Math modules") + `PARENT_APP_PRODUCT.md` §5.1 on 2026-08-01. Build plan: [`MATH_MODULE_TASKS_PLAN.md`](./MATH_MODULE_TASKS_PLAN.md) — slice A (assignment) then slice B (progress)
+  - Prereqs found while designing: `Fractions.svelte` is built but unreachable from the math menu; `multiplication_table_mastery` has no operation column so division's per-table stats are computed and discarded — blocks any per-table ("÷7 is weak") feature
 - [ ] Reading quizzes tied to actual books (quiz references a book; completing it can auto-verify a plan task)
 - [ ] Lesson-suggestion payloads applying into plans with one parent tap (schema exists; apply path not built)
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
@@ -32,7 +36,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 - [ ] OTA apply/install (check + download + signature verify exist; nothing installs yet) + `ota-releases` storage bucket + Ed25519 keypair ceremony (sign the sha256 digest — see `goji_cloud/SYNC_API.md`)
 - [ ] Pricing model decision (assumptions in `goji_computer/docs/specs/cloud-sync-product/`)
-- [ ] Multi-child / multi-device: cloud schema supports it; Pi still maps everything to local user 1
+- [ ] Multi-child / multi-device: cloud schema supports it; since the 2026-07-25 audit the Pi attributes uploads to the device's claimed child (no longer hardcoded user 1), but child B's work on a shared Goji still records as child A's — needs `child_cloud_id` on the wire (see audit §4.2)
 - [ ] Kid-facing branding polish beyond hub wordmark (box, website, character naming)
 - [x] CodeBox→Goji env rename: `GOJI_*` only, no `CODEBOX_*` fallback (`NAMING.md`; landed on `feat/school-day-sync`)
 - [ ] Printed privacy one-pager for the box (draft: `goji_computer/docs/PRIVACY_SYNC_SCHEMA.md`)
@@ -45,7 +49,9 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [x] 2026-07-21 — Phase 1 Pi: lesson-plan queue + auto-verify, Today tile, pairing (no secrets in image), sync agent
 - [x] 2026-07-22 — goji_learner/ reorg (3 repos), GOJI_* envs, pairing security hardening (register_secret; poll never leaks codes), plan-status-push (self-confirms reach parents)
 - [x] 2026-07-22 — Phase 2b: synced decks auto-import to Flashcards, Hub ParentQuizzes, OTA download/verify (streaming sha256 + Ed25519-over-digest), opt-in firewall installer + goji-sync.service
-- [x] 2026-07-23 — School Day contract locked (`SYNC_API.md` + privacy schema); cloud migration `school_day_sync` + RPCs/edge functions deployed to live project; Pi + Flutter implementations on feature branches (not merged)
+- [x] 2026-07-23 — School Day contract locked (`SYNC_API.md` + privacy schema); cloud migration `school_day_sync` + RPCs/edge functions deployed to live project
+- [x] 2026-07-25 — Full Pi↔cloud↔app sync audit: profile-switch stale plans, catalog prune, session/ack hardening, wizard draft duplication, PDF clamp — 33 files fixed (`SYNC_AUDIT_2026-07-25.md`); School Day branches merged to main; kiosk task deep-links (`navigateTo(appId, intent)` → PDF page / book)
+- [x] 2026-08-01 — Module-scoped math tasks contract + product spec landed (`SYNC_API.md` "Math modules", `PARENT_APP_PRODUCT.md` §5.1, `MATH_MODULE_TASKS_PLAN.md`); Household Tasks board grilled + docs landed (`PARENT_APP_PRODUCT.md` §10, `SYNC_API.md` "Household tasks")
 
 ## Brand rollout follow-ups
 

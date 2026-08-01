@@ -1,6 +1,6 @@
 # Parent app — product definition (plan of record)
 
-Status: **agreed 2026-07-22** (grilling session) · Owner: Patrick  
+Status: **agreed 2026-07-22** (grilling session) · math tasks §5.1 added 2026-08-01 · Household Tasks §10 + nav chrome §6 added 2026-08-01 · Owner: Patrick  
 Workspace home for agents coordinating `goji_learner_app/` ↔ `goji_computer/` ↔ `goji_cloud/`.
 
 This doc is the **product** source of truth for what the Flutter parent app (`goji_parent` in `goji_learner_app/`) is for, what it can do relative to the Goji computer, and what is explicitly deferred. Sync wire shapes still live in `goji_cloud/SYNC_API.md`. Device behavior details live in `goji_computer/docs/CLOUD_SYNC_PLAN.md`.
@@ -42,7 +42,7 @@ Pairing (not the PIN) maps **Goji → family**. The **phone app has no email/pas
 Hybrid lockdown:
 
 1. Parent finishes wizard and taps **Start school day** for a specific child → device enters School Mode when the command arrives (pending OK in v1).
-2. While active: only apps/tasks in that day’s plan are available.
+2. While active: only apps/tasks in that day’s plan are available. (Exception: the **Tasks** hub app — the Household Tasks board, §10 — is always present, like the hub itself. It is informational and never satisfies or blocks a school-day task.)
 3. Ends when **all tasks are done** (auto-unlock) **or** parent **Release** / **PIN** anytime.
 4. Scheduled auto-Start = shelved (v2+ convenience).
 
@@ -67,10 +67,38 @@ Always **child-scoped** (from that child’s board card, or pick-child first if 
 |------|--------|
 | PDF lesson | Synced **catalog picker** (names + page metadata). Assigned page range. **No** parent PDF upload. |
 | Parent-authored quiz | Prove wizard + device loop; scores on dashboard |
-| Math | Active minutes / challenges |
+| Math | **Module-scoped.** Parent names which drills count (Times Tables, Mental Math, Addition, Subtraction, Division, Word Problems, Fractions) — one task may list several, any-of. Goal is **minutes or problems solved**, parent's choice, with an optional accuracy gate. Naming no modules keeps the old "any math" behavior. See §5.1. |
 | Reading | Synced **book catalog** (same idea as PDFs) + minutes |
 | Journal | Entry saved (min words); parent can **read**; optional “looks good” sign-off — **not** required to leave School Mode |
 | Typing | Active minutes |
+
+### 5.1 Math tasks — module-scoped (agreed 2026-08-01)
+
+"15 minutes of math" is not an assignment. A math task says **what kind of
+math**, and the child lands in that drill instead of the math menu.
+
+- **Which:** any-of list of module ids. One task = one checklist row, even
+  when it names two or three modules ("20 min: Times Tables or Mental Math").
+  A parent who wants them separately tracked adds separate tasks.
+- **How much:** minutes *or* problems solved, chosen per task. Problems is
+  the honest unit for drills; minutes stays for open-ended practice.
+- **How well (optional):** accuracy gate, valid only with a problem count.
+  It never traps the child — Release / PIN work as on any task.
+- **On the device:** tapping the task deep-links straight into that drill
+  (single module) or into the math menu scoped to the named tiles (several),
+  reusing the `navigateTo(appId, intent)` mechanism the PDF/book tasks use.
+- **Back-compat:** a task with no modules behaves exactly as today.
+
+**Progress the parent sees:** each completed drill session syncs as a
+`math.drill` activity event carrying module, duration, problems attempted /
+correct, average time and best streak. The parent app aggregates these into
+per-module accuracy, minutes and last-practiced — shown both on child detail
+and inline in the wizard's module picker, so assigning work is informed by
+where the child is weak. Per-times-table mastery ("7× is shaky") is a
+follow-up, blocked on a device-side data fix — see the deferred note in
+`goji_cloud/SYNC_API.md`.
+
+Wire shapes and verification rules: `goji_cloud/SYNC_API.md`, "Math modules".
 
 ### PDF completion (specific)
 
@@ -82,7 +110,8 @@ Always **child-scoped** (from that child’s board card, or pick-child first if 
 ### Other completion rules
 
 - Quiz: **submitted** (score always visible; pass threshold later if needed).
-- Math / reading / typing: **idle-honest active minutes** matching the plan.
+- Math: per §5.1 — minutes or problems in the named modules, from drill
+  sessions. Reading / typing: **idle-honest active minutes** matching the plan.
 - Journal: saved + small minimum word count.
 
 ### Carry-forward
@@ -98,6 +127,12 @@ Always **child-scoped** (from that child’s board card, or pick-child first if 
 ---
 
 ## 6. Parent app UX surfaces
+
+**App chrome (agreed 2026-08-01 — pair-first shell):**
+
+- **Unpaired** (no family / no claimed device): the app is a **full-screen Pair experience** — no tabs, nothing else to do yet.
+- **Paired:** bottom nav = **Family | Tasks | Content**. Family = the board below; Tasks = the Household Tasks bird's-eye + per-child editor (§10); Content = author/manage synced content.
+- **Settings via the avatar** in the AppBar — Pair (add another device) and Computer live there, not as top-level tabs.
 
 **Home = family board** (all children as status cards) → tap child for detail.  
 Primary action = **Plan today / Start** for that child (not a peer “lifestyle” tab equal to Pair/Plan/Progress/Content).
@@ -126,6 +161,9 @@ Primary action = **Plan today / Start** for that child (not a peer “lifestyle�
 - Parent PDF upload to cloud  
 - Required journal sign-off to unlock  
 - Weekly schedule templates / timed School Mode windows  
+- OS push notifications (incl. “child finished their Tasks board” — in-app signal only in v1)  
+- Kid Inbox / message center on the Goji (shared Goji-face alert language; banner only for now)  
+- Household-task extras: notes, due dates, recurrence, templates, assign-one-to-many, parent verify gate (optional soft “looks good” is a follow-up, never blocking)  
 
 ---
 
@@ -168,3 +206,53 @@ When adding brand files to the app, **copy from the computer’s `assets/brand/`
 4. Do not put parent-app or cloud code into `goji_computer/` image roots.
 
 Workspace TODO list: `TODO.md`. Device engineering TODOs: `goji_computer/TODO.md`.
+
+---
+
+## 10. Household Tasks board (agreed 2026-08-01)
+
+A standing **per-child chore/task board**, fully separate from School Mode:
+it is **audit/info only** and never locks or unlocks the device. Wire shapes:
+`goji_cloud/SYNC_API.md`, "Household tasks" — a **new** `household_tasks`
+table mirroring the messages sync pattern; do **not** reuse `plan_tasks` or
+freeform school tasks for this.
+
+### Locked decisions
+
+- **Standing per-child board.** Tasks are **title-only** (1–120 chars); no
+  notes, due dates, recurrence, or multi-assign in v1 (§7).
+- **States:** open ↔ done. Either the kid (on the Goji) or the parent (in
+  the app) can toggle; last write wins on `updated_at`.
+- **Parent can:** create, edit title, delete, reorder, **Clear completed**.
+  Completed tasks stay visible on the Goji until the parent clears them.
+- **“All done”** (no open tasks left for a child) = an **in-app** bird's-eye
+  signal on the Tasks tab / child card — no OS push in v1.
+- **On the Goji:** a dedicated **Tasks hub app** — always present, cute
+  checklist with the Goji face, open tasks above done, friendly empty state.
+  **School Mode exception:** treated like the hub itself — always allowed
+  (§4). Profile-scoped: shows the current profile's board only.
+- **Offline-first:** local Pi cache (like messages) so a kid can mark done
+  offline; the sync agent pushes status opportunistically.
+
+### Parent app surfaces
+
+- **Tasks tab** (§6 chrome): bird's-eye across children (per-child cards
+  with open/done counts + all-done state) → tap child for the list editor
+  (add / edit / delete / reorder / toggle / Clear completed).
+
+### Follow-ups (documented, not built — see §7)
+
+OS push on board completion · kid Inbox/message center · notes, due dates,
+recurrence, templates, assign-one-to-many · optional soft parent “looks good”.
+
+### Build order (cross-repo, after the contract)
+
+1. Cloud: migration + RLS (parent CRUD via PostgREST) + `household-tasks-pull`
+   / `household-tasks-status-push` edge functions (copy structure from
+   `messages-pull` / `plan-status-push`).
+2. Pi: local cache table + sync agent hooks + Tasks hub app; School Mode
+   allow-list + Hub tile filter exception.
+3. App: pair-first shell + nav (§6), Settings screen (Pair + Computer),
+   Tasks tab + editor; repository against the Supabase table.
+4. Tests: cloud RLS/idempotency; Pi cache merge, school-mode allow, toggle
+   push; Flutter nav gate + repository units.
