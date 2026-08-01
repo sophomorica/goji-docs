@@ -4,14 +4,51 @@ goji_cloud/
 goji_computer/
 goji_learner_app/
 
-# OS / editor noise at the workspace root
+# Accidental npm installs at the docs root (uqr belongs in goji_computer/frontend)
+node_modules/
+package.json
+package-lock.json
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# OS / editor noise
 .DS_Store
+.AppleDouble
+.LSOverride
 .idea/
 .vscode/
 *.swp
 *~
+*.bak
 
 # Secrets must never land in any repo
 .env
 .env.*
 !.env.example
+
+# Python / test caches (if someone runs tools from this folder)
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+
+# Build / temp / scratch
+dist/
+build/
+_to_delete/
+*.log
+*.tmp
+*.temp
+
+# Large / design source dumps (keep out of the docs git)
+*.zip
+*.psd
+*.ai
+Goji Educational Logo Design.zip
