@@ -2,6 +2,8 @@
 
 **This is the place.** When someone says *“Goji computer,”* *curriculum,* *lesson plans,* *teaching animations,* *skills,* *Virginia SOLs,* *where the child stands,* or *Claude Design for learning* — start here.
 
+**How humans get here:** open the company **hub** and say it in plain English. They do **not** need this path. Hub agents are instructed (`hub/CLAUDE.md`, `hub/GOJI.md`) to open this folder automatically.
+
 Status: **planning / organization** · vision locked in intent 2026-08-05  
 Scope: **K–12**, pillars **reading · writing · math**, offline-first Goji computer + parent metrics  
 **Curriculum lead:** family curriculum owner (works with agents in this folder)  

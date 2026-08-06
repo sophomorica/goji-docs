@@ -32,6 +32,8 @@ git clone git@github.com:sophomorica/goji-learner-app.git goji_learner_app
 **Paradigm:** three pillars — **reading** (access), **writing** (think), **math** (think straight); teach → practice → comprehension; child’s pace; vehicle+data on device; parent metrics + school day; optional Grok co-pilot cloud-side.  
 Curriculum lead may be a non-engineering family member — keep answers in this folder’s language; don’t invent structure inside `goji_computer/` seed without updating `curriculum/` first.
 
+**Hub routing:** Sessions often start in `hub/` with plain language only (“Goji curriculum”, “Goji computer”). Hub `CLAUDE.md` + `hub/GOJI.md` send agents here — never require the human to know this path.
+
 ## Cross-repo rules (apply to all work here)
 
 1. **The sync contract lives in `goji_cloud/SYNC_API.md`.** Any change to what
