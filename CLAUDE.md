@@ -27,6 +27,11 @@ git clone git@github.com:sophomorica/goji-learner-app.git goji_learner_app
 
 **Parent-folder coordination:** product decisions that span computer + app + cloud land here (`PARENT_APP_PRODUCT.md`, `TODO.md`, this file). Agents should read those first, then work in the child repos in parallel without drifting.
 
+**Curriculum / pedagogy planning (K–12, teaching animations, quizzes, tools map):**
+[`curriculum/README.md`](./curriculum/README.md) + **[`curriculum/VISION.md`](./curriculum/VISION.md)** — start here for Goji computer curriculum, lesson plans, objectives, Claude Design animations, Virginia skills coverage, Gutenberg/Kiwix reading, or parent “where does my child stand.”  
+**Paradigm:** three pillars — **reading** (access), **writing** (think), **math** (think straight); teach → practice → comprehension; child’s pace; vehicle+data on device; parent metrics + school day; optional Grok co-pilot cloud-side.  
+Curriculum lead may be a non-engineering family member — keep answers in this folder’s language; don’t invent structure inside `goji_computer/` seed without updating `curriculum/` first.
+
 ## Cross-repo rules (apply to all work here)
 
 1. **The sync contract lives in `goji_cloud/SYNC_API.md`.** Any change to what
@@ -57,6 +62,9 @@ git clone git@github.com:sophomorica/goji-learner-app.git goji_learner_app
    tokens from `goji_computer/PRODUCT_DESIGN.md` + `docs/BRAND.md` (canonical SVGs in
    `goji_computer/frontend/src/assets/brand/`; app copies in `goji_learner_app/assets/brand/`).
    No parallel palette or logo treatment.
+10. **Owned curriculum planning** lives in `curriculum/` (objectives, lesson plans, animation
+    registry, quiz strategy, tools inventory). Maximize existing Goji apps first; track gaps
+    in `curriculum/TOOLS.md`. Large animation binaries stay out of git — see `curriculum/ANIMATIONS.md`.
 
 ## Working here (for Claude sessions)
 

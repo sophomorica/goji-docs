@@ -6,6 +6,8 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 **Parent app product SoT (grilled 2026-07-22):** [`PARENT_APP_PRODUCT.md`](./PARENT_APP_PRODUCT.md) — school-day remote, School Mode, wizard, dashboard, messages, brand. Agents coordinating across repos start there.
 
+**Owned K–12 curriculum planning (docs only for now):** [`curriculum/README.md`](./curriculum/README.md) — objectives, lesson plans, Claude Design animations, quiz strategy, existing-tools vs tools-to-build. Not a pilot-blocker; advance in planning sessions without blocking School Day e2e.
+
 ## Now — get v1 live (human steps, ~1 evening)
 
 - [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Anonymous auth enabled for credential-free phone app (2026-07-24).
@@ -31,6 +33,21 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
 - [ ] Standing app lock/unlock + child unlock-requests (after school-day loop)
 - [ ] Parent app polish pass beyond brand (v1 screens are deliberately ugly functionally)
+
+## Curriculum planning (docs in `curriculum/` — not pilot blockers)
+
+Vision SoT: [`curriculum/VISION.md`](./curriculum/VISION.md) (pillars R/W/M, VA skills catalog, parent standing metrics, Gutenberg + Kiwix, Claude Design, Grok co-pilot). Curriculum lead works here with agents.
+
+- [x] 2026-08-05 — Stand up `curriculum/` planning home (VISION, TOOLS inventory, animations/quizzes conventions, subject + band scaffolds, templates)
+- [x] 2026-08-05 — Lock north-star vision (three pillars, teach→practice→comprehension, VA skills coverage, parent metrics, offline knowledge stores)
+- [ ] Curriculum lead: pick first pillar strand (reading / writing / math × band) and fill objectives + ~5 lesson plans
+- [ ] Virginia skills catalog started for one grade × pillars (coverage checklist)
+- [ ] Gutenberg on-device audit + classic reading lists by band (`subjects/reading/`)
+- [ ] Register first Claude Design teaching animations in `curriculum/assets/animations/INDEX.md`
+- [ ] Decide on-device animation playback format (see `curriculum/ANIMATIONS.md` §4)
+- [ ] Quiz blueprints for first strand; keep using parent quizzes until generator exists
+- [ ] Spec parent “pillar standing” metrics story (feeds future parent-app work; don’t invent wire without SYNC_API)
+- [ ] Engineering only when docs say so: animation player, lesson sequence, objective-linked items, standing metrics (see `curriculum/TOOLS.md` §6)
 
 ## Later — pre-sale blockers (each is a real project)
 

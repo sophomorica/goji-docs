@@ -52,3 +52,11 @@ _to_delete/
 *.psd
 *.ai
 Goji Educational Logo Design.zip
+
+# Teaching animation binaries (briefs/INDEX stay tracked under curriculum/)
+curriculum/assets/animations/**/*.mp4
+curriculum/assets/animations/**/*.webm
+curriculum/assets/animations/**/*.mov
+curriculum/assets/animations/**/*.gif
+curriculum/assets/animations/**/*.lottie
+curriculum/assets/animations/**/*.json.bak
