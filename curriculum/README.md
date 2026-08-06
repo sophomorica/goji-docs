@@ -4,6 +4,8 @@
 
 **How humans get here:** open the company **hub** and say it in plain English. They do **not** need this path. Hub agents are instructed (`hub/CLAUDE.md`, `hub/GOJI.md`) to open this folder automatically.
 
+**Mac mini:** hub is at `~/nr/hub`; this curriculum tree is at `~/nr/products/goji_learner/curriculum/`. Open Grok on **`~/nr/hub`** and say “Goji curriculum.” Human guide: `hub/FOR_CURRICULUM_LEAD.md`.
+
 Status: **planning / organization** · vision locked in intent 2026-08-05  
 Scope: **K–12**, pillars **reading · writing · math**, offline-first Goji computer + parent metrics  
 **Curriculum lead:** family curriculum owner (works with agents in this folder)  
