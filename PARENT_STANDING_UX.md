@@ -3,7 +3,7 @@
 Status: **spec v1** · 2026-08-07 · owner-directed  
 Companion to `curriculum/PARENT_STANDING.md` (the data model) and `PARENT_APP_PRODUCT.md` §6 (app shell). Brand per `goji_learner_app/BRANDING.md`.
 
-**Design stance (owner's words, kept):** a parent managing six children K–8 must never be overwhelmed with reading. **Glance → tap → evidence.** Color carries the first read; text appears only when the parent leans in.
+**Design stance (owner's words, kept):** a parent managing **any number of children** — one kid or a big family, K–12 — must never be overwhelmed with reading. **Glance → tap → evidence.** Color carries the first read; text appears only when the parent leans in. The family board is a dynamic list: families add, rename, and manage children freely (add/update child management is a first-class surface, not a fixed layout); a six-child K–8 household is simply the stress case every screen must survive.
 
 ---
 
@@ -20,7 +20,7 @@ Four semantic states, used identically on every surface (board, heat maps, day r
 
 Rules: colorblind-safe pairings (states also differ by fill pattern/icon, never color alone); calm saturation per brand (no traffic-light neon); **red is rare by design** — it appears only on genuine struggle signals, so it stays meaningful.
 
-## 2. Family board (six kids, one glance)
+## 2. Family board (the whole family, one glance)
 
 Each child card = avatar + **day ring** + one optional attention dot:
 
@@ -31,7 +31,7 @@ Each child card = avatar + **day ring** + one optional attention dot:
  └──────────────┘    amber=needs parent action (sign-off, review waiting)
 ```
 
-- **No numbers on the board.** Six cards fit one screen; a parent reads the family's day in two seconds.
+- **No numbers on the board.** Cards scale to the family — up to six fit one screen without scrolling; larger families scroll, smaller ones breathe. A parent reads the family's day in two seconds regardless of count.
 - Tap card → child detail. Long-press → quick actions (Start day, Message, Pause games).
 - Card order: attention-first (dots float up), then grade.
 
@@ -61,7 +61,7 @@ Adds a small **"to read" stack**: submissions awaiting parent review (analysis d
 
 ## 4. Set-the-day from standing
 
-The wizard gains a **"from their road" mode**: preselects tasks from each child's weakest developing cells (never struggling-only — one win task, one stretch task, per pillar). The parent edits and starts as today. Six kids ≈ six taps on a good morning. (Suggested-day logic is deterministic from the catalog + states — Grok enrichment optional later, per VISION §6.)
+The wizard gains a **"from their road" mode**: preselects tasks from each child's weakest developing cells (never struggling-only — one win task, one stretch task, per pillar). The parent edits and starts as today. One tap per child on a good morning, however many children there are. (Suggested-day logic is deterministic from the catalog + states — Grok enrichment optional later, per VISION §6.)
 
 ## 5. Controls (existing product surface, restated for completeness)
 
