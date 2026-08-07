@@ -7,7 +7,7 @@ Verified source: VDOE *2024 English SOL — Understanding the Standards, Grade 2
 | SOL | Skill (compressed) | Strand | Goji coverage | Status |
 |-----|--------------------|--------|---------------|--------|
 | 2.FFR.2 | Phonemic awareness: 4–5 phoneme words, digraphs, blends | Foundations | — | **off-device** mostly (parent-led) |
-| 2.FFR.3 | Phonics: blends/digraphs/trigraphs; vowel teams; r-controlled; syllable types; affixes; HF words | Foundations | HF flashcards | **partial** — same phonics-strand build as Grade 1 (shared sequence, leveled) |
+| 2.FFR.3 | Phonics: blends/digraphs/trigraphs; vowel teams; r-controlled; syllable types; affixes; HF words | Foundations | shared K–2 sequence `obj.reading.k2.phonics.03`–`.06` (vowel teams/r-controlled, digraphs/blends, diphthongs/variant vowels, 2-syllable + -s/-ing/-ed) + HF flashcards (`obj.reading.k2.fluency.02`) | **covered** at objective level — trigraphs (tch, dge) and derivational affixes are not yet carded (ride `.04`/`.06` decks as stretch cards; 3–5 morphology picks up affixes) |
 | 2.DSR | Fluent expressive reading; grades 2–3 complexity band; cite/quote evidence; knowledge text sets | Fluency/Comp | reader + minutes + K–2/3–5 reading lists | **partial** |
 | 2.RV.1 | Vocabulary: roots/affixes; homophones; morphology; shades of meaning | Vocabulary | flashcards, word-lookup count | **partial** — per-book vocab decks |
 | 2.RL.1 | Literary: retell with structure + central message; central conflict; character traits/motivations; predict | Comprehension | reading objectives + book-tied quizzes (e.g. quiz.reading.k2.comp per book) | **covered** at objective level — banks to author per book |
@@ -22,8 +22,8 @@ Verified source: VDOE *2024 English SOL — Understanding the Standards, Grade 2
 |-----|--------------------|--------|---------------|--------|
 | 2.FFW.1 | Handwriting: legible print; begin cursive; sign name | Foundations | paper + pencil | **off-device** |
 | 2.FFW.2 | Spelling: vowel teams, r-controlled, multisyllabic, HF automaticity | Foundations | typing exercises from same lists | **partial** — same spelling→typing wiring as Grade 1 |
-| 2.W.1 | Narratives with elaboration + time-order; informative with facts; opinion with reasons; responses | Writing | journal + writing app prompt banks | **partial** |
-| 2.W.2 | Writing process: topic sentence, audience, organize, conclude | Writing | writing app | **planned** — guided templates |
+| 2.W.1 | Narratives with elaboration + time-order; informative with facts; opinion with reasons; responses | Writing | `obj.writing.k2.compose.01`/`.02` + prompt bank [`k2.md`](../subjects/writing/prompt-banks/k2.md) (recount/narrative/informative/opinion); narrative *elaboration* formally lands in `obj.writing.35.compose.03` (planned) | **partial → covered** (2026-08-07) for recount/response/opinion; elaboration rides the 3–5 narrative objective |
+| 2.W.2 | Writing process: topic sentence, audience, organize, conclude | Writing | `obj.writing.35.compose.01` (paragraph machine — topic sentence/organize/conclude, ready one band up; strong G2 can run it); prewriting/audience = `process` strand stub | **partial** |
 | 2.W.3 | Revise for ideas/organization/fluency/word choice; edit conventions | Writing | parent review + sign-off | **partial** (by design in v1) |
 | 2.LU.1 / 2.LU.2 | Grammar: compound sentences, irregular verbs, contractions, possessives, no double negatives; mechanics incl. commas in letters | Language | `obj.writing.35.grammar.02` (compound/run-ons) + k2 strand prereqs; banks authored 2026-08-07 | **partial → covered** for the sentence spine; word-level usage items ride the banks |
 | 2.C.1 / 2.C.2 | Discussions; oral storytelling; organized retelling | Communication | family life | **off-device** |

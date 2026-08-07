@@ -116,12 +116,12 @@ quiz.reading.68.comp.02:
   writing_crossover: journal motive analysis (stated reason / real want / proving line / where the author winks)
 ```
 
-## `quiz.reading.912.comp.01` — Close reading (Poe — blocked on ingest)
+## `quiz.reading.912.comp.01` — Close reading (Poe)
 
 ```yaml
 quiz.reading.912.comp.01:
   objectives: [obj.reading.912.comp.01]
-  book_id: poe-tales   # PLANNED id — confirm catalog key at ingest (Gutenberg 2147)
+  book_id: poe-tales   # CONFIRMED on device 2026-08-07 (8 complete tales as chapters)
   skill: "identify mood and tone of a passage; name the technique (word choice / sound / pacing) a quoted line uses"
   tools: parent-quiz (source_book_id: poe-tales)
   item_type: multiple_choice
@@ -133,7 +133,7 @@ quiz.reading.912.comp.01:
     must_include: [one mood-of-passage, one tone-vs-mood distinction, two which-technique-is-this-line-using, one ghost-swap ("plainer word would mostly weaken: word choice / sound / pacing")]
     distractors: mood words fitting the PLOT but not the prose; technique labels swapped between quoted lines; tone offered where mood is asked
     evidence_rule: technique/tone items quote their exact line and store the annotation-style justification
-  status: blocked on ingest — blueprint complete so wiring is a rename-check only
+  status: ready — book on device, id confirmed
   writing_crossover: notebooks annotation page (W/S/P key, >= 6 annotations) reviewed alongside
 ```
 
@@ -150,6 +150,34 @@ gate.reading.k2.phonics.02:
   tools: flashcards (deck read-k2-vce, >=10 minimal pairs)
   pass_rule: ">= 9/10 including 4+ minimal-pair items, two days"
   prerequisite: gate.reading.k2.phonics.01
+
+gate.reading.k2.phonics.03:
+  objectives: [obj.reading.k2.phonics.03]
+  tools: flashcards (decks read-k2-vteams + read-k2-bossy-r, anchor-sampled per INTEGRATION.md)
+  pass_rule: ">= 8/10 per pattern deck (vowel teams and bossy-r gate separately), two days"
+  prerequisite: gate.reading.k2.phonics.02
+  contrast_rule: each run mixes 2-3 reviewed CVC lookalikes (rain/ran, coat/cot, meat/met; cart/cat, her/hen) — proves the child reads the team, not guesses from length
+
+gate.reading.k2.phonics.04:
+  objectives: [obj.reading.k2.phonics.04]
+  tools: flashcards (decks read-k2-digraphs + read-k2-blends, anchor-sampled)
+  pass_rule: ">= 9/10 per deck, two days"
+  prerequisite: gate.reading.k2.phonics.01   # teaching order: this gate sits BETWEEN .01 and .02 (OBJECTIVES.md strand note)
+  contrast_rule: ">= 4 minimal-pair cards per run — digraph vs single letter (ship/sip, chat/cat, then/ten) and blend vs single (stop/top, black/back, trap/tap)"
+
+gate.reading.k2.phonics.05:
+  objectives: [obj.reading.k2.phonics.05]
+  tools: flashcards (deck read-k2-diphthongs, anchor-sampled)
+  pass_rule: ">= 8/10 per pattern group (oi/oy, ou/ow, au/aw, oo), two days; every run samples BOTH oo sounds (moon-oo and book-oo)"
+  prerequisite: gate.reading.k2.phonics.03
+  contrast_rule: mixes name-sayer teams from .03 (coin/cone, out/oat, how/hoe) — noise-maker vs name-sayer is the error this gate exists to catch
+
+gate.reading.k2.phonics.06:
+  objectives: [obj.reading.k2.phonics.06]
+  tools: flashcards (deck read-k2-2syllable) + typing (base + -ing/-ed forms)
+  pass_rule: ">= 8/10 incl. >= 3 open/closed contrast cards and >= 3 -ed cards sampling all three sounds (/t/ /d/ /id/), two days"
+  prerequisite: gate.reading.k2.phonics.02 and gate.reading.k2.phonics.04
+  contrast_rule: a doubling pair rides every run (hopping/hoping) — open vs closed first syllable is the diagnostic
 
 gate.reading.35.vocab.01:
   objectives: [obj.reading.35.vocab.01]

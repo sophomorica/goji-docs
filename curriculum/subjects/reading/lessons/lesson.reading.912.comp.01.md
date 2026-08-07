@@ -7,7 +7,7 @@
 | **Band** | 9–12 |
 | **Duration (target)** | 35–45 min on Goji |
 | **Objectives** | `obj.reading.912.comp.01` |
-| **Status** | blocked: book ingest (see reading-lists.md) — Poe selections not on device; lesson complete, ingest unblocks it. Animation playback = parent-side preview until player ships |
+| **Status** | ready (books ingested 2026-08-07) — Poe selections not on device; lesson complete, ingest unblocks it. Animation playback = parent-side preview until player ships |
 
 ---
 

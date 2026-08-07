@@ -1,6 +1,6 @@
 # Virginia skills catalog — coverage checklist
 
-Status: **started 2026-08-07** · K–2 math + Grades 1–2 English verified  
+Status: **complete catalogs 2026-08-07** · Math K–8 + Algebra I/Geometry/Algebra II · English 1–12 — all verified against fetched VDOE sources  
 This is the coverage checklist from VISION.md §5: for each grade × pillar, the finite list of skills Virginia expects, and **what on Goji covers each one**.
 
 **Provenance:** every SOL code and statement in these files was verified against fetched official VDOE documents (2023 Mathematics SOLs; 2024 English SOLs — "Understanding the Standards" grade docs), not written from memory. Source URLs are noted per file. When VDOE revises standards, re-verify before editing.
@@ -19,6 +19,8 @@ Rule from the vision: every skill ends up covered by **some combination** of ani
 
 ## Files
 
+**K–2**
+
 | File | Scope |
 |------|-------|
 | [`math-k.md`](./math-k.md) | Kindergarten math (2023 SOLs) |
@@ -27,7 +29,61 @@ Rule from the vision: every skill ends up covered by **some combination** of ani
 | [`english-1.md`](./english-1.md) | Grade 1 English — reading + writing pillars |
 | [`english-2.md`](./english-2.md) | Grade 2 English — reading + writing pillars |
 
-Next grades: add `math-3.md` + `english-3.md` when the K–2 spine has lessons running on-device; do not sprint ahead of the vertical (VISION.md §11).
+**3–5**
+
+| File | Scope |
+|------|-------|
+| [`math-3.md`](./math-3.md) | Grade 3 math (12 standards) |
+| [`math-4.md`](./math-4.md) | Grade 4 math (18 standards) |
+| [`math-5.md`](./math-5.md) | Grade 5 math (14 standards) |
+| [`english-3.md`](./english-3.md) | Grade 3 English |
+| [`english-4.md`](./english-4.md) | Grade 4 English (media messages begin) |
+| [`english-5.md`](./english-5.md) | Grade 5 English |
+
+**6–8**
+
+| File | Scope |
+|------|-------|
+| [`math-6.md`](./math-6.md) | Grade 6 math (15 standards) |
+| [`math-7.md`](./math-7.md) | Grade 7 math (15 standards) |
+| [`math-8.md`](./math-8.md) | Grade 8 math (16 standards — Algebra I on-ramp) |
+| [`english-6.md`](./english-6.md) | Grade 6 English (FFR/FFW defer to K–5 from here) |
+| [`english-7.md`](./english-7.md) | Grade 7 English |
+| [`english-8.md`](./english-8.md) | Grade 8 English (MLA/APA begins) |
+
+**High school** — English 9–12 catalogs exist; HS math is course-structured (see [`GRADUATION.md`](./GRADUATION.md))
+
+| File | Scope |
+|------|-------|
+| [`math-algebra1.md`](./math-algebra1.md) | Algebra I |
+| [`math-geometry.md`](./math-geometry.md) | Geometry |
+| [`math-algebra2.md`](./math-algebra2.md) | Algebra II |
+| [`english-9.md`](./english-9.md) | Grade 9 English (9–12 reading rows ingest-blocked) |
+| [`english-10.md`](./english-10.md) | Grade 10 English — world literature |
+| [`english-11.md`](./english-11.md) | Grade 11 English — American literature + workplace docs |
+| [`english-12.md`](./english-12.md) | Grade 12 English — British literature + technical writing |
+
+Sources: K–2 files cite per-grade "Understanding the Standards" docs; grades 3–8 math cite the 2023 K–12 math SOL doc (…/48908/…) and grades 3–12 English cite the 2024 K–12 English SOL doc (…/53643/…), both fetched 2026-08-07 via archive.
+
+**Science (2018 SOLs — current for K–Physics; 2025 expansion covers only additional HS courses)** — delivery per PRACTICES.md §6: Kiwix-anchored units + PDF lessons + quizzes; labs/hands-on off-device, parent-led
+
+| File | Scope |
+|------|-------|
+| [`science-k.md`](./science-k.md) | Kindergarten science (11 standards) |
+| [`science-1.md`](./science-1.md) | Grade 1 science (8 standards) |
+| [`science-2.md`](./science-2.md) | Grade 2 science (8 standards) |
+| [`science-3.md`](./science-3.md) | Grade 3 science (8 standards — jungle-book anchor synergy) |
+| [`science-4.md`](./science-4.md) | Grade 4 science (8 standards — solar system, Oz weather unit) |
+| [`science-5.md`](./science-5.md) | Grade 5 science (9 standards — energy year) |
+| [`science-6.md`](./science-6.md) | Grade 6 science (9 standards — atoms, watersheds) |
+| [`science-7-life.md`](./science-7-life.md) | Grade 7 Life Science (11 standards — call-of-wild anchor synergy) |
+| [`science-8-physical.md`](./science-8-physical.md) | Grade 8 Physical Science (9 standards — most drill-compatible) |
+| [`science-biology.md`](./science-biology.md) | Biology (8 standards — lab-credit constraint noted) |
+| [`science-chemistry.md`](./science-chemistry.md) | Chemistry (7 standards — lab-credit constraint noted) |
+| [`science-earth.md`](./science-earth.md) | Earth Science (12 standards — most on-device-deliverable lab science) |
+| [`science-physics.md`](./science-physics.md) | Physics (9 standards — sequence after Algebra II) |
+
+Science sources: each file cites its per-grade/course 2018 Science SOL doc on doe.virginia.gov (ids: K 23733, G1 23721, G2 23723, G3 23725, G4 23727, G5 23729, G6 23731, LS 23715, PS 23717, BIO 15700, CH 15704, ES 15708, PH 23719), all fetched 2026-08-07 via archive. Laboratory-science graduation credits (×3, two disciplines) are tracked in [`GRADUATION.md`](./GRADUATION.md).
 
 ## How objectives relate
 

@@ -17,8 +17,9 @@ Teach mathematical **principles** with Claude Design animations and short lesson
 
 | File | Purpose |
 |------|---------|
-| [OBJECTIVES.md](./OBJECTIVES.md) | Objective ID list by band/strand (skeleton) |
+| [OBJECTIVES.md](./OBJECTIVES.md) | Objective ID list by band/strand (K–2 first strand + 3–5 strand set authored 2026-08-07) |
 | [lessons/](./lessons/) | Lesson plans (one file per lesson when written) |
+| [quiz-blueprints.md](./quiz-blueprints.md) | Quiz blueprints + drill gates per objective |
 
 ---
 

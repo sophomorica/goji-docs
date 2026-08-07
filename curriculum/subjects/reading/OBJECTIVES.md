@@ -17,7 +17,12 @@ Book-tied objectives use the device catalog ids from [`reading-lists.md`](./read
 |----|-----------|------------------|---------|----------------|------------|------|---------------|--------|
 | `obj.reading.k2.phonics.01` | Decode CVC (closed-syllable, short-vowel) words | 9/10 on decodable flashcard deck, two days | — | flashcards, typing (same word list) | `anim.reading.k2.phonics.01` | deck gate | 1.FFR.3 | ready |
 | `obj.reading.k2.phonics.02` | Decode VCe ("magic-e") and open-syllable long-vowel words | 9/10 on VCe deck incl. minimal pairs (cap/cape) | `.01` | flashcards, typing | `anim.reading.k2.phonics.02` | deck gate | 1.FFR.3 | ready |
-| `obj.reading.k2.phonics.03` | Decode common vowel teams (ai, ee, oa, ea) and r-controlled vowels (ar, or, er) | 8/10 per pattern deck | `.02` | flashcards, typing | TBD (reuse .02 pattern) | deck gate | 1.FFR.3 / 2.FFR.3 | planned |
+| `obj.reading.k2.phonics.03` | Decode common vowel teams (ai, ee, oa, ea) and r-controlled vowels (ar, or, er) | 8/10 per pattern deck (vowel teams and bossy-r gate separately), two days | `.02` | flashcards, typing | `anim.reading.k2.phonics.03` | deck gate | 1.FFR.3 / 2.FFR.3 | ready |
+| `obj.reading.k2.phonics.04` | Decode words with consonant digraphs (sh, ch, th, wh, ck) and common blends (bl, st, tr, gr, fl…) | 9/10 per deck (digraphs, blends) incl. minimal pairs (ship/sip, stop/top), two days | `.01` | flashcards, typing | `anim.reading.k2.phonics.04` | deck gate | 1.FFR.3 / 2.FFR.3 | ready |
+| `obj.reading.k2.phonics.05` | Decode diphthongs and variant vowels (oi/oy, ou/ow, au/aw, oo both sounds) | 8/10 per pattern group, both `oo` sounds sampled, two days | `.03` | flashcards, typing | TBD (reuse .03 two-letters-one-sound pattern) | deck gate | 2.FFR.3 | ready |
+| `obj.reading.k2.phonics.06` | Read 2-syllable words by splitting open/closed syllables and reading inflectional endings (-s, -ing, -ed) | 8/10 on 2-syllable deck incl. 3+ open/closed contrasts and 3+ -ed cards, two days | `.02`, `.04` | flashcards, typing | TBD | deck gate | 1.FFR.3 / 2.FFR.3 | ready |
+
+> **Teaching order ≠ ID order (strand note).** IDs are law — never renumbered. Instruction runs **`.01` → `.04` → `.02` → `.03` → `.05` → `.06`**: digraphs/blends (`.04`) slot between CVC and magic-e, because sh/ch/th words are still short-vowel decoding — one new sound, no silent letters — while VCe introduces the harder "letters that change other letters" idea. The prereq column encodes the real order; the parent app should sequence by prereqs, not by ID.
 
 ### Fluency (`fluency`)
 
@@ -74,11 +79,11 @@ Book-tied objectives use the device catalog ids from [`reading-lists.md`](./read
 
 | ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA | Status |
 |----|-----------|------------------|---------|----------------|------------|------|-----|--------|
-| `obj.reading.912.comp.01` | Close-read a short text: mood, tone, word choice, and how they're built | Annotated close reading (notebooks) + quiz ≥ 4/5 | 68 comp | reader (Poe — **needs ingest**), notebooks | `anim.reading.912.comp.01` | `quiz.reading.912.comp.01` | 9–12 RL (draft) | blocked: ingest 9–12 shelf |
-| `obj.reading.912.comp.02` | Analyze theme, symbolism, and character development across a full novel | Essay-form journal/notebook responses, parent review | `.01` | reader (`pride-prejudice`, `frankenstein` — **needs ingest**), writing | — | essay rubric TBD | 9–12 RL (draft) | blocked: ingest |
-| `obj.reading.912.info.01` | Read and evaluate an argument: claim, evidence, reasoning, rhetoric | Argument map (notebooks) for 2 founding-era texts, parent review | 68 info | reader (Federalist — **needs ingest**), notebooks | — | argument-map rubric | 9–12 RI (draft) | blocked: ingest |
+| `obj.reading.912.comp.01` | Close-read a short text: mood, tone, word choice, and how they're built | Annotated close reading (notebooks) + quiz ≥ 4/5 | 68 comp | reader (`poe-tales` — on device), notebooks | `anim.reading.912.comp.01` | `quiz.reading.912.comp.01` | 9–12 RL (draft) | ready |
+| `obj.reading.912.comp.02` | Analyze theme, symbolism, and character development across a full novel | Essay-form journal/notebook responses, parent review | `.01` | reader (`pride-prejudice`, `frankenstein` — on device), writing | — | essay rubric TBD | 9–12 RL (draft) | ready |
+| `obj.reading.912.info.01` | Read and evaluate an argument: claim, evidence, reasoning, rhetoric | Argument map (notebooks) for 2 founding-era texts, parent review | 68 info | reader (`federalist-papers` — on device), notebooks | — | argument-map rubric | 9–12 RI (draft) | ready |
 
-**9–12 blocker is content, not tools:** the device's 9–12 shelf is empty — see ingest priorities in [`reading-lists.md`](./reading-lists.md). Lessons are authored against the plan so ingest unblocks them without re-authoring.
+**9–12 shelf ingested 2026-08-07** (goji_computer `dbd2a07`): poe-tales, pride-prejudice, jane-eyre, frankenstein, federalist-papers all on device — the band is fully unblocked.
 
 ---
 

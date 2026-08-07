@@ -1,0 +1,23 @@
+# Physics — 2018 Virginia SOLs × Goji coverage
+
+Verified source: VDOE *Science Standards of Learning — 2018*, Physics (doe.virginia.gov/home/showpublisheddocument/23719/…, fetched 2026-08-07 via archive). 2018 Science SOLs (current for K–Physics; 2025 expansion covers only additional HS courses). 9 standards. Delivery stance (PRACTICES.md §6): Kiwix-anchored units + PDF lessons + quizzes via the research→notebooks chain; labs off-device, parent-led.
+
+| SOL | Skill (compressed) | Strand | Goji coverage | Status |
+|-----|--------------------|--------|---------------|--------|
+| PH.1 | SEP: questions scoped to the school lab; hypotheses from research; safe investigations; data in mathematical/algebraic form; graphical analysis and prediction; evaluate new data against working models; optimize designs; hypothesis vs theory vs law; mathematical/computational models and simulations; evaluate sources; communicate in multiple formats | Scientific & Engineering Practices | research + notebooks + journal (planning, recording, argument); math pillar (algebra, trig) carries the quantitative core | **partial** — investigation planning/recording via notebooks + journal; hands-on off-device parent-led (measurement labs need simple equipment; most are buildable at home) |
+| PH.2 | Kinematics: displacement, velocity, uniform acceleration; linear, uniform circular, and projectile motion | Kinematics | PS.8 motion problems (when built) | **gap** — Kiwix unit candidate (kinematics, projectile motion articles); equation-drill + graph-reading problem banks |
+| PH.3 | Force, mass, acceleration: Newton's laws of motion; universal gravitation | Dynamics | PS.8 Newton's-laws unit (when built) | **gap** — Kiwix unit candidate (Newton's laws, gravitation articles); F=ma and inverse-square problem sets |
+| PH.4 | Conservation laws: momentum conserved absent impulse; mechanical energy conserved absent external work | Conservation | none | **gap** — Kiwix unit candidate (momentum, conservation of energy articles); collision problems are quiz-shaped |
+| PH.5 | Waves: characteristics; wave interactions in everyday experience; light and sound as energy-transmitting waves | Waves & Optics | PS.6/PS.7 wave units (when built) | **gap** — Kiwix unit candidate (wave, interference articles); v=fλ problem bank |
+| PH.6 | Optics: laws of reflection and refraction; ray diagrams through different media | Waves & Optics | none | **gap** — Kiwix unit candidate (refraction, lens articles); ray-diagram drawing in notebooks + mirror/lens kit off-device |
+| PH.7 | Fields: gravitational, electric, magnetic force via the field concept; strength diminishes with distance | Fields | none | **gap** — Kiwix unit candidate (field articles); inverse-square computation ties to Algebra II |
+| PH.8 | Circuits: component functions; Ohm's law; series vs parallel characteristics and uses; electrical power; applications | Electricity | G5/PS.9 circuit-kit work (off-device, when done) | **gap** — Kiwix unit candidate (Ohm's law, series and parallel circuits articles); V=IR problem bank + the circuit kit's final, quantitative outing |
+| PH.9 | Beyond Newton (survey): wave/particle duality, quantum mechanics and uncertainty, relativity, nuclear physics, solid state, nanotechnology, superconductivity, standard model, dark matter/energy | Modern Physics | none | **gap** — Kiwix unit candidate (quantum mechanics, relativity, Standard Model articles) — reading-and-essay survey; explicitly conceptual in the standard, so the chain fits |
+
+## Summary
+
+**Graduation role (GRADUATION.md):** Physics can serve as a discipline within the required **3 laboratory-science credits (two disciplines)** — usually the third credit for a STEM-bound student rather than part of the minimum pair. The honest lab constraint is the mildest of the four courses after Earth Science: most classic physics labs (timing carts, pendulums, optics on a table) are **parent-led with household or cheap equipment**, recorded in notebooks — but they are still off-device. The bigger dependency is mathematical: sequence Physics after Algebra II (trig in hand), where the math pillar already stands.
+
+1. **Kinematics + Newton problem chain** (PH.2/PH.3) — the course spine as graded problem banks with diagnostic distractors (sign errors, mixed units); pure extension of existing quiz machinery.
+2. **Ohm's law circuit unit** (PH.8) — the snap-circuit kit's third outing, now with measured V/I/R and computed power; the best cheap "real lab" in HS science.
+3. **Modern-physics reading survey** (PH.9) — Kiwix's flagship deep articles (relativity, quantum) + notebook synthesis essays; high-wonder, low-tooling, and the standard itself is survey-level.

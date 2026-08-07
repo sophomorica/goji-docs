@@ -7,7 +7,7 @@
 | **Band** | 9–12 |
 | **Duration (target)** | 40–45 min on Goji |
 | **Objectives** | `obj.reading.912.info.01` |
-| **Status** | blocked: book ingest (see reading-lists.md) — Federalist selections not on device; lesson complete, ingest unblocks it |
+| **Status** | ready (books ingested 2026-08-07) — Federalist selections not on device; lesson complete, ingest unblocks it |
 
 ---
 

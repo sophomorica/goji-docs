@@ -7,7 +7,7 @@
 | **Band** | 9–12 |
 | **Duration (target)** | 35–45 min per session, repeating across the novel |
 | **Objectives** | `obj.reading.912.comp.02` |
-| **Status** | blocked: book ingest (see reading-lists.md) — `pride-prejudice` / `frankenstein` not on device; lesson complete, ingest unblocks it |
+| **Status** | ready (books ingested 2026-08-07) — `pride-prejudice` / `frankenstein` not on device; lesson complete, ingest unblocks it |
 
 ---
 

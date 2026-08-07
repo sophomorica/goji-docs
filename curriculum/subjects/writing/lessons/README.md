@@ -1,4 +1,4 @@
-# Writing lessons (grammar/mechanics strand)
+# Writing lessons (grammar/mechanics + compose strands)
 
 One markdown file per lesson when written:
 
@@ -27,4 +27,17 @@ Grammar lives in the **writing pillar** (learn how to think) but serves reading 
 | [`lesson.writing.912.grammar.01`](./lesson.writing.912.grammar.01.md) | Sentence variety as style — colon, semicolon, dash | `obj.writing.912.grammar.01` |
 | [`lesson.writing.912.grammar.02`](./lesson.writing.912.grammar.02.md) | Editing real prose — parallelism, modifiers, confusables | `obj.writing.912.grammar.02` |
 
-Suggested order within a band: grammar.01 → grammar.02 → mechanics.01 (K–2); grammar.01 → grammar.02 → mechanics.01 (3–5); grammar.01 → grammar.02 (6–8, 9–12). Grammar rides alongside daily reading — pull the practice sentences from whatever book the child is currently in when it beats the canned set.
+## Authored lessons (compose strand, 2026-08-07)
+
+Composition lessons use **no animations** this pass — the teach step is the parent modeling real writing live ("animation: none — modeled live" in each lesson). Manual-mode prompts per band live in [`../prompt-banks/`](../prompt-banks/); gates are parent-judged checklists (PARENT_STANDING.md §2), never auto-scored.
+
+| Lesson | Title | Objective |
+|--------|-------|-----------|
+| [`lesson.writing.k2.compose.01`](./lesson.writing.k2.compose.01.md) | First, then, last — the three-sentence recount | `obj.writing.k2.compose.01` |
+| [`lesson.writing.35.compose.01`](./lesson.writing.35.compose.01.md) | The paragraph machine — topic sentence, evidence, closer | `obj.writing.35.compose.01` |
+| [`lesson.writing.35.compose.02`](./lesson.writing.35.compose.02.md) | Prove it from the book — responding to Black Beauty with evidence | `obj.writing.35.compose.02` |
+| [`lesson.writing.68.compose.01`](./lesson.writing.68.compose.01.md) | From notes to essay — expository writing out of your research notebook | `obj.writing.68.compose.01` |
+| [`lesson.writing.68.compose.02`](./lesson.writing.68.compose.02.md) | Convince me — persuasion with an honest counterargument | `obj.writing.68.compose.02` |
+| [`lesson.writing.912.compose.01`](./lesson.writing.912.compose.01.md) | The analytical essay — thesis, evidence, counterclaim | `obj.writing.912.compose.01` |
+
+Suggested order within a band: grammar.01 → grammar.02 → mechanics.01 (K–2); grammar.01 → grammar.02 → mechanics.01 (3–5); grammar.01 → grammar.02 (6–8, 9–12). Compose follows grammar within each band (the grammar gates are compose prereqs); at 3–5, compose.01 (paragraph) before compose.02 (evidence response). Grammar rides alongside daily reading — pull the practice sentences from whatever book the child is currently in when it beats the canned set.

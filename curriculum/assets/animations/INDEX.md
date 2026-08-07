@@ -6,8 +6,13 @@
 | `anim.math.k2.place-value.02` | Which is bigger? Tens decide first | `obj.math.k2.place-value.03` | `lesson.math.k2.place-value.03` | [brief](./anim.math.k2.place-value.02.md) | — | `brief` |
 | `anim.math.k2.fluency.01` | Facts you just know — counting on, doubles, make-ten | `obj.math.k2.fluency.01`, `obj.math.k2.fluency.02` | `lesson.math.k2.fluency.01`, `lesson.math.k2.fluency.02` | [brief](./anim.math.k2.fluency.01.md) | — | `brief` |
 | `anim.math.k2.fractions.01` | Fair shares — halves and fourths | `obj.math.k2.fractions.01` | `lesson.math.k2.fractions.01` | [brief](./anim.math.k2.fractions.01.md) | — | `brief` |
+| `anim.math.35.multiply.01` | Equal groups, arrays, and the times-table map | `obj.math.35.multiply.01`, `obj.math.35.multiply.02`, `obj.math.35.divide.01` (backwards read) | `lesson.math.35.multiply.01`, `lesson.math.35.multiply.02`, `lesson.math.35.divide.01` | [brief](./anim.math.35.multiply.01.md) | — | `brief` |
+| `anim.math.35.fractions.01` | Equivalent fractions — same amount, different cuts | `obj.math.35.fractions.02` | `lesson.math.35.fractions.02` | [brief](./anim.math.35.fractions.01.md) | — | `brief` |
+| `anim.math.35.decimals.01` | A dime is a tenth — money anchors decimals | `obj.math.35.decimals.01` | `lesson.math.35.decimals.01` | [brief](./anim.math.35.decimals.01.md) | — | `brief` |
 | `anim.reading.k2.phonics.01` | Crack the code — sounds blend into words | `obj.reading.k2.phonics.01` | `lesson.reading.k2.phonics.01` | [brief](./anim.reading.k2.phonics.01.md) | — | `brief` |
 | `anim.reading.k2.phonics.02` | Magic-e wakes the vowel | `obj.reading.k2.phonics.02` | `lesson.reading.k2.phonics.02` | [brief](./anim.reading.k2.phonics.02.md) | — | `brief` |
+| `anim.reading.k2.phonics.03` | Vowel teams — two vowels, one voice | `obj.reading.k2.phonics.03` | `lesson.reading.k2.phonics.03` | [brief](./anim.reading.k2.phonics.03.md) | — | `brief` |
+| `anim.reading.k2.phonics.04` | Sound teams — digraphs make one new sound | `obj.reading.k2.phonics.04` | `lesson.reading.k2.phonics.04` | [brief](./anim.reading.k2.phonics.04.md) | — | `brief` |
 | `anim.reading.k2.comp.01` | The story train — beginning, middle, end | `obj.reading.k2.comp.01` | `lesson.reading.k2.comp.01` | [brief](./anim.reading.k2.comp.01.md) | — | `brief` |
 | `anim.reading.35.comp.01` | Main idea — the umbrella over the details | `obj.reading.35.comp.01` | `lesson.reading.35.comp.01` | [brief](./anim.reading.35.comp.01.md) | — | `brief` |
 | `anim.reading.35.comp.02` | Reading between the lines — clue + know = infer | `obj.reading.35.comp.02` | `lesson.reading.35.comp.02` | [brief](./anim.reading.35.comp.02.md) | — | `brief` |

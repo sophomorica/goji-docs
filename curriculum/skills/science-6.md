@@ -1,0 +1,23 @@
+# Grade 6 science — 2018 Virginia SOLs × Goji coverage
+
+Verified source: VDOE *Science Standards of Learning — 2018*, Grade 6 (doe.virginia.gov/home/showpublisheddocument/23731/…, fetched 2026-08-07 via archive). 2018 Science SOLs (current for K–Physics; 2025 expansion covers only additional HS courses). 9 standards. Delivery stance (PRACTICES.md §6): Kiwix-anchored units + PDF lessons + quizzes via the research→notebooks chain; hands-on investigations off-device, parent-led.
+
+| SOL | Skill (compressed) | Strand | Goji coverage | Status |
+|-----|--------------------|--------|---------------|--------|
+| 6.1 | SEP: questions/hypotheses with independent-dependent variables; plan observational + experimental investigations with variables/constants/controls; evaluate data-collection methods; graphical displays; explanations with qualitative/quantitative relationships; scale models; synthesize multiple sources and assess credibility/bias; evidence-based argument | Scientific & Engineering Practices | research + notebooks (multi-source synthesis is native to the chain); journal | **partial** — investigation planning/recording via notebooks + journal; hands-on off-device parent-led |
+| 6.2 | Solar system organization: matter distribution; planet sizes and orbital distances; gravity and orbital motion; historical development of the model | Earth & Space Systems | Grade 4 solar-system unit (when built) | **gap** — Kiwix unit candidate (Solar System article, deeper pass: gravity, scale, history of the model) |
+| 6.3 | Sun–Earth–moon: Earth's unique properties; rotation → day/night; moon phases; axial tilt → seasons; moon → tides | Earth & Space Systems | none | **gap** — Kiwix unit candidate (Moon, tide articles); moon-phase log off-device carried from grade 4 |
+| 6.4 | Energy sources and transformation: sun forms most energy sources; Earth's energy budget; radiation/conduction/convection; transformations in usage | Force, Motion & Energy | Grade 5 energy spine (when built) | **gap** — Kiwix unit candidate (heat transfer articles); links the G5 energy unit to Earth systems |
+| 6.5 | Atoms: electrons/protons/neutrons; elements; chemical symbols; bonds; compound formulas; chemical equations; a few elements dominate Earth, life, oceans, atmosphere | Matter | none | **gap** — Kiwix unit candidate (atom, chemical element, periodic table articles) — quiz-friendly (symbols, formulas); on-ramp to PS |
+| 6.6 | Water: universal solvent; specific properties; thermal energy in phase changes; role in weathering; large bodies moderate climate; agriculture/power/public health | Matter | none | **gap** — Kiwix unit candidate (water properties article); pulls together G3 water cycle + G5 phases |
+| 6.7 | Atmosphere: mixture of gases; physical characteristics; change with altitude; air movement–thermal energy–weather; atmospheric measures predict weather; weather maps and fronts | Earth & Space Systems | weather journal + G4 weather unit (when built) | **gap** — Kiwix unit candidate (atmosphere, weather front articles); weather-map reading is a natural quiz format |
+| 6.8 | Watersheds: land drains to a body of water; Virginia's watershed systems; Chesapeake Bay estuary functions; natural + human influences on watershed health | Earth & Space Systems | none | **gap** — Kiwix unit candidate (Chesapeake Bay article) — Virginia-specific; pairs with VA history/geography work |
+| 6.9 | Human impact and public policy: protecting natural resources; managing renewable/nonrenewable; air/water quality health issues; energy safety; preventive land-use measures; cost/benefit of conservation | Earth Resources | none | **gap** — Kiwix unit candidate (conservation, pollution articles); good first "argument from evidence" essay prompt for the 6–8 writing chain |
+
+## Summary
+
+Grade 6 is the synthesis year — solar system, energy, atoms, water, atmosphere all return one level deeper — and its 6.1 SEP standard (multi-source synthesis, credibility, bias) is the one place where the research→notebooks chain is *natively* the right tool, not a stand-in. Highest-value next steps:
+
+1. **Atoms & elements unit** (6.5) — symbols, simple formulas, dominant elements; the most quiz-friendly science content yet (deck-shaped), and the direct on-ramp to Physical Science.
+2. **Chesapeake Bay watershed unit** (6.8) — Virginia-specific, map-based, pairs with the history side; notebook watershed diagram + quiz.
+3. **Weather-and-atmosphere unit** (6.7) — graduate the long-running weather journal into fronts, pressure, and map reading; weather-map items make strong diagnostic quizzes.

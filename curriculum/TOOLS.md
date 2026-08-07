@@ -141,6 +141,7 @@ Ranked by how often curriculum talks will hit the wall. Status = planning only.
 | Tool | Why | Priority |
 |------|-----|----------|
 | ~~Wire Fractions~~ + ~~division mastery schema~~ (both done 2026-08-07 — `12314c3`, `ebaff08`; division per-table stats now persist with `operation` in the key) | Unlock real fraction/division strands | ✅ device-side done; parent "÷7 is weak" view rides SYNC_API later |
+| **Decimals drill** (or decimals mode on the ± × ÷ drills): read/compare items + operations | 4.NS.4–5, 4.CE.4, 5.CE.3 have **no practice surface** — `obj.math.35.decimals.01` runs teach + parent-quiz only (mental math partial, money flashcards), `obj.math.35.decimals.02` is **blocked** until this ships; Grade 6 percent work stands on it | High |
 | Reading comprehension quiz ↔ book ID | Product TODO already | High for reading spine |
 | Parent **pillar standing** views (R/W/M + books read + trajectory) | Vision §6 — core parent promise | High (product; after data model) |
 | Gutenberg inventory + grade reading lists (docs then data) | Classic lineup as main reading path | High (curriculum lead) |
@@ -172,3 +173,4 @@ Ranked by how often curriculum talks will hit the wall. Status = planning only.
 |------|--------|
 | 2026-08-05 | Initial inventory from goji_computer + parent product docs |
 | 2026-08-07 | Fractions tile restored to math menu (goji_computer `12314c3`); book library audited (13 books in DB, ingest pipeline documented in `subjects/reading/reading-lists.md`); mastery-schema gap pinpointed |
+| 2026-08-07 | 3–5 math strand set authored (13 objectives, 7 lessons); **decimals-drill gap row added** (§6D) |
