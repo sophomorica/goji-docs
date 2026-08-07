@@ -42,6 +42,7 @@ Everything else (history, science, coding, …) builds on these.
 | **[TOOLS.md](./TOOLS.md)** | What the computer already has vs tools to invent |
 | **[ANIMATIONS.md](./ANIMATIONS.md)** | Claude Design pipeline + ID mapping |
 | **[QUIZZES.md](./QUIZZES.md)** | Comprehension checks, generation later |
+| **[INTEGRATION.md](./INTEGRATION.md)** | **Anchor books, app chains, Kiwix research pairings** — how everything connects |
 | **[PARENT_STANDING.md](./PARENT_STANDING.md)** | "Where the child stands" metrics spec (per pillar) |
 | **[skills/](./skills/)** | **VA SOL coverage checklist** (K–2 math + G1–2 English, verified) |
 | **[subjects/](./subjects/)** | Pillar subjects first; supporting pathways — math K–2 strand + reading lists/quizzes authored |
