@@ -104,6 +104,33 @@ quiz.math.k2.place-value.03:
 
 ---
 
+## `quiz.math.k2.fractions.01` — Fair shares (halves & fourths)
+
+```yaml
+quiz.math.k2.fractions.01:
+  objectives: [obj.math.k2.fractions.01]
+  skill: "identify halves and fourths as equal shares; reject unequal partitions"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 5
+  pass_rule: ">= 4/5"
+  difficulty: intro
+  constraints:
+    must_include: [one pick-the-fair-cut, one name-the-share, one set model (not just shapes), one more-pieces trap]
+    distractors: unequal partitions labeled as halves/fourths; "4 pieces beats 2" trap
+  animation_review: anim.math.k2.fractions.01
+```
+
+**Gold items (v1):**
+
+1. Which circle is cut into halves? → (2 equal pieces) / (2 unequal pieces) / (3 pieces) / (uncut)
+2. A square cut into 4 equal pieces shows → fourths / halves / thirds / wholes
+3. Share 4 berries fairly between 2 friends — each gets → 2 / 1 / 3 / 4
+4. Which is MORE cookie: one half, or one fourth of the same cookie? → one half / one fourth / same / can't tell
+5. Is a sandwich cut into one big and one small piece cut in halves? → No — pieces aren't equal / Yes — it's 2 pieces / Only if it's big / Yes — any cut works
+
+---
+
 ## Drill gates (fluency strand — no item bank)
 
 Fluency objectives are checked by **module accuracy**, not authored items:

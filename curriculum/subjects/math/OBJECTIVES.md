@@ -35,11 +35,11 @@ Virginia crosswalk codes are drafts from the 2023 Math SOLs — see [`../../skil
 
 **Misconceptions to watch (strand-level):** teens read backwards ("41" for fourteen); "more digits = bigger" without comparing tens; treating subtraction as unrelated to addition; counting-all forever instead of counting-on.
 
-### Fractions intro (`fractions`) — later in K–2 or start 3–5
+### Fractions intro (`fractions`)
 
-| ID | Statement (draft) | Practice tools | Animations |
-|----|-------------------|----------------|------------|
-| `obj.math.k2.fractions.01` | Halves and fourths of shapes | fractions module (**blocked**: tile not on math menu — TOOLS.md §6D) | TBD |
+| ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA (draft) | Status |
+|----|-----------|------------------|---------|----------------|------------|------|------------|--------|
+| `obj.math.k2.fractions.01` | Partition shapes and sets into halves and fourths; name equal shares and explain why unequal cuts aren't fair shares | Fractions module ≥ 85% on a halves/fourths session; explains "equal parts" once (journal) | `place-value.01` | math → fractions (tile live 2026-08-07), journal | `anim.math.k2.fractions.01` | `quiz.math.k2.fractions.01` | 1.NS.3 | ready |
 
 ---
 

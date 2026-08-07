@@ -19,5 +19,6 @@ Use template: [`../../../assets/templates/lesson-plan.md`](../../../assets/templ
 | [`lesson.math.k2.place-value.03`](./lesson.math.k2.place-value.03.md) | Which is bigger? Compare with tens first | `obj.math.k2.place-value.03` |
 | [`lesson.math.k2.fluency.01`](./lesson.math.k2.fluency.01.md) | Adding within 10 — from counting to knowing | `obj.math.k2.fluency.01` |
 | [`lesson.math.k2.fluency.02`](./lesson.math.k2.fluency.02.md) | Subtracting within 10 — addition's shadow | `obj.math.k2.fluency.02` |
+| [`lesson.math.k2.fractions.01`](./lesson.math.k2.fractions.01.md) | Fair shares — halves and fourths | `obj.math.k2.fractions.01` |
 
 Suggested order: place-value.01 → fluency.01 → fluency.02 → place-value.02 → place-value.03 (fluency runs across multiple days in parallel with place-value).
