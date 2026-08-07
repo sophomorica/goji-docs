@@ -85,6 +85,29 @@ Sources: K–2 files cite per-grade "Understanding the Standards" docs; grades 3
 
 Science sources: each file cites its per-grade/course 2018 Science SOL doc on doe.virginia.gov (ids: K 23733, G1 23721, G2 23723, G3 23725, G4 23727, G5 23729, G6 23731, LS 23715, PS 23717, BIO 15700, CH 15704, ES 15708, PH 23719), all fetched 2026-08-07 via archive. Laboratory-science graduation credits (×3, two disciplines) are tracked in [`GRADUATION.md`](./GRADUATION.md).
 
+**History & Social Science (2023 SOLs) + Economics & Personal Finance (2019 SOLs)** — delivery per PRACTICES.md §6: Kiwix-anchored units + PDF lessons + quizzes via the research→notebooks chain; primary sources ride the reader (federalist-papers ingest underway) and the informational-reading objectives (`obj.reading.*.info.*`).
+
+**2023 structure note:** each grade is a named course — Grade 4 = Virginia Studies (VS), 5 = US History to 1865 (USI), 6 = US History 1865–Present (USII), 7 = Civics & Economics (CE), 8 = World Geography (WG); high school: 9 = World History to 1500 (WHI), 10 = World History 1500–Present (WHII), 11 = VA/US History (VUS), 12 = VA/US Government (GOVT). K–3 standards carry Civics/Geography/Economics/History strand labels; grades 4–12 have a course-wide Skills standard plus numbered standards (strand "—" in the tables).
+
+| File | Scope |
+|------|-------|
+| [`history-k.md`](./history-k.md) | Kindergarten — Community (8 standards + Skills) |
+| [`history-1.md`](./history-1.md) | Grade 1 — Commonwealth of Virginia (8 + Skills) |
+| [`history-2.md`](./history-2.md) | Grade 2 — United States of America (13 + Skills) |
+| [`history-3.md`](./history-3.md) | Grade 3 — The World (10 + Skills — **Egypt unit is the INTEGRATION §4 worked example**) |
+| [`history-4-va-studies.md`](./history-4-va-studies.md) | Grade 4 — Virginia Studies, VS (13 + Skills) |
+| [`history-5-us1.md`](./history-5-us1.md) | Grade 5 — US History to 1865, USI (9 + Skills) |
+| [`history-6-us2.md`](./history-6-us2.md) | Grade 6 — US History 1865–Present, USII (9 + Skills — call-of-wild Klondike synergy) |
+| [`history-7-civics.md`](./history-7-civics.md) | Grade 7 — Civics & Economics, CE (14 + Skills — Federalist 10/51 named in-standard) |
+| [`history-8-world-geo.md`](./history-8-world-geo.md) | Grade 8 — World Geography, WG (17 + Skills — nine templated region units) |
+| [`history-9-whg1.md`](./history-9-whg1.md) | Grade 9 — World History to 1500, WHI (13 + Skills) |
+| [`history-10-whg2.md`](./history-10-whg2.md) | Grade 10 — World History 1500–Present, WHII (12 + Skills) |
+| [`history-11-vus.md`](./history-11-vus.md) | Grade 11 — VA/US History, VUS (17 + Skills — usual verified-credit course) |
+| [`history-12-govt.md`](./history-12-govt.md) | Grade 12 — VA/US Government, GOVT (14 + Skills — Federalist reading spine) |
+| [`econ-personal-finance.md`](./econ-personal-finance.md) | Economics & Personal Finance, EPF (18 standards — **the separate 1-credit graduation requirement**, 2019 SOLs) |
+
+History/EPF sources: the 13 HSS courses cite the combined 2023 History and Social Science SOL doc (…/58926/…, April 2023); EPF cites the 2019 Economics and Personal Finance SOLs (…/2004/…, Oct 17 2019) — both fetched 2026-08-07 via archive. The History & Social Sciences ×3 credits (1 verified) and the EPF credit are tracked in [`GRADUATION.md`](./GRADUATION.md).
+
 ## How objectives relate
 
 Goji objective IDs (`obj.math.k2.…`) are the native spine; the SOL code is the **crosswalk** column on each objective (see `subjects/*/OBJECTIVES.md`). One objective can serve several SOL sub-skills; one SOL can need several objectives. The catalog is the completeness check, not the teaching unit.
