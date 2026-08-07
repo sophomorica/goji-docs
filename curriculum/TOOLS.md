@@ -140,7 +140,7 @@ Ranked by how often curriculum talks will hit the wall. Status = planning only.
 
 | Tool | Why | Priority |
 |------|-----|----------|
-| ~~Wire Fractions~~ (done 2026-08-07) + division mastery schema (`operation` column on `multiplication_table_mastery`, incl. unique-key change — division per-table stats are computed then discarded at `ArithmeticDrill.svelte` endGame) | Unlock real fraction/division strands | High (fractions done; division schema next) |
+| ~~Wire Fractions~~ + ~~division mastery schema~~ (both done 2026-08-07 — `12314c3`, `ebaff08`; division per-table stats now persist with `operation` in the key) | Unlock real fraction/division strands | ✅ device-side done; parent "÷7 is weak" view rides SYNC_API later |
 | Reading comprehension quiz ↔ book ID | Product TODO already | High for reading spine |
 | Parent **pillar standing** views (R/W/M + books read + trajectory) | Vision §6 — core parent promise | High (product; after data model) |
 | Gutenberg inventory + grade reading lists (docs then data) | Classic lineup as main reading path | High (curriculum lead) |
