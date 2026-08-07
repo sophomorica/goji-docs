@@ -13,6 +13,9 @@
 | `anim.reading.35.comp.02` | Reading between the lines — clue + know = infer | `obj.reading.35.comp.02` | `lesson.reading.35.comp.02` | [brief](./anim.reading.35.comp.02.md) | — | `brief` |
 | `anim.reading.68.comp.01` | Theme is a claim about life | `obj.reading.68.comp.01` | `lesson.reading.68.comp.01` | [brief](./anim.reading.68.comp.01.md) | — | `brief` |
 | `anim.reading.912.comp.01` | How mood is built | `obj.reading.912.comp.01` | `lesson.reading.912.comp.01` | [brief](./anim.reading.912.comp.01.md) | — | `brief` |
+| `anim.writing.k2.grammar.01` | A sentence is a who + a what-happened | `obj.writing.k2.grammar.01` | `lesson.writing.k2.grammar.01` | [brief](./anim.writing.k2.grammar.01.md) | — | `brief` |
+| `anim.writing.35.grammar.01` | Words have jobs — the sentence machine | `obj.writing.35.grammar.01` | `lesson.writing.35.grammar.01` | [brief](./anim.writing.35.grammar.01.md) | — | `brief` |
+| `anim.writing.68.grammar.01` | Clauses — sentences hiding inside sentences | `obj.writing.68.grammar.01` | `lesson.writing.68.grammar.01` | [brief](./anim.writing.68.grammar.01.md) | — | `brief` |
 
 ## Status values
 
