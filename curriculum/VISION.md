@@ -172,11 +172,11 @@ Self-contained means: after setup, a student can learn **for a long time** witho
 | Phase | Goal | Exit criteria |
 |-------|------|----------------|
 | **P0 Organize** | This folder, tools inventory, templates, vision | ✅ 2026-08-05 |
-| **P1 First pillar strand** | One pillar × one band (objectives + 5–10 lessons) | Docs complete |
-| **P2 Media pilot** | Claude Design animations mapped; playback approach decided | INDEX + format note |
-| **P3 Skills coverage map** | VA skill catalog started for pillars (even one grade) | Spreadsheet/docs linked here |
-| **P4 Gutenberg audit** | Inventory on-device classics + grade reading lists | `subjects/reading/` doc |
-| **P5 Practice + quiz + metrics story** | Blueprint for parent “standing” per pillar | Spec; eng later |
+| **P1 First pillar strand** | One pillar × one band (objectives + 5–10 lessons) | ✅ 2026-08-07 — math K–2 (5 objectives, 5 lessons in `subjects/math/lessons/`) |
+| **P2 Media pilot** | Claude Design animations mapped; playback approach decided | Briefs + INDEX ✅ 2026-08-07 (3 briefs); **format decision still open** |
+| **P3 Skills coverage map** | VA skill catalog started for pillars (even one grade) | ✅ 2026-08-07 — `skills/` (K–2 math + G1–2 English, VDOE-verified) |
+| **P4 Gutenberg audit** | Inventory on-device classics + grade reading lists | ✅ 2026-08-07 — `subjects/reading/reading-lists.md` (13 on device) |
+| **P5 Practice + quiz + metrics story** | Blueprint for parent “standing” per pillar | ✅ 2026-08-07 — `PARENT_STANDING.md` + quiz blueprints; eng later |
 | **P6 Device integration** | Seed / player / deep-links / richer parent metrics | Product repos |
 | **P7 Expand** | More grades, Kiwix-augmented domain units | Repeat |
 

@@ -2,7 +2,9 @@
 
 | Animation ID | Title | Objectives | Lesson(s) | Brief | Asset path | Status |
 |--------------|-------|------------|-----------|-------|------------|--------|
-| — | — | — | — | — | — | *none registered yet* |
+| `anim.math.k2.place-value.01` | Tens and ones — bundling | `obj.math.k2.place-value.02` | `lesson.math.k2.place-value.02` | [brief](./anim.math.k2.place-value.01.md) | — | `brief` |
+| `anim.math.k2.place-value.02` | Which is bigger? Tens decide first | `obj.math.k2.place-value.03` | `lesson.math.k2.place-value.03` | [brief](./anim.math.k2.place-value.02.md) | — | `brief` |
+| `anim.math.k2.fluency.01` | Facts you just know — counting on, doubles, make-ten | `obj.math.k2.fluency.01`, `obj.math.k2.fluency.02` | `lesson.math.k2.fluency.01`, `lesson.math.k2.fluency.02` | [brief](./anim.math.k2.fluency.01.md) | — | `brief` |
 
 ## Status values
 

@@ -1,8 +1,8 @@
-# Math — objectives (skeleton)
+# Math — objectives
 
 ID format: `obj.math.<band>.<strand>.<nn>`  
 Bands: `k2` | `35` | `68` | `912`  
-Status: **draft skeleton** — expand when first strand is chosen; do not invent a full K–12 catalog in one pass.
+Status: **K–2 first strand authored 2026-08-07** (place-value + fluency, lessons in [`lessons/`](./lessons/)); 3–5 still skeleton.
 
 ---
 
@@ -14,28 +14,32 @@ Required fields: id, band, strand, statement, success criteria, practice tools, 
 
 ---
 
-## K–2 (`k2`) — seed strands (placeholders)
+## K–2 (`k2`) — first strand (authored)
+
+Virginia crosswalk codes are drafts from the 2023 Math SOLs — see [`../../skills/`](../../skills/) for the coverage catalog.
 
 ### Place value (`place-value`)
 
-| ID | Statement (draft) | Practice tools | Animations |
-|----|-------------------|----------------|------------|
-| `obj.math.k2.place-value.01` | Count and write numbers to 20 | flashcards, math add | — |
-| `obj.math.k2.place-value.02` | Tens and ones for 10–99 | math, animation | TBD |
-| `obj.math.k2.place-value.03` | Compare two 2-digit numbers | math, quiz | TBD |
+| ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA (draft) | Status |
+|----|-----------|------------------|---------|----------------|------------|------|------------|--------|
+| `obj.math.k2.place-value.01` | Count forward to 20; read and write numerals 0–20; count a set of up to 20 objects | 9/10 numeral↔quantity matches on flashcard deck; parent quiz 8/10 | — | flashcards (numeral↔dots deck), journal | — | `quiz.math.k2.place-value.01` | K.NS.1 | ready |
+| `obj.math.k2.place-value.02` | Explain a 2-digit number (10–99) as tens and ones, and build it both ways | Names tens/ones for 8/10 numbers incl. teens and round tens; explains one in own words (journal) | `.01` | math (mental math), flashcards, journal | `anim.math.k2.place-value.01` | `quiz.math.k2.place-value.02` | 1.NS.2 | ready |
+| `obj.math.k2.place-value.03` | Compare two 2-digit numbers using greater than / less than / equal, by comparing tens first | 8/10 comparisons correct incl. tricky pairs (e.g. 39 vs 41, 52 vs 25); states the tens-first rule | `.02` | math (mental math), parent quiz | `anim.math.k2.place-value.02` | `quiz.math.k2.place-value.03` | 1.NS.3 | ready |
 
 ### Fact fluency (`fluency`)
 
-| ID | Statement (draft) | Practice tools | Animations |
-|----|-------------------|----------------|------------|
-| `obj.math.k2.fluency.01` | Add within 10 | addition drill | — |
-| `obj.math.k2.fluency.02` | Subtract within 10 | subtraction drill | — |
+| ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA (draft) | Status |
+|----|-----------|------------------|---------|----------------|------------|------|------------|--------|
+| `obj.math.k2.fluency.01` | Add within 10 accurately, moving from counting-on to known facts (doubles, make-ten pairs) | Addition drill ≥ 90% on 20 problems (0–10), two sessions on different days | `place-value.01` | math (addition drill), flashcards | `anim.math.k2.fluency.01` | drill gate (see blueprint) | 1.CA.1 | ready |
+| `obj.math.k2.fluency.02` | Subtract within 10, using the addition relationship ("what plus 4 makes 9?") | Subtraction drill ≥ 90% on 20 problems, two sessions; explains fact-family link once (journal) | `fluency.01` | math (subtraction drill), journal | `anim.math.k2.fluency.01` (re-teach) | drill gate (see blueprint) | 1.CA.1 | ready |
+
+**Misconceptions to watch (strand-level):** teens read backwards ("41" for fourteen); "more digits = bigger" without comparing tens; treating subtraction as unrelated to addition; counting-all forever instead of counting-on.
 
 ### Fractions intro (`fractions`) — later in K–2 or start 3–5
 
 | ID | Statement (draft) | Practice tools | Animations |
 |----|-------------------|----------------|------------|
-| `obj.math.k2.fractions.01` | Halves and fourths of shapes | fractions module | TBD |
+| `obj.math.k2.fractions.01` | Halves and fourths of shapes | fractions module (**blocked**: tile not on math menu — TOOLS.md §6D) | TBD |
 
 ---
 

@@ -27,7 +27,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] **Sync-audit open issues** (2026-07-25, ranked in `SYNC_AUDIT_2026-07-25.md` §4 — the previously-ticketed follow-ups here were all fixed in that audit): device-poll one-shot token loss can brick pairing; **multi-child attribution** (all uploads land on `devices.child_id` — needs `child_cloud_id` on the wire before multi-child is real); no session expiry (orphaned `pending_start` blocks Start until manual cancel); `device-register` squatting / no rate limit; **anonymous-session loss forks the family** (blocks the two-phones goal — needs invite/recovery code); profile-switch PIN during School Mode; parent `plan_tasks` RLS toggle bypasses completion side-effects; minor board/wizard items (§4.8–9)
 - [ ] **Household Tasks board** (grilled 2026-08-01 — product: `PARENT_APP_PRODUCT.md` §10; contract: `goji_cloud/SYNC_API.md` "Household tasks") — standing **per-child** title-only chore board, fully separate from School Mode. Cloud migration + edge functions deployed (`household_tasks`, `household-tasks-pull`, `household-tasks-status-push`); Pi cache/sync + Tasks hub + School Mode allow; parent pair-first shell **Family | Tasks | Content** + avatar Settings. Still owed: e2e smoke on device/phone; follow-ups in §7 (OS push, kid inbox, notes/due/recurrence)
 - [ ] **Module-scoped math tasks** — parent assigns "30 problems of Times Tables at 90%", not "15 min math"; child deep-links into that drill; per-module progress surfaces in the wizard picker. Contract landed in `SYNC_API.md` ("Math modules") + `PARENT_APP_PRODUCT.md` §5.1 on 2026-08-01. Build plan: [`MATH_MODULE_TASKS_PLAN.md`](./MATH_MODULE_TASKS_PLAN.md) — slice A (assignment) then slice B (progress)
-  - Prereqs found while designing: `Fractions.svelte` is built but unreachable from the math menu; `multiplication_table_mastery` has no operation column so division's per-table stats are computed and discarded — blocks any per-table ("÷7 is weak") feature
+  - Prereqs found while designing: ~~`Fractions.svelte` is built but unreachable from the math menu~~ (tile restored 2026-08-07, `12314c3` — a merge had dropped the wiring); `multiplication_table_mastery` has no operation column so division's per-table stats are computed and discarded — blocks any per-table ("÷7 is weak") feature (discard point: `ArithmeticDrill.svelte` endGame saves tableStats only for multiplication; fix needs `operation` in the UNIQUE key + route/DB signature)
 - [ ] Reading quizzes tied to actual books (quiz references a book; completing it can auto-verify a plan task)
 - [ ] Lesson-suggestion payloads applying into plans with one parent tap (schema exists; apply path not built)
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
@@ -40,14 +40,14 @@ Vision SoT: [`curriculum/VISION.md`](./curriculum/VISION.md) (pillars R/W/M, VA 
 
 - [x] 2026-08-05 — Stand up `curriculum/` planning home (VISION, TOOLS inventory, animations/quizzes conventions, subject + band scaffolds, templates)
 - [x] 2026-08-05 — Lock north-star vision (three pillars, teach→practice→comprehension, VA skills coverage, parent metrics, offline knowledge stores)
-- [ ] Curriculum lead: pick first pillar strand (reading / writing / math × band) and fill objectives + ~5 lesson plans
-- [ ] Virginia skills catalog started for one grade × pillars (coverage checklist)
-- [ ] Gutenberg on-device audit + classic reading lists by band (`subjects/reading/`)
-- [ ] Register first Claude Design teaching animations in `curriculum/assets/animations/INDEX.md`
-- [ ] Decide on-device animation playback format (see `curriculum/ANIMATIONS.md` §4)
-- [ ] Quiz blueprints for first strand; keep using parent quizzes until generator exists
-- [ ] Spec parent “pillar standing” metrics story (feeds future parent-app work; don’t invent wire without SYNC_API)
-- [ ] Engineering only when docs say so: animation player, lesson sequence, objective-linked items, standing metrics (see `curriculum/TOOLS.md` §6)
+- [x] 2026-08-07 — First pillar strand authored: **math K–2** — 5 objectives (place-value + fluency) + 5 lesson plans (`curriculum/subjects/math/lessons/`); curriculum lead reviews/adjusts, then picks strand #2
+- [x] 2026-08-07 — Virginia skills catalog started (`curriculum/skills/`): K/1/2 math + G1/2 English, **verified against fetched VDOE 2023-math / 2024-English documents**, with per-SOL Goji coverage status
+- [x] 2026-08-07 — Gutenberg on-device audit (13 books in reader DB) + classic reading lists K–12 (`curriculum/subjects/reading/reading-lists.md`); ingest priorities noted (K–2 shelf thinnest)
+- [x] 2026-08-07 — First 3 teaching-animation briefs registered in `curriculum/assets/animations/INDEX.md` (place-value ×2, fluency ×1) — Claude Design generation next
+- [ ] Decide on-device animation playback format (see `curriculum/ANIMATIONS.md` §4) — briefs exist; parent-side preview is the interim
+- [x] 2026-08-07 — Quiz blueprints for first strand (`subjects/math/quiz-blueprints.md`, `subjects/reading/quiz-blueprints.md` — book-tied via `source_book_id`, already carried by the quiz payload spec)
+- [x] 2026-08-07 — Parent “pillar standing” metrics spec (`curriculum/PARENT_STANDING.md`) — computed-from-existing-signals + explicit needs-engineering table; no wire invented
+- [ ] Engineering only when docs say so: animation player, lesson sequence, objective-linked items, standing metrics (see `curriculum/TOOLS.md` §6). ~~Fractions tile~~ (restored 2026-08-07, goji_computer `12314c3`)
 
 ## Later — pre-sale blockers (each is a real project)
 
