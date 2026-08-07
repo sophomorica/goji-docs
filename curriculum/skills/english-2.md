@@ -25,7 +25,7 @@ Verified source: VDOE *2024 English SOL — Understanding the Standards, Grade 2
 | 2.W.1 | Narratives with elaboration + time-order; informative with facts; opinion with reasons; responses | Writing | journal + writing app prompt banks | **partial** |
 | 2.W.2 | Writing process: topic sentence, audience, organize, conclude | Writing | writing app | **planned** — guided templates |
 | 2.W.3 | Revise for ideas/organization/fluency/word choice; edit conventions | Writing | parent review + sign-off | **partial** (by design in v1) |
-| 2.LU.1 / 2.LU.2 | Grammar: compound sentences, irregular verbs, contractions, possessives, no double negatives; mechanics incl. commas in letters | Language | — | **gap** — sentence-fixing quiz banks |
+| 2.LU.1 / 2.LU.2 | Grammar: compound sentences, irregular verbs, contractions, possessives, no double negatives; mechanics incl. commas in letters | Language | `obj.writing.35.grammar.02` (compound/run-ons) + k2 strand prereqs; banks authored 2026-08-07 | **partial → covered** for the sentence spine; word-level usage items ride the banks |
 | 2.C.1 / 2.C.2 | Discussions; oral storytelling; organized retelling | Communication | family life | **off-device** |
 | 2.R.1 | Research: topic + questions; reference texts; own words; avoid plagiarism | Research | research app + notebooks | **planned** |
 

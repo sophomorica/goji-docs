@@ -11,7 +11,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 ## Now — get v1 live (human steps, ~1 evening)
 
 - [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Anonymous auth enabled for credential-free phone app (2026-07-24).
-- [ ] `flutter create` + run `goji_learner_app` on a real phone
+- [ ] Run `goji_learner_app` on a real phone (~~`flutter create`~~ — stale: all platform dirs exist and `flutter test` runs; verified 2026-08-07)
 - [ ] End-to-end smoke test: pair → wizard/Start on phone → sync → School Mode + Today on Pi → progress/messages/journal on phone
 - [ ] Install `goji-sync.service` on the real Pi; firewall `--dry-run` first, live later
 - [x] GitHub repos created + pushed for all four repos (`goji-docs`, `kodi-computer`, `goji-cloud`, `goji-learner-app`); School Day feature branches all merged to `main` (verified 2026-08-01)
@@ -38,6 +38,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
 - [ ] Standing app lock/unlock + child unlock-requests (after school-day loop)
 - [ ] Parent app polish pass beyond brand (v1 screens are deliberately ugly functionally)
+- [ ] **Parent app hygiene** (found in 2026-08-07 audit): delete dead `progress_screen.dart` (unreferenced; also queries children without a family filter) and legacy `build_plan_screen.dart`; resolve quiz titles in `latestQuizScores` (UI currently shows raw content ids); review the broad `catch (_) → empty` pattern in repositories so real errors stop rendering as "no data" (list in audit notes)
 
 ## Curriculum planning (docs in `curriculum/` — not pilot blockers)
 

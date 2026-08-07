@@ -7,7 +7,7 @@ Verified source: VDOE *2024 English SOL — Understanding the Standards, Grade 1
 | SOL | Skill (compressed) | Strand | Goji coverage | Status |
 |-----|--------------------|--------|---------------|--------|
 | 1.FFR.2 | Phonemic awareness: isolate/blend/segment 4–5 phoneme words incl. digraphs, blends | Foundations | none yet — oral/auditory skill | **off-device** mostly (parent-led); audio-supported deck possible later |
-| 1.FFR.3 | Phonics: closed/open/VCe syllables; vowel teams; r-controlled; syllabify; high-frequency words with automaticity | Foundations | `obj.reading.k2.fluency.02` (high-frequency flashcards) | **partial** — HF words covered; systematic phonics sequence is a real curriculum build (decodable decks + animations per pattern) |
+| 1.FFR.3 | Phonics: closed/open/VCe syllables; vowel teams; r-controlled; syllabify; high-frequency words with automaticity | Foundations | `obj.reading.k2.phonics.01`–`.03` (CVC, VCe lessons authored 2026-08-07; vowel teams planned) + `obj.reading.k2.fluency.02` (HF flashcards) | **partial → covered for CVC/VCe**; vowel teams/r-controlled = `.03` planned |
 | 1.DSR | Skilled reading: accuracy/rate/expression on grade texts; self-monitor; cite evidence from read-alouds; knowledge-building text sets | Fluency/Comp | `obj.reading.k2.fluency.01` + reader minutes + K–2 reading list ([`../subjects/reading/reading-lists.md`](../subjects/reading/reading-lists.md)) | **partial** — reading happens and is measured; expression/self-monitoring is parent-observed |
 | 1.RV.1 | Vocabulary: meanings in context; antonyms/synonyms; roots + inflectional affixes; shades of meaning | Vocabulary | flashcard decks + reader word-lookup count | **partial** — vocab decks exist as a mechanism; per-book decks to author |
 | 1.RL.1 | Literary: retell sequentially with central message; characters/setting/events; literal + inferential questions; predict | Comprehension | `obj.reading.k2.comp.01` (retell) + `.02` (who/what/where) + book-tied quiz blueprint | **covered** at objective level — needs per-book quiz banks authored |
@@ -25,7 +25,7 @@ Verified source: VDOE *2024 English SOL — Understanding the Standards, Grade 1
 | 1.W.1 | Compose: recounts, informative, opinion, responses to text | Writing | journal + writing apps | **partial** — surfaces exist; prompt banks per mode to author |
 | 1.W.2 | Organization: prewriting, audience/purpose, simple sentences | Writing | writing app | **planned** — guided prompt templates |
 | 1.W.3 | Edit with guidance: spelling, capitalization, punctuation | Writing | parent sign-off on journal (PARENT_STANDING.md writing rule) | **partial** — parent-judged by design in v1 |
-| 1.LU.1 / 1.LU.2 | Grammar + mechanics (sentences, tenses, capitals, end punctuation) | Language | none structured yet | **gap** — sentence-fixing quiz items are a good parent-quiz bank candidate |
+| 1.LU.1 / 1.LU.2 | Grammar + mechanics (sentences, tenses, capitals, end punctuation) | Language | `obj.writing.k2.grammar.01`/`.02` + `obj.writing.k2.mechanics.01` — lessons + quiz banks authored 2026-08-07 | **covered** at objective level |
 | 1.C.1 / 1.C.2 | Discussion, listening, speaking, retelling aloud | Communication | family life + read-aloud retells | **off-device** — parent-led; journal can hold "I retold…" records |
 | 1.R.1 | Research with support: questions, locate info, organize, share | Research | research app + notebooks (3–5+ focus) | **planned** — light G1 version = "find one fact with a parent" |
 
