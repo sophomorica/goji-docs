@@ -31,7 +31,8 @@ After this lesson, the child can read a division problem as sharing *or* groupin
 - [ ] Task 1: Math — division drill, tables matching owned times tables, ~20 problems
 - [ ] Task 2: Math — word problems, 2–3 sharing/grouping items
 - [ ] Task 3: Parent quiz — `quiz.math.35.divide.01`, pass ≥ 8/10
-- [ ] Task 4: Journal — one sharing story
+- [ ] Task 4: Journal — "Write your own sharing story: something gets shared into equal groups. End with its division fact."
+  - Checklist: A story where things are shared equally · The total, and how many groups (or how many each) · The matching division fact (like 12 ÷ 3 = 4)
 
 ## 4. Checks
 

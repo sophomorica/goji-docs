@@ -28,7 +28,8 @@ After this lesson, the child can compare any two 2-digit numbers and explain the
 
 - [ ] Task 1: Math — mental math drill (comparison set)
 - [ ] Task 2: Parent quiz — `quiz.math.k2.place-value.03`, pass ≥ 8/10
-- [ ] Task 3: Journal — one "how do you know" sentence
+- [ ] Task 3: Journal — "Write one sentence comparing two 2-digit numbers: which is bigger, and how do you know?"
+  - Checklist: Two 2-digit numbers · The word greater or less · Your 'how I know' — check the tens first · One complete sentence
 
 ## 4. Checks
 

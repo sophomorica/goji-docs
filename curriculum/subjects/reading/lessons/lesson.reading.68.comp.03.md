@@ -28,7 +28,8 @@ After this lesson (run as a routine across *Anne of Green Gables*), the child ca
 
 - [ ] Task 1: Reading — `anne-green-gables`, 20 min (today's chapter-chunk)
 - [ ] Task 2: Notebooks — one 3-sentence entry in "Running summary — Anne" (sentence 3 must reference an earlier entry)
-- [ ] Task 3 (every 3rd day): Journal — answer one arc question from the read-aloud review
+- [ ] Task 3: Journal — "Every 3rd day: pick one arc question from your read-aloud review of Anne and answer it using your running-summary entries."
+  - Checklist: The arc question you picked · Your answer in 2-3 sentences · Which running-summary entry (or entries) backs it up
 
 ## 4. Checks
 

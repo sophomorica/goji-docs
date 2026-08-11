@@ -27,7 +27,8 @@ After this lesson, the child can build a paragraph that works like a machine: a 
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — current anchor chapter + minutes
-- [ ] Task 2: Writing — one paragraph, ≥ 80 words (prompt from [`../prompt-banks/35.md`](../prompt-banks/35.md))
+- [ ] Task 2: Writing (via journal) — "Write one paragraph about the chapter you just read: a topic sentence stating one idea, details that feed it, and a closer." (starter ideas: [`../prompt-banks/35.md`](../prompt-banks/35.md))
+  - Checklist: A topic sentence that states ONE idea · At least 2 details — each one feeds the topic sentence · A closer that echoes the idea in new words (no 'In conclusion') · At least 80 words
 - [ ] Task 3: Parent review — checklist sign-off (parent-judged, never auto-scored)
 
 ## 4. Checks

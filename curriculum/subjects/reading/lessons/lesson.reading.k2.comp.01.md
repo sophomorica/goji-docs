@@ -27,7 +27,8 @@ After this lesson, the child can retell a story they just read in order — begi
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — `aesop-fables`, one fable (~10 min)
-- [ ] Task 2: Journal — 3-sentence retell (beginning / middle / end)
+- [ ] Task 2: Journal — "You just read a fable. Retell it in 3 sentences: what happened at the beginning, the middle, and the end."
+  - Checklist: Sentence 1: the beginning — who was it about, what did they want? · Sentence 2: the middle — what happened? · Sentence 3: the end — how did it turn out? · Bonus: the fable's message in your own words
 - [ ] Task 3: Parent quiz — that fable's check, pass ≥ 4/5
 
 ## 4. Checks

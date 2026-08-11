@@ -27,7 +27,8 @@ After this lesson, the child can write a three-sentence recount of something tha
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — one fable from `aesop-fables` (aloud is fine)
-- [ ] Task 2: Journal — 3-sentence recount, ≥ 25 words (prompt from [`../prompt-banks/k2.md`](../prompt-banks/k2.md))
+- [ ] Task 2: Journal — "Recount the fable you just read in 3 sentences: what happened first, then, and last." (starter ideas: [`../prompt-banks/k2.md`](../prompt-banks/k2.md))
+  - Checklist: 3 complete sentences — each has a naming part and a telling part · In time order: first, then, last · All three sentences about the same story · At least 25 words
 - [ ] Task 3: Parent review — checklist sign-off (writing is parent-judged, never auto-scored)
 
 ## 4. Checks

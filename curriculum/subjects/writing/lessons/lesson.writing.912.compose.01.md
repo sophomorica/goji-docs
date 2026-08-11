@@ -28,7 +28,8 @@ After this lesson, the student can write an analytical essay on a novel: an argu
 
 - [ ] Task 1: Reading — anchor novel close-read passages + minutes
 - [ ] Task 2: Notebooks — argument map (thesis, sub-claims, quotes, counterclaim); parent approves before drafting
-- [ ] Task 3: Writing — essay, ≥ 500 words (prompt from [`../prompt-banks/912.md`](../prompt-banks/912.md))
+- [ ] Task 3: Writing (via journal) — "Draft your essay from the argument map your parent approved: thesis, sub-claims, woven quotes, counterclaim." (starter ideas: [`../prompt-banks/912.md`](../prompt-banks/912.md))
+  - Checklist: A thesis that is arguable and specific to THIS book · Every body paragraph advances the thesis (delete test) · Quotes woven in, each proving its sub-claim · The strongest honest counterclaim, addressed · At least 500 words
 - [ ] Task 4: Parent review — rubric sign-off (parent-judged, never auto-scored)
 
 ## 4. Checks

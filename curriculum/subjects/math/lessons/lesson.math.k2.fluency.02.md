@@ -27,7 +27,8 @@ After this lesson (run over several days), the child subtracts within 10 by thin
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Math — subtraction drill, 20 problems, target ≥ 90%
-- [ ] Task 2 (once): Journal — one fact family, e.g. 3, 7, 10
+- [ ] Task 2: Journal — "Once this week: write one fact family — three numbers that make two addition and two subtraction facts (like 3, 7, 10)."
+  - Checklist: Your three family numbers · Two addition facts using them · Two subtraction facts using them
 
 ## 4. Checks
 

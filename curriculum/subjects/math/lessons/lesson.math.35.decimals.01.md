@@ -30,7 +30,8 @@ After this lesson, the child can read, write, and compare decimals through hundr
 
 - [ ] Task 1: Flashcards — money-match deck (coin ↔ decimal ↔ fraction), 9/10
 - [ ] Task 2: Parent quiz — `quiz.math.35.decimals.01`, pass ≥ 8/10
-- [ ] Task 3: Journal — one "0.5 vs 0.05" sentence
+- [ ] Task 3: Journal — "Write one sentence explaining the difference between 0.5 and 0.05. Money can help — think dimes and pennies."
+  - Checklist: Both numbers: 0.5 and 0.05 · Which one is bigger · Your why, using money or place value · One complete sentence
 
 (No drill task exists for decimals yet — see §5. When the decimals drill ships, add: "Math — decimals drill, 20 problems at 90%.")
 

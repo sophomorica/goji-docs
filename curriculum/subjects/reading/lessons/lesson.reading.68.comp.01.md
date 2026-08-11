@@ -27,7 +27,8 @@ After this lesson, the child can state a novel's theme as a full-sentence claim 
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — `call-of-wild`, 20 min (current chapter-chunk)
-- [ ] Task 2: Journal — one theme statement (full sentence) + two proving events
+- [ ] Task 2: Journal — "From your reading today: write one theme statement — a full sentence someone could argue with — plus two events from the book that prove it."
+  - Checklist: A theme statement in a full sentence (not one word like 'courage') · Could someone argue with it? If not, sharpen it · Proving event 1 from the book · Proving event 2 from the book
 - [ ] Task 3: Parent quiz — `quiz.reading.68.comp.01`, pass ≥ 5/6
 
 ## 4. Checks

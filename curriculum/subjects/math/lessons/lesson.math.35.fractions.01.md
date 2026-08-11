@@ -30,7 +30,8 @@ After this lesson, the child can compare and order fractions (denominators to 12
 
 - [ ] Task 1: Math — fractions module compare session, accuracy ≥ 85%
 - [ ] Task 2: Parent quiz — `quiz.math.35.fractions.01`, pass ≥ 8/10
-- [ ] Task 3: Journal — one "which is more, and why" sentence
+- [ ] Task 3: Journal — "Pick two fractions you compared today. Write one sentence: which is more, and why?"
+  - Checklist: Your two fractions · Which one is more · Your why — think about the size of the pieces · One complete sentence
 
 ## 4. Checks
 

@@ -28,7 +28,8 @@ After this lesson, the child can split a shape or a small set into halves or fou
 
 - [ ] Task 1: Math — fractions module session (accuracy ≥ 85%)
 - [ ] Task 2: Parent quiz — `quiz.math.k2.fractions.01`, pass ≥ 4/5
-- [ ] Task 3: Journal — one "fair share" sentence
+- [ ] Task 3: Journal — "Write one sentence about fair shares: what did you split today, and how did you know the shares were fair?"
+  - Checklist: What you split (paper, snack, shape) · The word halves or fourths · Why the shares were fair — equal parts · One complete sentence
 
 ## 4. Checks
 

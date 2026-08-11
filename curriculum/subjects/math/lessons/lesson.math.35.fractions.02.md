@@ -30,7 +30,8 @@ After this lesson, the child can show that 1/2, 2/4, and 4/8 are the same amount
 
 - [ ] Task 1: Math — fractions module equivalence session, accuracy ≥ 85%
 - [ ] Task 2: Parent quiz — `quiz.math.35.fractions.02`, pass ≥ 8/10
-- [ ] Task 3: Journal — one "same amount, different cuts" sentence
+- [ ] Task 3: Journal — "Write one 'same amount, different cuts' sentence: name two equivalent fractions and explain why they show the same amount."
+  - Checklist: Two equivalent fractions (like 1/2 and 2/4) · The words 'same amount' · Why more cuts don't change the amount
 
 ## 4. Checks
 

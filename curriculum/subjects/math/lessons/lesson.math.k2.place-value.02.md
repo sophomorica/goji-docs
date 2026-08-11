@@ -28,7 +28,8 @@ After this lesson, the child can say what any number from 10 to 99 is made of �
 
 - [ ] Task 1: Math — mental math drill, ~15 problems (place-value flavored set)
 - [ ] Task 2: Parent quiz — `quiz.math.k2.place-value.02`, pass ≥ 8/10
-- [ ] Task 3: Journal — one "tens and ones" sentence
+- [ ] Task 3: Journal — "Pick a number between 10 and 99. Write one sentence telling how many tens and how many ones are inside it."
+  - Checklist: Your number, written as a numeral · How many tens it has · How many ones it has · One complete sentence, like '34 is 3 tens and 4 ones'
 
 ## 4. Checks
 

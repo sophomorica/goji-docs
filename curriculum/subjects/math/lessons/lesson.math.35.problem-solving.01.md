@@ -30,7 +30,8 @@ After this lesson, the child attacks a multistep problem by stating a plan — w
 
 - [ ] Task 1: Math — word problems, multistep set, ~8 problems at ≥ 80%
 - [ ] Task 2: Parent quiz — `quiz.math.35.problem-solving.01`, pass ≥ 4/5 with plan stated
-- [ ] Task 3: Journal — one plan-in-words (no computation)
+- [ ] Task 3: Journal — "Pick one problem from today. Write your plan in words — the steps you would take — without doing any computation."
+  - Checklist: What the problem asks for · Step 1 in words · Step 2 in words · No answers or arithmetic — plan only
 
 (When module-scoped math tasks ship, Task 1 becomes "8 problems of Word Problems at 80%" — see `MATH_MODULE_TASKS_PLAN.md`.)
 

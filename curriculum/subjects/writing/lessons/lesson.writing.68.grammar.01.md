@@ -27,8 +27,11 @@ After this lesson, the learner can tell a clause (has its own subject + verb) fr
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.68.grammar.01`, pass ≥ 8/10
-- [ ] Task 2: Journal — reading-response paragraph with 2 labeled complex sentences
-- [ ] Task 3: Reading — 20 min; flag one sentence with 3+ clauses and bring it to dinner
+- [ ] Task 2: Reading — 20 min (any current book works); flag one sentence with 3+ clauses and bring it to dinner
+- [ ] Task 3: Journal — "Write one paragraph responding to what you just read. Include at least 2 deliberate complex sentences, and label the clauses in each: I (independent) and D (dependent)."
+  - Checklist: A topic sentence about what you read · At least 2 complex sentences — label each · Clauses marked I (independent) and D (dependent) · At least 50 words
+
+(Reading comes before the journal on purpose — the paragraph responds to what was just read.)
 
 ## 4. Checks
 

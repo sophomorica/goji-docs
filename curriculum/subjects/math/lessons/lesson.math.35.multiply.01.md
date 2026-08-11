@@ -31,7 +31,8 @@ After this lesson, the child can say what a multiplication fact *means* — equa
 - [ ] Task 1: Math — times tables drill, tables 2–5, ~20 problems
 - [ ] Task 2: Math — word problems, 3–4 equal-groups items
 - [ ] Task 3: Parent quiz — `quiz.math.35.multiply.01`, pass ≥ 8/10
-- [ ] Task 4: Journal — one equal-groups story (picture optional)
+- [ ] Task 4: Journal — "Write your own equal-groups story problem and finish with its multiplication fact. A picture is optional."
+  - Checklist: A story with groups of the same size · How many groups, and how many in each · The matching multiplication fact (like 4 × 6 = 24) · Optional: a picture of your groups
 
 (When module-scoped math tasks ship, Task 1 becomes literally "20 problems of Times Tables (2–5)" — see `MATH_MODULE_TASKS_PLAN.md`.)
 

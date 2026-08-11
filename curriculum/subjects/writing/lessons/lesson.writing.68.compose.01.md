@@ -27,7 +27,8 @@ After this lesson, the child can turn a notebook of research facts into a multi-
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Research — anchor-germane topic (INTEGRATION.md §4) → Notebooks, ≥ 6 facts logged (prerequisite day(s), per the standard chain)
-- [ ] Task 2: Writing — expository piece, ≥ 250 words (prompt from [`../prompt-banks/68.md`](../prompt-banks/68.md))
+- [ ] Task 2: Writing (via journal) — "Using the facts in your research notebook, write an expository piece that teaches your topic to a reader." (starter ideas: [`../prompt-banks/68.md`](../prompt-banks/68.md))
+  - Checklist: An intro that names the topic and promises the parts · Each body paragraph carries ONE idea · Every fact traceable to your notebook (parent spot-checks 2) · A conclusion that answers 'so what' · At least 250 words
 - [ ] Task 3: Parent review — checklist sign-off with 2-fact spot-check
 
 ## 4. Checks

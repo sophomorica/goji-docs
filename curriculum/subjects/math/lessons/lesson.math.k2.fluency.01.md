@@ -27,7 +27,8 @@ After this lesson (run over several days), the child answers addition facts with
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Math — addition drill, 20 problems, target ≥ 90%
-- [ ] Task 2 (final day only): Journal — "facts I just know"
+- [ ] Task 2: Journal — "Final drill day only: list three addition facts you just KNOW now — no counting needed."
+  - Checklist: Three addition facts (like 4 + 4 = 8) · Each one you can answer without counting · Tell which one used to be hard
 
 (When module-scoped math tasks ship, this becomes literally "20 problems of Addition at 90%" — see `MATH_MODULE_TASKS_PLAN.md`.)
 

@@ -27,7 +27,8 @@ After this lesson, the learner edits prose for the errors readers actually judge
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.912.grammar.02`, pass ≥ 8/10
-- [ ] Task 2: Writing — edit pass on one page of own essay; fixes labeled P / M / C
+- [ ] Task 2: Writing (via journal) — "Do an edit pass on one page of your own essay: fix every error you find, and label each fix P (parallelism), M (modifier), or C (confusable)."
+  - Checklist: One full page of your own essay, edited · Every fix labeled P, M, or C · Parallel series keep the same shape all the way through · Read each fixed sentence aloud to check it
 - [ ] Task 3: The trap paragraph — learner authors it, parent edits it, learner grades the parent
 
 ## 4. Checks

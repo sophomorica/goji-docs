@@ -27,7 +27,8 @@ After this lesson, the child can argue a claim in writing with real evidence —
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — current anchor chapters + minutes
-- [ ] Task 2: Writing — persuasive piece, ≥ 250 words (prompt from [`../prompt-banks/68.md`](../prompt-banks/68.md))
+- [ ] Task 2: Writing (via journal) — "After today's reading: write a persuasive piece arguing a claim about your book — one a reasonable person could disagree with." (starter ideas: [`../prompt-banks/68.md`](../prompt-banks/68.md))
+  - Checklist: An arguable claim about the book · At least 2 evidence points that support it · The other side's best argument, stated fairly — then answered · At least 250 words
 - [ ] Task 3: Parent review — checklist sign-off, with special weight on the counterargument's fairness
 
 ## 4. Checks

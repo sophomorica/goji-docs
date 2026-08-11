@@ -27,7 +27,8 @@ After this lesson, the child can explain what a character really wants (vs what 
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — `tom-sawyer`, 20 min (include the fence scene, Ch. 2)
-- [ ] Task 2: Journal — motive analysis: stated reason / real want / proving line / where the author winks
+- [ ] Task 2: Journal — "Think about what you just read in Tom Sawyer. Analyze one character's motive in four parts: stated reason, real want, proving line, and where the author winks."
+  - Checklist: The character's stated reason (what they say) · Their real want (what they actually want) · A proving line from the book · Where the author winks — how you know more than the character admits
 - [ ] Task 3: Parent quiz — `quiz.reading.68.comp.02`, pass ≥ 4/5
 
 ## 4. Checks

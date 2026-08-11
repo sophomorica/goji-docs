@@ -27,7 +27,8 @@ After this lesson, the child can punctuate spoken words in a story (quotation ma
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.35.mechanics.01` (item bank below), pass ≥ 8/10
-- [ ] Task 2: Writing — 4-line dialogue scene, parent checks the three moves
+- [ ] Task 2: Writing (via journal) — "Write a 4-line dialogue scene between two characters, using the three moves: quotation marks around the spoken words, a comma linking the tag, end marks inside the quotes."
+  - Checklist: 4 lines of dialogue between two speakers · Quotation marks hug exactly the spoken words · A comma links each tag (said Dorothy,) · End marks live inside the quotes · Parent checks the three moves
 - [ ] Task 3: Deliver the practice letter to its recipient (yes, really — mechanics with a reader attached sticks)
 
 ## 4. Checks

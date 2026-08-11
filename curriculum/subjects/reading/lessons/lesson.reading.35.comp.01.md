@@ -28,7 +28,8 @@ After this lesson, the child can state what a Jungle Book story is mostly about 
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — `jungle-book`, ~20 min (one story chunk)
-- [ ] Task 2: Journal — umbrella sentence + 3 details
+- [ ] Task 2: Journal — "Think about the Jungle Book story chunk you just read. Write one umbrella sentence that covers the whole chunk, then 3 details from the story that fit under it."
+  - Checklist: One umbrella sentence — the big idea, not too big · Detail 1 from the story that fits under your umbrella · Detail 2 that fits · Detail 3 that fits · Check: does any detail poke out of the umbrella?
 - [ ] Task 3: Parent quiz — story check, pass ≥ 5/6
 - [ ] Task 4 (unit spice): Research — "wolf packs" or "Indian jungle" on offline Wikipedia; 2 facts into notebooks
 

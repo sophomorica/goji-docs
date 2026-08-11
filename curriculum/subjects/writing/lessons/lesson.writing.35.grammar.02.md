@@ -27,7 +27,8 @@ After this lesson, the child can join two sentences into a compound with a comma
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.35.grammar.02`, pass ≥ 8/10
-- [ ] Task 2: Journal — one entry with 3 compound sentences, junctions underlined
+- [ ] Task 2: Journal — "Write one journal entry that includes 3 compound sentences. Mark the junction in each: the comma plus its joiner (and, but, or, so)."
+  - Checklist: 3 compound sentences — two complete sentences joined · Each junction marked: comma + joiner word · The joiner fits the meaning (but = contrast, so = cause) · Read each aloud — no run-ons
 - [ ] Task 3: Reading — find 2 compound sentences in the current book and name the joiner
 
 ## 4. Checks

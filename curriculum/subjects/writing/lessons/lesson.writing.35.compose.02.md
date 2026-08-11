@@ -27,7 +27,8 @@ After this lesson, the child can make a claim about *Black Beauty* — how a cha
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Reading — `black-beauty` chapter + minutes
-- [ ] Task 2: Writing — evidence response, ≥ 100 words (prompt from [`../prompt-banks/35.md`](../prompt-banks/35.md))
+- [ ] Task 2: Writing (via journal) — "From the Black Beauty chapter you just read: write an evidence response — make a claim about the book and prove it with lines from the text." (starter ideas: [`../prompt-banks/35.md`](../prompt-banks/35.md))
+  - Checklist: A claim about the book (not a summary, not 'I liked it') · At least 2 evidence details — one quoted or closely retold from the actual lines · Say HOW the evidence proves your claim · At least 100 words
 - [ ] Task 3: Parent review — checklist sign-off; a strong response also counts toward `obj.reading.35.comp.02` (inference with evidence)
 
 ## 4. Checks

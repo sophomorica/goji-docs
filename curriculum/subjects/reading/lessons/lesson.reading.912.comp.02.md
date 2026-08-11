@@ -28,7 +28,8 @@ After this lesson (run as a routine across one full novel), the child can trace 
 
 - [ ] Task 1: Reading — `frankenstein` (or `pride-prejudice`), 25 min *(blocked until ingest)*
 - [ ] Task 2: Notebooks — thread entries (theme/symbol/character), dated, with chapter refs
-- [ ] Task 3 (mid-book and book end): Journal — essay-form response, parent review
+- [ ] Task 3: Journal — "Mid-book and at the book's end: write an essay-form response to your novel, built from your notebook threads (theme, symbol, character)."
+  - Checklist: An arguable thesis about the book · At least 3 pieces of tracked evidence with chapter refs · All three threads — theme, symbol, character — connected · A conclusion that says something the intro couldn't · Parent reviews when done
 
 ## 4. Checks
 

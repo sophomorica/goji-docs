@@ -29,7 +29,8 @@ After this lesson, the child can say how Beauty feels or why a character acts �
 
 - [ ] Task 1: Reading — `black-beauty`, ~20 min
 - [ ] Task 2: Parent quiz — chapter check, pass ≥ 4/5
-- [ ] Task 3: Journal — one claim + proof-line exit ticket
+- [ ] Task 3: Journal — "From the Black Beauty chapter you just read: write one claim about a character or event, then the line from the book that proves it."
+  - Checklist: One claim about today's chapter · The proof line, quoted or closely retold from the book · One sentence on how the line proves your claim
 - [ ] Task 4 (unit spice): Research — "horse" / "Victorian era carriages" on offline Wikipedia; how real horses signal fear → one note in notebooks
 
 ## 4. Checks

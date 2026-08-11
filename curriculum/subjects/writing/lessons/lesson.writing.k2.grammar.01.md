@@ -27,7 +27,8 @@ After this lesson, the child can tell whether a group of words is a complete sen
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.k2.grammar.01`, pass ≥ 8/10
-- [ ] Task 2: Journal — 3 complete sentences (parent checks each has a who and a what-happened)
+- [ ] Task 2: Journal — "Write 3 complete sentences of your own. Each one needs a naming part (who) and a telling part (what happened)."
+  - Checklist: Sentence 1 has a who and a what-happened · Sentence 2 has a who and a what-happened · Sentence 3 has a who and a what-happened · Read each aloud — does it sound finished?
 - [ ] Task 3: Reading — 10 min in Aesop; find one sentence and say its two parts
 
 ## 4. Checks

@@ -27,7 +27,8 @@ After this lesson, the child starts every sentence with a capital, ends it with 
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.k2.mechanics.01`, pass ≥ 8/10
-- [ ] Task 2: Journal — 2 sentences with a self-check pass (capitals + end marks) before parent sign-off
+- [ ] Task 2: Journal — "Write 2 sentences about your day. Self-check before parent sign-off: capitals where they belong, and an end mark on each."
+  - Checklist: 2 complete sentences · A capital at each sentence start — and on names · An end mark (. ! ?) on each sentence · Self-check done before showing the parent
 - [ ] Task 3: Reading — point at 3 end marks in today's book and name the voice each one makes
 
 ## 4. Checks

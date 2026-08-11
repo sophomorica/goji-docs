@@ -27,7 +27,8 @@ After this lesson, the learner keeps subject-verb agreement, pronoun reference, 
 ## 3. School Day mapping (how a parent would assign today)
 
 - [ ] Task 1: Parent quiz — `quiz.writing.68.grammar.02`, pass ≥ 8/10
-- [ ] Task 2: Writing — self-edit pass on one own paragraph; margin-mark each fix with A (agreement), R (reference), or T (tense)
+- [ ] Task 2: Writing (via journal) — "Take one paragraph you wrote recently and do a self-edit pass: fix the errors, and mark each fix A (agreement), R (reference), or T (tense)."
+  - Checklist: One of your own paragraphs, re-read slowly · Every fix marked A, R, or T · Find the real subject of each long sentence — does the verb agree? · Read it aloud — would a listener ask 'who's she?'
 - [ ] Task 3: Reading — 20 min; find one long sentence that stays perfectly clear and say why it works
 
 ## 4. Checks

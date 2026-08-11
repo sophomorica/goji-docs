@@ -26,7 +26,8 @@ After this lesson, the learner treats sentence length, structure, and the colon/
 
 ## 3. School Day mapping (how a parent would assign today)
 
-- [ ] Task 1: Writing — the two-version rewrite (both versions saved)
+- [ ] Task 1: Writing (via journal) — "Take one paragraph — your own recent work, or a passage from your book — and rewrite it two ways: (a) maximum flow, with semicolons joining longer sentences; (b) maximum punch, with varied lengths, one colon, and one short hammer sentence. Save both versions."
+  - Checklist: Version A: maximum flow — semicolons do the joining · Version B: maximum punch — one colon, one deliberate short sentence · Both versions stay grammatical · Every mark is a decision — be ready to say why, there
 - [ ] Task 2: Notebooks — rationale paragraph
 - [ ] Task 3: Parent review — score against the rubric below; discuss, don't just grade
 

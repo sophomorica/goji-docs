@@ -28,7 +28,8 @@ After this lesson, the child can count a group of up to 20 things and read/write
 
 - [ ] Task 1: Flashcards — deck `math-k2-numerals-20`, 2 passes
 - [ ] Task 2: Parent quiz — `quiz.math.k2.place-value.01`, pass ≥ 8/10
-- [ ] Task 3 (optional): Journal — "Draw or type the biggest number you counted today"
+- [ ] Task 3: Journal — "Optional: draw or type the biggest number you counted today, and write its name in words."
+  - Checklist: The number, written as a numeral · Its name in words (like 'fourteen') · Optional: a drawing of that many things
 
 (Existing task types only: flashcards, parent quiz, journal.)
 
