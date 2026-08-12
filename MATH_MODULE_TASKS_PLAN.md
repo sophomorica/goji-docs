@@ -1,6 +1,6 @@
 # Module-scoped math tasks — design + build plan
 
-Status: **design agreed 2026-08-01**, not yet implemented · Owner: Patrick
+Status: **slice A landing 2026-08-12** (assignment + deep-link + Pi verify). Slice B (progress events) not started. · Owner: Patrick
 Contract: `goji_cloud/SYNC_API.md` → "Math modules" · Product: `PARENT_APP_PRODUCT.md` §5.1
 
 Goal: the parent app assigns **"20 problems of Times Tables at 90%"**, not
