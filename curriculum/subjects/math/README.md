@@ -23,6 +23,8 @@ Teach mathematical **principles** with Claude Design animations and short lesson
 
 ---
 
+**Not on device yet:** the 6–8 first slice is curriculum docs only (`OBJECTIVES.md`, `lessons/lesson.math.68.*`). Do **not** implement it in `goji_computer/` until TOOLS.md §6D (integer mode, pre-algebra module, percent drill) and a parent-catalog regen are scheduled.
+
 ## Existing device coverage (practice)
 
 | Strand ideas | Current tool |

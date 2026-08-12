@@ -6,10 +6,12 @@
 
 **Mac mini:** hub is at `~/nr/hub`; this curriculum tree is at `~/nr/products/goji_learner/curriculum/`. Open Grok on **`~/nr/hub`** and say “Goji curriculum.” Human guide: `hub/FOR_CURRICULUM_LEAD.md`.
 
-Status: **planning / organization** · vision locked in intent 2026-08-05  
+Status: **planning / organization** · vision locked in intent 2026-08-05 · **math 6–8 first slice on `main` 2026-08-12** (`goji-docs` #3)  
 Scope: **K–12**, pillars **reading · writing · math**, offline-first Goji computer + parent metrics  
 **Curriculum lead:** family curriculum owner (works with agents in this folder)  
 **Product/engineering:** Patrick · pilot path still in `TODO.md` / child repos  
+
+**Agents: do not look in `goji_computer/` for the 6–8 math slice.** It lives here (`subjects/math/`, `skills/math-6.md` / `math-7.md`). Device modules and parent `catalog_v1.json` have **not** been regenerated for `obj.math.68.*`.  
 
 ---
 

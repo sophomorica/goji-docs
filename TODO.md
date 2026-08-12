@@ -41,13 +41,13 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
 - [ ] Standing app lock/unlock + child unlock-requests (after school-day loop)
 - [ ] Parent app polish pass beyond brand (v1 screens are deliberately ugly functionally)
-- [x] **Parent app hygiene** (found in 2026-08-07 audit; finished 2026-08-12): deleted dead `progress_screen.dart` + legacy `build_plan_screen.dart` (unreferenced — no routes/imports/tests); quiz titles already joined from `synced_content` (`2218555`) + hardened with catalog fallback via `QuizScoreSignal.displayTitle` (never raw content ids). Deferred: broad `catch (_) → empty` in repositories (empty-state UX depends on it; no existing logging pattern to lean on)
+- [x] **Parent app hygiene** (found in 2026-08-07 audit; merged **2026-08-12** `goji-learner-app` **#1** / `3c681e1` on `main`): deleted dead `progress_screen.dart` + legacy `build_plan_screen.dart`; quiz titles never show raw content ids (`QuizScoreSignal.displayTitle`). Deferred: broad `catch (_) → empty` in repositories.
 
 ## Curriculum planning (docs in `curriculum/` — not pilot blockers)
 
 **2026-08-07 PM campaign ("graduate proficient"):** full VA SOL catalogs now verified for **math K–8 + Alg I/Geo/Alg II, English 1–12, science K–8 + 4 lab courses, history/social science K–12 + EPF** (`curriculum/skills/`, 53 files) with per-row coverage verdicts; PRACTICES.md (learning cycle + agent rules + audit checklist); ASSESSMENT.md placement layer + K–2 batteries; phonics K–2 complete; math 3–5 strand (13 objectives); composition strand; 9–12 bookshelf ingested (library 13→29, `dbd2a07`); app catalog 61 skills, 70 tests.
 
-**2026-08-12 — math 6–8 first slice:** 8 objectives + 6 lessons (integers · ratios/unit rates · one-step equations) + 3 animation briefs + quiz gold items; skills/math-6–7 coverage updated to partial/planned. Still teach+quiz path (integer drill mode + pre-algebra module + percent drill logged in TOOLS.md §6D).
+**2026-08-12 — math 6–8 first slice (merged `goji-docs` #3):** 8 objectives + 6 lessons (integers · ratios/unit rates · one-step equations) + 3 animation briefs + quiz gold items. **This is curriculum docs, not `goji_computer` code.** Device drills / parent catalog JSON do not yet include `obj.math.68.*`. Still teach+quiz path (integer drill mode + pre-algebra module + percent drill logged in TOOLS.md §6D).
 
 **Honest open gaps:** HS math teaching (module + lessons — all catalog rows gap), **decimals drill** (blocks `obj.math.35.decimals.02` and feeds percent work — no lesson authored yet; objective + TOOLS §6D row only), 6–8 math *remainder* (MG/PS, `ratios.03`, `equations.02`, 8.PFA linear functions), science/history unit authoring (Egypt + wolves/Yukon ranked first), animation generation (briefs stubbed, not generated), composition K–2/68/912 planned-lessons, Grok writing loop build (SYNC_API routing), placement batteries beyond K–2.
 
