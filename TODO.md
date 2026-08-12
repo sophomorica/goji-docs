@@ -45,7 +45,11 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 ## Curriculum planning (docs in `curriculum/` — not pilot blockers)
 
-**2026-08-07 PM campaign ("graduate proficient"):** full VA SOL catalogs now verified for **math K–8 + Alg I/Geo/Alg II, English 1–12, science K–8 + 4 lab courses, history/social science K–12 + EPF** (`curriculum/skills/`, 53 files) with per-row coverage verdicts; PRACTICES.md (learning cycle + agent rules + audit checklist); ASSESSMENT.md placement layer + K–2 batteries; phonics K–2 complete; math 3–5 strand (13 objectives); composition strand; 9–12 bookshelf ingested (library 13→29, `dbd2a07`); app catalog 61 skills, 70 tests. **Honest open gaps:** HS math teaching (module + lessons — all catalog rows gap), decimals drill (blocks decimals.02), 6–8 math objectives, science/history unit authoring (Egypt + wolves/Yukon ranked first), animation generation (19 briefs stubbed), composition K–2/68/912 planned-lessons, Grok writing loop build (SYNC_API routing), placement batteries beyond K–2.
+**2026-08-07 PM campaign ("graduate proficient"):** full VA SOL catalogs now verified for **math K–8 + Alg I/Geo/Alg II, English 1–12, science K–8 + 4 lab courses, history/social science K–12 + EPF** (`curriculum/skills/`, 53 files) with per-row coverage verdicts; PRACTICES.md (learning cycle + agent rules + audit checklist); ASSESSMENT.md placement layer + K–2 batteries; phonics K–2 complete; math 3–5 strand (13 objectives); composition strand; 9–12 bookshelf ingested (library 13→29, `dbd2a07`); app catalog 61 skills, 70 tests.
+
+**2026-08-12 — math 6–8 first slice:** 8 objectives + 6 lessons (integers · ratios/unit rates · one-step equations) + 3 animation briefs + quiz gold items; skills/math-6–7 coverage updated to partial/planned. Still teach+quiz path (integer drill mode + pre-algebra module + percent drill logged in TOOLS.md §6D).
+
+**Honest open gaps:** HS math teaching (module + lessons — all catalog rows gap), **decimals drill** (blocks `obj.math.35.decimals.02` and feeds percent work — no lesson authored yet; objective + TOOLS §6D row only), 6–8 math *remainder* (MG/PS, `ratios.03`, `equations.02`, 8.PFA linear functions), science/history unit authoring (Egypt + wolves/Yukon ranked first), animation generation (briefs stubbed, not generated), composition K–2/68/912 planned-lessons, Grok writing loop build (SYNC_API routing), placement batteries beyond K–2.
 
 Vision SoT: [`curriculum/VISION.md`](./curriculum/VISION.md) (pillars R/W/M, VA skills catalog, parent standing metrics, Gutenberg + Kiwix, Claude Design, Grok co-pilot). Curriculum lead works here with agents.
 
@@ -55,6 +59,7 @@ Vision SoT: [`curriculum/VISION.md`](./curriculum/VISION.md) (pillars R/W/M, VA 
 - [x] 2026-08-07 — Virginia skills catalog started (`curriculum/skills/`): K/1/2 math + G1/2 English, **verified against fetched VDOE 2023-math / 2024-English documents**, with per-SOL Goji coverage status
 - [x] 2026-08-07 — Gutenberg on-device audit (13 books in reader DB) + classic reading lists K–12 (`curriculum/subjects/reading/reading-lists.md`); ingest priorities noted (K–2 shelf thinnest)
 - [x] 2026-08-07 — First 3 teaching-animation briefs registered in `curriculum/assets/animations/INDEX.md` (place-value ×2, fluency ×1) — Claude Design generation next
+- [x] 2026-08-12 — Math **6–8 first slice**: integers + ratios + one-step equations (`curriculum/subjects/math/` — 8 objectives, 6 lessons, quiz blueprints, 3 animation briefs); skills/math-6–7 coverage rows updated
 - [ ] Decide on-device animation playback format (see `curriculum/ANIMATIONS.md` §4) — briefs exist; parent-side preview is the interim
 - [x] 2026-08-07 — Quiz blueprints for first strand (`subjects/math/quiz-blueprints.md`, `subjects/reading/quiz-blueprints.md` — book-tied via `source_book_id`, already carried by the quiz payload spec)
 - [x] 2026-08-07 — Parent “pillar standing” metrics spec (`curriculum/PARENT_STANDING.md`) — computed-from-existing-signals + explicit needs-engineering table; no wire invented

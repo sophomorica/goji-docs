@@ -17,7 +17,7 @@ Teach mathematical **principles** with Claude Design animations and short lesson
 
 | File | Purpose |
 |------|---------|
-| [OBJECTIVES.md](./OBJECTIVES.md) | Objective ID list by band/strand (K–2 first strand + 3–5 strand set authored 2026-08-07) |
+| [OBJECTIVES.md](./OBJECTIVES.md) | Objective ID list by band/strand (K–2 + 3–5 + **6–8 first slice** 2026-08-12) |
 | [lessons/](./lessons/) | Lesson plans (one file per lesson when written) |
 | [quiz-blueprints.md](./quiz-blueprints.md) | Quiz blueprints + drill gates per objective |
 
@@ -30,18 +30,20 @@ Teach mathematical **principles** with Claude Design animations and short lesson
 | Fact fluency (× ÷ + −) | Arithmetic / multiplication / division drills |
 | Mental calculation | Mental Math |
 | Applied | Word Problems |
-| Fractions | `Fractions.svelte` (wire to menu) |
-| Place value, multi-digit algorithms, geometry, measurement, algebra… | **Gap** — need lessons/media ± new tools |
+| Fractions | `Fractions.svelte` (menu live) |
+| Integers, ratios, equations (6–8 first slice) | **Teach + parent quiz + journal today**; integer drill mode + pre-algebra module + percent drill gapped (TOOLS.md §6D) |
+| Decimals operations | **Blocked** on decimals drill — `obj.math.35.decimals.02` |
+| Geometry, measurement, stats, HS algebra… | **Gap** — lessons/media ± new tools |
 
 ---
 
 ## Planning focus (fill in order)
 
-1. Choose starting band (recommend **K–2** or **3–5**).  
-2. Draft 8–15 objectives for one strand (e.g. place value or fractions).  
-3. 5 lesson plans that only use **existing** drills where possible.  
-4. Animation briefs for concepts drills cannot teach alone.  
-5. Quiz blueprints per lesson.
+1. ~~K–2 / 3–5 spines~~ authored.  
+2. ~~6–8 first slice~~ (integers · ratios · one-step equations) authored 2026-08-12.  
+3. Next: `ratios.03` / `equations.02` lessons; 3–5 pending lessons; decimals drill (engineering); MG/PS teach layer; HS math module.  
+4. Animation generation for `brief` rows (including three new 6–8 briefs).  
+5. Parent-app catalog asset regen when engineering consumes new objective IDs.
 
 ---
 

@@ -141,7 +141,10 @@ Ranked by how often curriculum talks will hit the wall. Status = planning only.
 | Tool | Why | Priority |
 |------|-----|----------|
 | ~~Wire Fractions~~ + ~~division mastery schema~~ (both done 2026-08-07 — `12314c3`, `ebaff08`; division per-table stats now persist with `operation` in the key) | Unlock real fraction/division strands | ✅ device-side done; parent "÷7 is weak" view rides SYNC_API later |
-| **Decimals drill** (or decimals mode on the ± × ÷ drills): read/compare items + operations | 4.NS.4–5, 4.CE.4, 5.CE.3 have **no practice surface** — `obj.math.35.decimals.01` runs teach + parent-quiz only (mental math partial, money flashcards), `obj.math.35.decimals.02` is **blocked** until this ships; Grade 6 percent work stands on it | High |
+| **Decimals drill** (or decimals mode on the ± × ÷ drills): read/compare items + operations | 4.NS.4–5, 4.CE.4, 5.CE.3 have **no practice surface** — `obj.math.35.decimals.01` runs teach + parent-quiz only (mental math partial, money flashcards), `obj.math.35.decimals.02` is **blocked** until this ships; Grade 6 percent work (`obj.math.68.ratios.03`) stands on it | High |
+| **Integer mode** on ± × ÷ / mental-math drills (signed operands + absolute-value items) | `obj.math.68.integers.01`–`.03` run teach + parent quiz only (2026-08-12 first slice); 6.NS.2 / 6.CE.2 need volume practice | High |
+| **Pre-algebra practice module** (numeric-answer equations/expressions; one-step → multistep) | `obj.math.68.equations.01` teach+quiz ready; `equations.02` planned; ladder continues to 8.PFA.4 / Algebra I — one module vertical | High |
+| **Percent / proportion drill** (percent of a number, solve proportions, simple consumer items) | Feeds `obj.math.68.ratios.03` (planned), 7.CE.2, 8.CE.1 consumer math | High (after decimals drill) |
 | Reading comprehension quiz ↔ book ID | Product TODO already | High for reading spine |
 | Parent **pillar standing** views (R/W/M + books read + trajectory) | Vision §6 — core parent promise | High (product; after data model) |
 | Gutenberg inventory + grade reading lists (docs then data) | Classic lineup as main reading path | High (curriculum lead) |
@@ -174,3 +177,4 @@ Ranked by how often curriculum talks will hit the wall. Status = planning only.
 | 2026-08-05 | Initial inventory from goji_computer + parent product docs |
 | 2026-08-07 | Fractions tile restored to math menu (goji_computer `12314c3`); book library audited (13 books in DB, ingest pipeline documented in `subjects/reading/reading-lists.md`); mastery-schema gap pinpointed |
 | 2026-08-07 | 3–5 math strand set authored (13 objectives, 7 lessons); **decimals-drill gap row added** (§6D) |
+| 2026-08-12 | 6–8 math first slice authored (integers/ratios/equations); **integer mode**, **pre-algebra module**, **percent drill** rows added (§6D) |

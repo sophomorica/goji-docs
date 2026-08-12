@@ -1,4 +1,4 @@
-# Math — quiz blueprints (K–2 first strand + 3–5 strand set)
+# Math — quiz blueprints (K–2 + 3–5 + 6–8 first slice)
 
 Format per [`../../QUIZZES.md`](../../QUIZZES.md) §4. These are **blueprints**: gold items authored here, generation later (cloud-side). Until objective-linked quizzes exist on device, deliver via **parent quizzes** (§6 of QUIZZES.md).
 
@@ -372,6 +372,217 @@ gate.math.35.problem-solving.01:
 When **module-scoped math tasks** ship (`MATH_MODULE_TASKS_PLAN.md`), these gates become directly assignable ("20 problems of Times Tables (7s) at 90%"). Until then: parent assigns the drill and reads the score.
 
 **With-lesson blueprints (not yet authored):** `place-value.01`/`.02`, `fractions.03`, `problem-solving.02` quizzes arrive with their lessons; `decimals.02` gate additionally waits on the decimals drill (TOOLS.md §6D).
+
+---
+
+## 6–8 first slice (integers · ratios · equations)
+
+### `quiz.math.68.integers.01` — Integers on the number line
+
+```yaml
+quiz.math.68.integers.01:
+  objectives: [obj.math.68.integers.01]
+  skill: "represent/compare/order integers; absolute value as distance from zero"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 10
+  pass_rule: ">= 8/10 including order trap and one |n| distance item"
+  difficulty: intro
+  constraints:
+    must_include: [two order traps (-8 vs -3 style), two absolute-value items, one place-on-line, one farthest-from-zero, one zero item]
+    distractors: bigger-magnitude-wins, absolute-value-as-drop-sign, positive-always-greater-without-compare
+  animation_review: anim.math.68.integers.01
+```
+
+**Gold items (v1):**
+
+1. Which is less: −8 or −3? → −8 / −3 *(bigger magnitude wins)* / same / can't tell
+2. Which is greater: −1 or 4? → 4 / −1 / same / 1
+3. Order from least to greatest: 2, −5, 0 → −5, 0, 2 / 0, −5, 2 / 2, 0, −5 / −5, 2, 0
+4. \|−7\| = → 7 / −7 *(drop-sign-as-answer-with-minus)* / 0 / 14
+5. \|3\| = → 3 / −3 / 0 / 6
+6. Which is farther from zero: −9 or 4? → −9 / 4 / same / 0
+7. On a number line, −2 is → 2 units left of zero / 2 units right of zero / at zero / 2 units left of −4
+8. Which list is in order from least to greatest? → −6, −1, 3 / −1, −6, 3 *(magnitude sort)* / 3, −1, −6 / −6, 3, −1
+9. \|−4\| + 0 = → 4 / −4 / 0 / 8
+10. Temperature −12° is ___ than −5° → colder (less) / warmer / the same / can't compare
+
+---
+
+### `quiz.math.68.integers.02` — Add and subtract integers
+
+```yaml
+quiz.math.68.integers.02:
+  objectives: [obj.math.68.integers.02]
+  skill: "add/subtract integers; absolute-value expressions; subtract as add opposite"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 10
+  pass_rule: ">= 8/10 including same-sign, different-sign, subtract-negative, and one |n| expression"
+  difficulty: intro
+  constraints:
+    must_include: [two same-sign adds, two different-sign, one subtract-negative, one |a| + b]
+    distractors: always-add-magnitudes, two-negatives-make-positive-on-addition, ignore-signs
+  animation_review: anim.math.68.integers.01
+```
+
+**Gold items (v1):**
+
+1. 5 + (−8) = → −3 / 13 *(add magnitudes, keep +)* / 3 / −13
+2. (−3) + (−4) = → −7 / 7 *(two-negatives myth on add)* / −1 / 12
+3. (−6) + 2 = → −4 / −8 / 8 / 4
+4. 2 − (−5) = → 7 / −3 / 3 / −7
+5. (−9) − 4 = → −13 / −5 / 13 / 5
+6. \|−6\| + (−2) = → 4 / −8 / 8 / −4
+7. (−1) + 1 = → 0 / 2 / −2 / 1
+8. (−5) + (−2) = → −7 / 7 *(two-negatives myth on add)* / −3 / 10
+9. 4 − 9 = → −5 / 5 / 13 / −13
+10. (−8) + 8 = → 0 / 16 / −16 / 8
+
+---
+
+### `quiz.math.68.integers.03` — Multiply and divide integers
+
+```yaml
+quiz.math.68.integers.03:
+  objectives: [obj.math.68.integers.03]
+  skill: "multiply/divide integers with sign rules; single-step integer context"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 10
+  pass_rule: ">= 8/10 including both sign cases for × and ÷ and one context item"
+  difficulty: intro
+  constraints:
+    must_include: [positive×negative, negative×negative, divide-to-negative, one context]
+    distractors: wrong-sign-correct-magnitude, always-positive-product, add-instead-of-multiply
+```
+
+**Gold items (v1):**
+
+1. 3 × (−4) = → −12 / 12 *(wrong sign)* / −7 / 7
+2. (−5) × (−2) = → 10 / −10 / −7 / 7
+3. (−6) × 3 = → −18 / 18 / −9 / 9
+4. (−12) ÷ 3 = → −4 / 4 / −15 / 36
+5. (−20) ÷ (−5) = → 4 / −4 / 25 / −25
+6. 0 × (−9) = → 0 / −9 / 9 / undefined
+7. (−7) × 1 = → −7 / 7 / −1 / 0
+8. Context: temperature drops 3° each hour for 4 hours. Change = → −12° / 12° / −7° / 1°
+9. 8 ÷ (−2) = → −4 / 4 / −6 / 16
+10. (−3) × (−3) = → 9 / −9 / 6 / −6
+
+---
+
+### `quiz.math.68.ratios.01` — Ratios and equivalent tables
+
+```yaml
+quiz.math.68.ratios.01:
+  objectives: [obj.math.68.ratios.01]
+  skill: "write ratios in three forms; build/read equivalent ratio tables"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 10
+  pass_rule: ">= 8/10 including form translation and one table item"
+  difficulty: intro
+  constraints:
+    must_include: [two form translations, one order-matters trap, two table completions, one non-equivalent reject]
+    distractors: order-reversed, scale-one-part-only, fraction-as-unrelated
+  animation_review: anim.math.68.ratios.01
+```
+
+**Gold items (v1):**
+
+1. The ratio 2 to 5 is the same as → 2:5 / 5:2 *(order trap)* / 2+5 / 25
+2. 3:4 as a fraction form is → 3/4 / 4/3 / 3.4 / 7/4
+3. 2:5 equivalent pair → 4:10 / 4:5 *(scaled one part)* / 2:10 / 5:2
+4. Table for 1:3 — next row after 2:6 → 3:9 / 3:6 / 4:6 / 2:9
+5. Which belongs in a 2:5 table? → 6:15 / 6:10 / 5:2 / 2:6
+6. 4 to 6 in a:b form → 4:6 / 6:4 / 4/6 only / 46
+7. Scale 3:5 by 4 → 12:20 / 12:5 / 3:20 / 7:9
+8. Which is *not* equivalent to 2:3? → 4:9 *(scale-one-side mess)* / 4:6 / 6:9 / 8:12
+9. 5:1 means → 5 of first for every 1 of second / 1 of first for every 5 of second / 6 total always / equal amounts
+10. Incomplete: 2:7 = 6:__ → 21 / 9 / 14 / 3
+
+---
+
+### `quiz.math.68.ratios.02` — Unit rates and proportional tables
+
+```yaml
+quiz.math.68.ratios.02:
+  objectives: [obj.math.68.ratios.02]
+  skill: "unit rates; proportional tables; how-many-for-N"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 10
+  pass_rule: ">= 8/10 including unit-rate compute and one proportional judgment"
+  difficulty: intro
+  constraints:
+    must_include: [three unit rates, two how-many-for-N, two proportional-or-not tables]
+    distractors: inverted-rate, add-instead-of-scale, nonproportional-accepted
+  animation_review: anim.math.68.ratios.01
+```
+
+**Gold items (v1):**
+
+1. 12 miles in 3 hours — unit rate → 4 miles per hour / 3 miles per hour / 15 miles per hour / 36 miles per hour
+2. 15 dollars for 5 notebooks — price each → $3 / $5 / $10 / $20
+3. Unit rate 6 pages/day; pages in 4 days → 24 / 10 / 12 / 4
+4. 2:8 unit rate (per 1 of first) → 1:4 / 1:8 / 2:1 / 4:1
+5. Table (x,y): (1,4), (2,8), (3,12) — proportional? → yes / no / only first two / can't tell
+6. Table (1,5), (2,8), (3,11) — proportional? → no / yes *(arithmetic sequence trap)* / only if x=1 / yes because y grows
+7. 6 packs for $9 — cost of 1 pack → $1.50 / $9 / $15 / $0.67 *(inverted or leftover-change trap)*
+8. Rate 5 km per hour; km in 7 hours → 35 / 12 / 2 / 5
+9. 18 cookies for 6 kids — per kid → 3 / 6 / 12 / 24
+10. Which matches unit rate 2 dollars per pound for 5 pounds? → $10 / $7 / $2 / $25
+
+---
+
+### `quiz.math.68.equations.01` — One-step equations
+
+```yaml
+quiz.math.68.equations.01:
+  objectives: [obj.math.68.equations.01]
+  skill: "solve one-step linear equations; inverse operations; vocabulary"
+  tools: parent-quiz
+  item_type: multiple_choice
+  n_items: 10
+  pass_rule: ">= 8/10 covering all four inverse-op types"
+  difficulty: intro
+  constraints:
+    must_include: [x+a=b, x-a=b, ax=b, x/a=b, one vocabulary, one check-solution]
+    distractors: wrong-inverse, coefficient-subtracted-not-divided, solution-not-checked
+  animation_review: anim.math.68.equations.01
+```
+
+**Gold items (v1):**
+
+1. x + 7 = 12 → x = 5 / x = 19 / x = 5.5 / x = −5
+2. x − 5 = 9 → x = 14 / x = 4 / x = −4 / x = 45
+3. 3x = 18 → x = 6 / x = 15 *(subtract coefficient)* / x = 21 / x = 3
+4. x/4 = 6 → x = 24 / x = 2 / x = 10 / x = 4
+5. x + 3 = 3 → x = 0 / x = 6 / x = 1 / x = 3
+6. 5x = 0 → x = 0 / x = 5 / undefined / x = 1
+7. Which is the *solution* of x − 2 = 10? → 12 / 8 / −2 / 10
+8. In 4x = 20, the coefficient of x is → 4 / 20 / x / 5
+9. To solve x/3 = 5 you → multiply both sides by 3 / divide by 3 / subtract 3 / add 3
+10. Check: is x = 4 a solution of 2x = 10? → no / yes / only if x is even / can't tell
+
+---
+
+## Drill gates (6–8 — when modes ship)
+
+```yaml
+gate.math.68.integers.02:
+  objectives: [obj.math.68.integers.02]
+  tools: math-drill (integer ± mode — not built)
+  pass_rule: "accuracy >= 90% on ~20 problems, two sessions on different days"
+  status: blocked — TOOLS.md §6D integer mode
+
+gate.math.68.equations.01:
+  objectives: [obj.math.68.equations.01]
+  tools: pre-algebra module (numeric answers — not built)
+  pass_rule: "accuracy >= 90% on ~15 one-step equations, two sessions"
+  status: blocked — TOOLS.md §6D pre-algebra module
+```
 
 ---
 
