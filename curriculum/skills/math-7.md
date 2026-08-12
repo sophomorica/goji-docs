@@ -1,6 +1,6 @@
 # Grade 7 math — 2023 Virginia SOLs × Goji coverage
 
-Verified source: VDOE *Mathematics Standards of Learning — 2023, K–12* (doe.virginia.gov/home/showpublisheddocument/48908/…, fetched 2026-08-07 via archive). 15 standards. `obj.math.68` intentionally empty — gaps expected; this is the roadmap.
+Verified source: VDOE *Mathematics Standards of Learning — 2023, K–12* (doe.virginia.gov/home/showpublisheddocument/48908/…, fetched 2026-08-07 via archive). 15 standards. Update **2026-08-12:** 6–8 first slice stubbed `obj.math.68.ratios.03` (7.CE.2) and `obj.math.68.equations.02` (7.PFA.3) as **planned** — no Grade 7-ready lessons yet. Remaining rows still gap.
 
 | SOL | Skill (compressed) | Strand | Goji coverage | Status |
 |-----|--------------------|--------|---------------|--------|

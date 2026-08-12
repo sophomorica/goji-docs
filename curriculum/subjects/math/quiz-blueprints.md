@@ -435,7 +435,7 @@ quiz.math.68.integers.02:
 5. (−9) − 4 = → −13 / −5 / 13 / 5
 6. \|−6\| + (−2) = → 4 / −8 / 8 / −4
 7. (−1) + 1 = → 0 / 2 / −2 / 1
-8. 0 + (−7) = → −7 / 7 / 0 / −0
+8. (−5) + (−2) = → −7 / 7 *(two-negatives myth on add)* / −3 / 10
 9. 4 − 9 = → −5 / 5 / 13 / −13
 10. (−8) + 8 = → 0 / 16 / −16 / 8
 
@@ -529,7 +529,7 @@ quiz.math.68.ratios.02:
 4. 2:8 unit rate (per 1 of first) → 1:4 / 1:8 / 2:1 / 4:1
 5. Table (x,y): (1,4), (2,8), (3,12) — proportional? → yes / no / only first two / can't tell
 6. Table (1,5), (2,8), (3,11) — proportional? → no / yes *(arithmetic sequence trap)* / only if x=1 / yes because y grows
-7. 9 packs for $6 — cost of 1 pack → $0.67 approx / $6 / $15 / $3 *(inverted or wrong)*
+7. 6 packs for $9 — cost of 1 pack → $1.50 / $9 / $15 / $0.67 *(inverted or leftover-change trap)*
 8. Rate 5 km per hour; km in 7 hours → 35 / 12 / 2 / 5
 9. 18 cookies for 6 kids — per kid → 3 / 6 / 12 / 24
 10. Which matches unit rate 2 dollars per pound for 5 pounds? → $10 / $7 / $2 / $25

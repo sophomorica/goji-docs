@@ -14,7 +14,7 @@
 
 ## 1. Goal (one sentence)
 
-After this lesson, the child can find a unit rate from a ratio or table, use it to answer “how many for N?,” and spot whether a simple table is proportional.
+After this lesson, the child can find a unit rate from a ratio or table, use it to answer “how many for N?,” and spot whether a simple **table** is proportional. Graphs of proportional relationships are **not** in this lesson (6.PFA.2 remainder).
 
 ## 2. Sequence (teach → practice → comprehension)
 
@@ -28,8 +28,10 @@ After this lesson, the child can find a unit rate from a ratio or table, use it 
 
 ## 3. School Day mapping (how a parent would assign today)
 
-- [ ] Task 1: Parent quiz — `quiz.math.68.ratios.02`, pass ≥ 8/10
-- [ ] Task 2: Journal — "Write one unit-rate sentence from real life (price, speed, recipes, reading). Then solve: if the rate stays the same, how much for 5 units?"
+- [ ] Task 1: Journal — independent practice: 4 unit-rate finds + 2 “how many for N?” (paper)
+  - Checklist: Each unit rate uses “per 1” · Extension computed
+- [ ] Task 2: Parent quiz — `quiz.math.68.ratios.02`, pass ≥ 8/10
+- [ ] Task 3: Journal — "Write one unit-rate sentence from real life (price, speed, recipes, reading). Then solve: if the rate stays the same, how much for 5 units?"
   - Checklist: Unit rate named with "per 1" language · Context is real or story-based · Extension to 5 (or another N) computed · Work shown
 
 ## 4. Checks

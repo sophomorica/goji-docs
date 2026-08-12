@@ -14,7 +14,7 @@
 
 ## 1. Goal (one sentence)
 
-After this lesson, the child can write and solve one-step linear equations (add/subtract/multiply/divide forms) and use the words *variable*, *coefficient*, and *solution* correctly.
+After this lesson, the child can write and solve one-step linear equations (add/subtract/multiply/divide forms) and use the words *variable*, *coefficient*, and *solution* correctly. Official 6.PFA.3.a also names *expression* and *term* — leave those for a later pass; do not mark vocab complete.
 
 ## 2. Sequence (teach → practice → comprehension)
 

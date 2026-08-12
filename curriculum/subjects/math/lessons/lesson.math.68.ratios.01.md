@@ -28,8 +28,10 @@ After this lesson, the child can write a ratio in three forms (a:b, a to b, a/b)
 
 ## 3. School Day mapping (how a parent would assign today)
 
-- [ ] Task 1: Parent quiz — `quiz.math.68.ratios.01`, pass ≥ 8/10
-- [ ] Task 2: Journal — "Pick a ratio from a story (crew, treasure, recipes). Write it three ways. Build a table with four equivalent pairs."
+- [ ] Task 1: Journal — independent practice: write 3 story ratios in all three forms
+  - Checklist: Each ratio in a:b, a to b, and a/b · Order preserved
+- [ ] Task 2: Parent quiz — `quiz.math.68.ratios.01`, pass ≥ 8/10
+- [ ] Task 3: Journal — "Pick a ratio from a story (crew, treasure, recipes). Write it three ways. Build a table with four equivalent pairs."
   - Checklist: Ratio in a:b, a to b, and a/b · Order preserved · Table has ≥ 4 rows · Each row multiplies both parts by the same number
 
 ## 4. Checks
@@ -47,4 +49,5 @@ After this lesson, the child can write a ratio in three forms (a:b, a to b, a/b)
 
 - Animation brief: [`anim.math.68.ratios.01`](../../../assets/animations/anim.math.68.ratios.01.md).
 - Quiz blueprint: `quiz.math.68.ratios.01` in [`../quiz-blueprints.md`](../quiz-blueprints.md).
+- Flashcard seed (ratio-form deck): 8 cards mixing a:b ↔ a to b ↔ a/b plus one order-trap (3:5 vs 5:3). Seed when the flashcards leverage pass lands.
 - Prereq honesty: equivalent fractions (`obj.math.35.fractions.02`) is the conceptual parent; if that is weak, run a fractions.02 refresh first.

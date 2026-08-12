@@ -28,8 +28,10 @@ After this lesson, the child can place integers on a number line, compare and or
 
 ## 3. School Day mapping (how a parent would assign today)
 
-- [ ] Task 1: Parent quiz — `quiz.math.68.integers.01`, pass ≥ 8/10
-- [ ] Task 2: Journal — "Draw a number line. Place −4, −1, 0, 3, and 6. Then finish: \|−4\| = ___ because ___."
+- [ ] Task 1: Journal — independent practice: place −7, −2, 0, 4, 9 on a number line and write \|n\| for each
+  - Checklist: Zero marked · All five placed · Each absolute value is a distance
+- [ ] Task 2: Parent quiz — `quiz.math.68.integers.01`, pass ≥ 8/10
+- [ ] Task 3: Journal — "Draw a number line. Place −4, −1, 0, 3, and 6. Then finish: \|−4\| = ___ because ___."
   - Checklist: Line with zero marked · All five numbers placed · Absolute-value sentence uses *distance* (not "drop the sign") · Numbers ordered left-to-right on the line
 
 (When integer-mode drills ship — TOOLS.md §6D — add a compare/order drill task here.)
