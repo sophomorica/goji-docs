@@ -41,7 +41,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 - [ ] Real LLM content generation (`content-generate` is a stub; Grok path + paywall per product doc; hard revisit ~v1.2)
 - [ ] Standing app lock/unlock + child unlock-requests (after school-day loop)
 - [ ] Parent app polish pass beyond brand (v1 screens are deliberately ugly functionally)
-- [ ] **Parent app hygiene** (found in 2026-08-07 audit): delete dead `progress_screen.dart` (unreferenced; also queries children without a family filter) and legacy `build_plan_screen.dart`; resolve quiz titles in `latestQuizScores` (UI currently shows raw content ids); review the broad `catch (_) → empty` pattern in repositories so real errors stop rendering as "no data" (list in audit notes)
+- [x] **Parent app hygiene** (found in 2026-08-07 audit; finished 2026-08-12): deleted dead `progress_screen.dart` + legacy `build_plan_screen.dart` (unreferenced — no routes/imports/tests); quiz titles already joined from `synced_content` (`2218555`) + hardened with catalog fallback via `QuizScoreSignal.displayTitle` (never raw content ids). Deferred: broad `catch (_) → empty` in repositories (empty-state UX depends on it; no existing logging pattern to lean on)
 
 ## Curriculum planning (docs in `curriculum/` — not pilot blockers)
 
