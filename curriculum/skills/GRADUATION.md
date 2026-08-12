@@ -27,7 +27,7 @@ Homeschoolers in Virginia typically graduate under the home-instruction statute 
 
 | Area | Catalog (verified) | Teaching |
 |------|--------------------|----------|
-| Math K–8 | ✅ all grades | K–2 ✅ · 3–5 in progress · 6–8 gap |
+| Math K–8 | ✅ all grades | K–2 ✅ · 3–5 in progress · 6–8 first slice (integers/ratios/equations, 2026-08-12) · MG/PS + HS still open |
 | Math HS (Alg I, Geo, Alg II) | ✅ | gap (module + teach layer) |
 | English K–12 | ✅ all grades | K–2 strong · 3–8 spine · 9–12 ingest-blocked |
 | Science | not yet (phase 2) | gap |

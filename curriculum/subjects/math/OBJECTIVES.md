@@ -2,7 +2,7 @@
 
 ID format: `obj.math.<band>.<strand>.<nn>`  
 Bands: `k2` | `35` | `68` | `912`  
-Status: **K–2 first strand authored 2026-08-07** (place-value + fluency, lessons in [`lessons/`](./lessons/)); **3–5 strand set authored 2026-08-07** (13 objectives across 6 strands, 7 lessons).
+Status: **K–2 first strand authored 2026-08-07** (place-value + fluency, lessons in [`lessons/`](./lessons/)); **3–5 strand set authored 2026-08-07** (13 objectives across 6 strands, 7 lessons); **6–8 first slice authored 2026-08-12** (integers + ratios + equations — 8 objectives, 6 lessons).
 
 ---
 
@@ -81,7 +81,7 @@ VA crosswalk codes are **verified** against the 2023 Math SOLs (fetched VDOE doc
 | ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA | Status |
 |----|-----------|------------------|---------|----------------|------------|------|----|--------|
 | `obj.math.35.decimals.01` | Read, write, and compare decimals through thousandths as place value continuing right of the ones; know money-anchored fraction↔decimal partners (1/10 = 0.1 = a dime; 1/4 = 0.25) | Quiz ≥ 8/10 incl. the 0.5-vs-0.05 trap; money-match flashcard deck 9/10 | `place-value.01` (concept), `fractions.02` | flashcards (money-match deck), math (mental math — money sums, **partial**), journal — **practice gap: no decimals drill (TOOLS.md §6D)** | `anim.math.35.decimals.01` | `quiz.math.35.decimals.01` | 4.NS.4 / 4.NS.5 / 5.NS.1 | ready (teach + quiz path; drill practice gapped) |
-| `obj.math.35.decimals.02` | Add and subtract (grade 4), then multiply and divide (grade 5) decimals, including money contexts | Decimals drill ≥ 90%, two sessions on different days + quiz ≥ 8/10 — **not yet assessable on device** | `decimals.01` | **gap — decimals drill (TOOLS.md §6D)**; word problems (money items) interim | — | quiz (with lesson, once drill ships) | 4.CE.4 / 5.CE.3 | blocked (no decimals drill) |
+| `obj.math.35.decimals.02` | Add and subtract (grade 4), then multiply and divide (grade 5) decimals, including money contexts | Decimals drill ≥ 90%, two sessions on different days + quiz ≥ 8/10 — **not yet assessable on device** | `decimals.01` | **gap — decimals drill (TOOLS.md §6D)**; word problems (money items) interim | — | quiz (with lesson, once drill ships) | 4.CE.4 / 5.CE.3 | blocked (no decimals drill) — **lesson not authored; do not start 6–8 percent (`ratios.03`) until this unblocks** |
 
 ### Problem solving (`problem-solving`)
 
@@ -94,9 +94,44 @@ VA crosswalk codes are **verified** against the 2023 Math SOLs (fetched VDOE doc
 
 ---
 
-## 6–8 / 9–12
+## 6–8 (`68`) — first slice (authored 2026-08-12)
 
-Intentionally empty until elementary spine is real. Add strand headers when ready.
+VA crosswalk codes are **verified** against the 2023 Math SOLs (see [`../../skills/math-6.md`](../../skills/math-6.md), [`math-7.md`](../../skills/math-7.md)). First slice follows the Grade 6 highest-value list: **integers** (drill-shaped), **ratios/unit rates** (gateway of the whole 6–8 band), **one-step equations** (algebra ladder start). Anchor books for the band (INTEGRATION.md): `treasure-island`, `call-of-wild`, `tom-sawyer`, `anne-green-gables`.
+
+Practice honesty: device math today is whole-number arithmetic. Integer/ratio/equation work runs **teach + parent quiz + journal** until integer-mode drills and a pre-algebra practice module ship (TOOLS.md §6D). Lessons are written to run *today* on existing surfaces.
+
+### Integers (`integers`)
+
+| ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA | Status |
+|----|-----------|------------------|---------|----------------|------------|------|----|--------|
+| `obj.math.68.integers.01` | Represent, compare, and order integers on a number line; explain absolute value as distance from zero (not “drop the sign”) | Quiz ≥ 8/10 incl. order trap and \|n\| distance item; places 5 given integers on a drawn number line (journal) | `obj.math.35.place-value.01` (concept) or solid 2-digit compare | journal, parent quiz, mental math (compare only — **partial**) | `anim.math.68.integers.01` | `quiz.math.68.integers.01` | 6.NS.2 | ready |
+| `obj.math.68.integers.02` | Add and subtract integers (incl. absolute-value expressions like \|−3\| + (−5)), using number-line and chip/zero-pair reasoning | Quiz ≥ 8/10 incl. two same-sign and two different-sign items; explains one zero-pair or number-line move (journal) | `integers.01` | journal, parent quiz — **practice gap: integer mode on ± drills (TOOLS.md §6D)** | `anim.math.68.integers.01` (re-teach) | `quiz.math.68.integers.02` | 6.CE.2 (add/sub) | ready (teach + quiz path; drill gapped) |
+| `obj.math.68.integers.03` | Multiply and divide integers; apply all four integer operations in single-step contextual problems | Quiz ≥ 8/10 incl. sign rules and one contextual item; states the ×/÷ sign rule once (journal) | `integers.02` | journal, parent quiz, word problems (integer items — **interim bank**) — **practice gap: integer mode** | — | `quiz.math.68.integers.03` | 6.CE.2 (×/÷ + context) | ready (teach + quiz path; drill gapped) |
+
+### Ratios & proportional reasoning (`ratios`)
+
+| ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA | Status |
+|----|-----------|------------------|---------|----------------|------------|------|----|--------|
+| `obj.math.68.ratios.01` | Write ratios in a:b, a to b, and a/b forms; build and read tables of equivalent ratios for a proportional relationship | Quiz ≥ 8/10 incl. form translation and one incomplete table; builds a 4-row equivalent-ratio table (journal) | `obj.math.35.fractions.02` | journal, parent quiz, flashcards (ratio-form deck) | `anim.math.68.ratios.01` | `quiz.math.68.ratios.01` | 6.PFA.1 | ready |
+| `obj.math.68.ratios.02` | Find unit rates; recognize proportional relationships across tables, simple graphs, and contexts; solve “how many for N?” from a unit rate | Quiz ≥ 8/10 incl. unit-rate compute and one “is it proportional?” table; writes one unit-rate sentence from a real context (journal) | `ratios.01` | journal, parent quiz, word problems (rate items — **interim**) | `anim.math.68.ratios.01` (re-teach) | `quiz.math.68.ratios.02` | 6.PFA.2 | ready |
+| `obj.math.68.ratios.03` | Solve proportions and percent-of-a-number problems (find the part, the whole, or the percent) in context | Quiz ≥ 8/10 on a mixed proportion/percent set; one consumer-style item correct | `ratios.02`, `obj.math.35.decimals.01` | parent quiz, word problems — **practice gap: percent/proportion drill (TOOLS.md §6D)** | — | quiz (with lesson) | 7.CE.2 | planned (lesson pending; percent drill backlog) |
+
+### Equations (`equations`)
+
+| ID | Statement | Success criteria | Prereqs | Practice tools | Animations | Quiz | VA | Status |
+|----|-----------|------------------|---------|----------------|------------|------|----|--------|
+| `obj.math.68.equations.01` | Write and solve one-step linear equations in one variable (x ± a = b, ax = b, x/a = b); use algebraic vocabulary (variable, coefficient, solution) | Quiz ≥ 8/10 incl. all four inverse-op types; writes and solves one equation from a short story (journal) | `obj.math.35.problem-solving.01`; `integers.02` helpful for negative solutions | journal, parent quiz — **practice gap: pre-algebra practice module (TOOLS.md §6D)**; numeric answers work on paper today | `anim.math.68.equations.01` | `quiz.math.68.equations.01` | 6.PFA.3 | ready (teach + quiz path; module gapped) |
+| `obj.math.68.equations.02` | Write and solve two-step linear equations in one variable, including contextual problems | Quiz ≥ 8/10 on two-step set incl. one context write-and-solve | `equations.01` | parent quiz — **pre-algebra module** | — | quiz (with lesson) | 7.PFA.3 | planned |
+
+**Misconceptions to watch (band-level):** absolute value as “erase the minus” (loses distance meaning); integer add as always-move-right; “two negatives make a positive” applied to addition; ratio order flipped (3:5 vs 5:3); unit rate as the bigger number always; keyword-grabbing in rate problems; solving equations by guessing without inverse operations; moving a term without the inverse (add when should subtract).
+
+**Still open in 6–8 (catalog rows, not yet objective-IDed here):** 6.NS.1 equivalency across forms (depends on finishing 3–5 fraction/decimal ops); 6.NS.3 / 7.NS.3 exponents & perfect squares; all MG (geometry) and PS (stats) rows; 7.PFA.1 y = mx; 8.PFA linear functions vertical; consumer math 8.CE.1. See skills/math-6…8.md.
+
+---
+
+## 9–12
+
+Intentionally empty until 6–8 spine has a second pass. HS catalogs live in [`../../skills/math-algebra1.md`](../../skills/math-algebra1.md) etc. — all teaching gap (pre-algebra / Algebra I module).
 
 ---
 
