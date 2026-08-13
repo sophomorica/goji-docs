@@ -70,7 +70,7 @@ Curriculum lead may be a non-engineering family member — keep answers in this 
 
 ## Working here (for Claude sessions)
 
-- goji_computer follows Narrow Road standards via `../narrow-road-hq/standards/`
+- goji_computer follows Narrow Road standards via `../../hub/standards/`
   (operating manual, code standards, `/review` PASS = done). The other two repos
   follow the same spirit: tests green, no orphaned code, escalate rather than
   invent architecture, label guesses `ASSUMED:`.
@@ -78,7 +78,6 @@ Curriculum lead may be a non-engineering family member — keep answers in this 
   `cd goji_computer/frontend && npm run test:run` (one known pre-existing
   MyApps.test.js flake) · e2e in `frontend/e2e/` (import `test` from
   `./fixtures`, never `@playwright/test` directly).
-- Flutter app has no platform folders until `flutter create` is run locally
-  (Dart sources only in git).
+- Flutter parent app has platform dirs in git; `flutter test` runs. Phone e2e smoke is still open (`TODO.md`).
 - Live cloud state: see `goji_cloud/HUMAN_CHECKLIST.md` for what has to be done
   by a human in the Supabase dashboard vs what is code.
