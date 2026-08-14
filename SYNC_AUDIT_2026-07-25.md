@@ -189,9 +189,11 @@ Note: fixes were made against your folder as of today ~12:10 — if you edited a
    still maps everything to local user 1" — now "to the device child"), but on a shared
    Goji, child B's work is recorded as child A's. Needs `child_cloud_id` on the wire
    (contract change) before multi-child is real.
-3. **Profile-switch PIN during School Mode** (product doc gap): the device stays locked
-   for all profiles (deliberate), but there's no PIN gate on switching, and the Today
-   tile for the non-session profile just shows nothing.
+3. **Profile-switch PIN during School Mode** — **superseded 2026-08-14.** Product
+   changed: School Mode is per-profile (siblings stay unlocked so a finished child
+   can play). Parent-app follow-up: know which child is at the box; alert if a
+   mid-school-day child switches onto a finished sibling's profile. Do not
+   re-lock the whole device.
 4. **No session expiry.** An orphaned `pending_start` (device dead/unpaired) blocks
    `start_school_day` until a manual cancel. A pg_cron job terminalizing sessions older
    than ~24h would close it.

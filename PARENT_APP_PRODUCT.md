@@ -24,7 +24,7 @@ The parent app is the family’s **school-day remote + trust dashboard**: run a 
 | At-the-box escape | **Household PIN** on the Goji | unchanged |
 | Direct phone ↔ Pi LAN control | Not required | Optional, not the default path |
 
-Pairing (not the PIN) maps **Goji → family**. The **phone app has no email/password login** — open it and use it. Under the hood the app keeps a silent on-device session so cloud RLS still works; parents never see credentials. Multiple equal parent phones can share that family (join path via pairing / invite — not a sign-in form). One **household PIN** on the device is for release / profile-switch at the box; it does not log anyone into the phone app. A future **web** client may require real login; that stays out of the phone UX.
+Pairing (not the PIN) maps **Goji → family**. The **phone app has no email/password login** — open it and use it. Under the hood the app keeps a silent on-device session so cloud RLS still works; parents never see credentials. Multiple equal parent phones can share that family (join path via pairing / invite — not a sign-in form). One **household PIN** on the device is for releasing that child’s School Mode at the box; it does not log anyone into the phone app. A future **web** client may require real login; that stays out of the phone UX.
 
 ---
 
@@ -32,7 +32,7 @@ Pairing (not the PIN) maps **Goji → family**. The **phone app has no email/pas
 
 - **Children-first** data model (already in cloud schema). Support **many children** (real target: 6) and **shared Goji + optional extra devices**.
 - Setup: **pair device → family once**; create/link children in the parent app; sync maps cloud children ↔ local Goji profiles.
-- **School Mode is per child.** On a shared box, switching profile during that child’s School Mode requires **PIN or parent Release**.
+- **School Mode is per child.** Each profile is locked only to that child’s plan apps while their school day is open. A sibling who finished (or never started) keeps free play on their own profile — kids may be on different learning paths. Profile switch is allowed so a finished child can play; the parent app should know who is at the box and alert if a child mid-school-day switches onto a finished sibling’s profile (see TODO).
 - Adults: **multiple equal parents** from day one (Start/Release/dashboard/messages). No role matrix in v1.
 
 ---
@@ -41,10 +41,11 @@ Pairing (not the PIN) maps **Goji → family**. The **phone app has no email/pas
 
 Hybrid lockdown:
 
-1. Parent finishes wizard and taps **Start school day** for a specific child → device enters School Mode when the command arrives (pending OK in v1).
-2. While active: only apps/tasks in that day’s plan are available. (Exception: the **Tasks** hub app — the Household Tasks board, §10 — is always present, like the hub itself. It is informational and never satisfies or blocks a school-day task.)
-3. Ends when **all tasks are done** (auto-unlock) **or** parent **Release** / **PIN** anytime.
+1. Parent finishes wizard and taps **Start school day** for a specific child → **that child’s profile** enters School Mode when the command arrives (pending OK in v1). Other profiles stay unlocked.
+2. While that child’s day is active: only apps/tasks in **their** plan are available on their profile. (Exception: the **Tasks** hub app — the Household Tasks board, §10 — is always present, like the hub itself. It is informational and never satisfies or blocks a school-day task.) A sibling who already finished deserves play time on their own profile.
+3. Ends for that child when **all their tasks are done** (auto-unlock) **or** parent **Release** / **PIN** on that profile.
 4. Scheduled auto-Start = shelved (v2+ convenience).
+5. **Parent-app follow-up (not v1 device):** during the school day the parent app should know which child is at the box. If a child whose day is still open tries to switch to a profile that already finished, alert the parent — other profiles need to stay open for the kids who earned play time.
 
 **Standing app locks** (after school-day loop is solid — not v1):
 
