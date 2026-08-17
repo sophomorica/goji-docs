@@ -18,7 +18,7 @@ Source: `goji_computer/frontend/src/App.svelte` `lazyApps` + Hub.
 | `math` | Math hub + drills | Primary math practice surface |
 | `typing` | Typing lessons / games | Keyboard fluency; literacy support |
 | `coding` | Courses + challenges (HTML/CSS/JS, Flexbox Froggy, …) | CS pathway (strongest seed today) |
-| `flashcard-app` | Flashcard study (+ parent-synced decks) | Vocabulary, facts, quick checks. **Computer tool only — not the store app Goji Memory** (`products/flashcard-app`). |
+| `flashcard-app` | Flashcard study (+ parent-synced decks) | Vocabulary, facts, quick checks. **Computer tool only — not the store app Goji Memory** (`products/goji_memory`). |
 | `journal` | Journal entries | Reflection; School Day optional sign-off |
 | `writing` | Writing surface | Compositions / prompts (underused in curriculum plan) |
 | `notebooks` | Long-form notes (TipTap) | Project notes, research write-ups |
