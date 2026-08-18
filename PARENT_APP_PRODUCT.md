@@ -1,6 +1,6 @@
 # Parent app — product definition (plan of record)
 
-Status: **agreed 2026-07-22** (grilling session) · math tasks §5.1 added 2026-08-01 · Household Tasks §10 + nav chrome §6 added 2026-08-01 · Owner: Patrick  
+Status: **agreed 2026-07-22** (grilling session) · math tasks §5.1 added 2026-08-01 · Household Tasks §10 + nav chrome §6 added 2026-08-01 · §6 board/child-detail layout amended 2026-08-18 (layout studio pass — see `PARENT_APP_DESIGN_SPEC.md`) · Owner: Patrick  
 Workspace home for agents coordinating `goji_learner_app/` ↔ `goji_computer/` ↔ `goji_cloud/`.
 
 This doc is the **product** source of truth for what the Flutter parent app (`goji_parent` in `goji_learner_app/`) is for, what it can do relative to the Goji computer, and what is explicitly deferred. Sync wire shapes still live in `goji_cloud/SYNC_API.md`. Device behavior details live in `goji_computer/docs/CLOUD_SYNC_PLAN.md`.
@@ -135,14 +135,15 @@ Wire shapes and verification rules: `goji_cloud/SYNC_API.md`, "Math modules".
 - **Paired:** bottom nav = **Family | Tasks | Content**. Family = the board below; Tasks = the Household Tasks bird's-eye + per-child editor (§10); Content = author/manage synced content.
 - **Settings via the avatar** in the AppBar — Pair (add another device) and Computer live there, not as top-level tabs.
 
-**Home = family board** (all children as status cards) → tap child for detail.  
-Primary action = **Plan today / Start** for that child (not a peer “lifestyle” tab equal to Pair/Plan/Progress/Content).
+**Home = family board** (amended 2026-08-18; layout SoT: `PARENT_APP_LAYOUT_STUDIO.html` + `PARENT_APP_DESIGN_SPEC.md` §4.2): glance-first per `PARENT_STANDING_UX.md` §2 — 2-up grid of child cards (day ring + name + ONE status word, **no numbers, no per-card buttons**) → tap child for detail. Per-child primary actions (Plan today / Start / Release) live on **child detail** and in the card **long-press** quick actions, not on the board face. Below the grid, a **“Needs you”** list is the board's single actionable surface: rows derived from synced signals (missed drills, journal awaiting read, drafts ready) — derivation only, no new wire in v1.
 
-**Child day detail (dual mode):**
+**Child day detail (amended 2026-08-18 — hero + tabs, replacing the single pinned-scroll):**
 
-- **Always-on activity** year-round (summer included): e.g. “read 40 min of Alice,” typing minutes, quiz scores, word-lookup **count**.
-- When a school day is active or completed that day: **pin the checklist** on top of the same activity.
-- Near-live presence: current app / last sync (poll-honest).
+- **Hero:** day ring + name + state chip + ONE primary action (contextual) + ⋯ overflow; then three tabs: **Today | Standing | Activity**.
+- **Today** = the checklist when a school day is active or completed that day (the old “pinned checklist”, now a tab that leads).
+- **Activity** = the **always-on activity** year-round (summer included): e.g. “read 40 min of Alice,” typing minutes, quiz scores, word-lookup **count**.
+- **Standing** = pillar tiles → heat maps per `PARENT_STANDING_UX.md` §3 (glance→tap→evidence unchanged).
+- Near-live presence: current app / last sync (poll-honest) — carried in the hero meta line.
 - Drill-down matures later (fuller forensic feed optional, not default).
 
 **Quotes (books only):** soft “save a quote?” after book reading — optional, not a wizard hard task; parent-visible on drill-down. Not for PDFs.  

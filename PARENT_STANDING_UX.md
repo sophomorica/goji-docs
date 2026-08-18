@@ -37,7 +37,9 @@ Each child card = avatar + **day ring** + one optional attention dot:
 
 ## 3. Child detail — bird's-eye first
 
-Top of screen: **three pillar tiles** (Reading / Writing / Math), each showing only a mini coverage bar in the four state colors + trajectory word ("on track"). Below: today's checklist (when a day is active) pinned above the always-on activity feed (existing behavior).
+Top of screen: **three pillar tiles** (Reading / Writing / Math), each showing only a mini coverage bar in the four state colors + trajectory word ("on track").
+
+> **Layout superseded 2026-08-18:** the "checklist pinned above the always-on activity feed on one scroll" arrangement was replaced by the tabbed child detail (hero + **Today | Standing | Activity**) — see `PARENT_APP_PRODUCT.md` §6 and `PARENT_APP_DESIGN_SPEC.md` §4.3. Pillar tiles now live on the **Standing** tab. Everything else in this section (heat map, evidence sheet, glance→tap→evidence) is unchanged and still binding.
 
 ### The heat map (tap a pillar tile)
 
