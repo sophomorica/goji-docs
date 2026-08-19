@@ -8,7 +8,7 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 **Owned K–12 curriculum planning (docs only for now):** [`curriculum/README.md`](./curriculum/README.md) — objectives, lesson plans, Claude Design animations, quiz strategy, existing-tools vs tools-to-build. Not a pilot-blocker; advance in planning sessions without blocking School Day e2e.
 
-**2026-08-19 Goji computer pre-lessons audit (Svelte + Bugbot + Security):** [`GOJI_COMPUTER_AUDIT_2026-08-19.md`](./GOJI_COMPUTER_AUDIT_2026-08-19.md) — full `kodi-computer` @ `5c8bbdd`. P0s are **blocking** before on-device lesson authoring. Official Cursor Bugbot/Security Review tools only run on a PR diff; this is the full-repo equivalent. Copy P0/P1 into `goji_computer/TODO.md` when that repo is opened.
+**2026-08-19 Goji computer pre-lessons audit (Svelte + Bugbot + Security):** [`GOJI_COMPUTER_AUDIT_2026-08-19.md`](./GOJI_COMPUTER_AUDIT_2026-08-19.md) — full `kodi-computer` @ `5c8bbdd`. P0/P1 implementation is on `kodi-computer` branch `cursor/goji-computer-hardening-db16`. Official Cursor Bugbot/Security Review tools only run on a PR diff; this is the full-repo equivalent.
 
 ## Pre-lessons — Goji computer robustness (2026-08-19)
 
@@ -16,36 +16,36 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 
 ### P0 — blocking
 
-- [ ] **SEC-PIN-LEAK** — `GET /api/settings` returns `household_pin` in plaintext; Hub loads it on mount. Strip from API, hash at rest, never log.
-- [ ] **SEC-API-BIND** — Flask `CORS(app)` + `0.0.0.0` with no auth. Bind loopback **or** lock privileged routes to localhost (escalate; don’t invent a third scheme).
-- [ ] **SEC-PRIV-ROUTES** — Unauthenticated shutdown, wifi mutate, users DELETE, school PIN/unlock, parent-invite, settings POST.
-- [ ] **SEC-EVINCE** — `POST /api/pdfs/<id>/open-native` still launches Evince (kiosk filesystem escape). Delete routes; drop evince from the image.
-- [ ] **SEC-PREVIEW** — Coding preview iframe is `allow-scripts allow-same-origin` + unsanitized error HTML (XSS / full local API). Drop same-origin; escape errors; DEBUG-guard `/api/test-*`.
-- [ ] **BUG-JOURNAL-SAVE** — Journal 2s debounce is not cleared on destroy; `backToHub()` fires `saveEntry()` without await. Profile switch can write Child A’s text under Child B.
-- [ ] **BUG-JOURNAL-WORDS** — Each Journal autosave logs cumulative `word_count`; daily summary **sums** those events, so a 20-word entry saved 3 times counts as 60 and can auto-complete a writing task.
-- [ ] **BUG-PLAN-STALE** — Profile switch does not clear `todayPlan.plan` / `schoolMode`; a failed or in-flight `getToday()` keeps the sibling’s plan and lockdown. `SchoolModeBar` is outside `{#key $currentUserId}`.
-- [ ] **SEC-CDN-TAILWIND** — `HTMLChallenge.svelte` loads `https://cdn.tailwindcss.com` in the preview `srcdoc` (offline-blank + third-party call from the Pi).
-- [ ] **SEC-RESEARCH-SSRF** — `GET /api/research/article?path=` fetches any `http://` URL the client sends (`research.py` ~175–183), then the kiosk `{@html}`s it with a no-op sanitizer. Allow only Kiwix paths; reject `http`/`https`/`//`.
+- [x] **SEC-PIN-LEAK** — PIN hashed at rest; `GET /api/settings` strips secrets; unlock rate-limited. (`kodi-computer` hardening branch)
+- [x] **SEC-API-BIND** — Bind/gunicorn default `127.0.0.1`; CORS allowlist localhost.
+- [x] **SEC-PRIV-ROUTES** — Privileged writes 403 off loopback.
+- [x] **SEC-EVINCE** — Native viewer routes removed; evince dropped from the image.
+- [x] **SEC-PREVIEW** — Preview iframe `allow-scripts` only; error HTML escaped; `/api/test-*` DEBUG-gated.
+- [x] **BUG-JOURNAL-SAVE** — Debounce captures user id; destroy clears timeout; hub navigation awaits save.
+- [x] **BUG-JOURNAL-WORDS** — Daily summary uses MAX word count, one entry.
+- [x] **BUG-PLAN-STALE** — Profile switch clears plan/school and remounts School Mode chrome.
+- [x] **SEC-CDN-TAILWIND** — Preview uses on-device `/api/static/tailwind-minimal.css`.
+- [x] **SEC-RESEARCH-SSRF** — Article path allows Kiwix only; snippet is text, not `{@html}`.
 
 ### P1 — first week of lessons (or sooner)
 
 - [ ] **BUG-QUIZ-SCOPE** — Parent quizzes are family-global; complete removes them for every sibling. `apply_pending_synced_content(user_id=1)` hardcoded. Needs `SYNC_API.md` if the cache grows `child_id`.
-- [ ] **BUG-MSG-SWITCH** — `MessageBanner` does not refetch on profile switch (up to 10s stale sibling message).
-- [ ] **BUG-APP-SWITCH** — Open Journal/Writing/Math keep the previous child’s in-memory state across profile switch.
-- [ ] **BUG-DEV-QUERY** — Production kiosk honors `?dev=1` (unlocks chrome / DevTools-class keys).
-- [ ] **BUG-CODING-SAVE** — Coding autosave `$effect` can POST after Back if challenge is cleared.
+- [x] **BUG-MSG-SWITCH** — `MessageBanner` remounts on `$currentUserId`.
+- [x] **BUG-APP-SWITCH** — App `{#key}` includes `$currentUserId`.
+- [x] **BUG-DEV-QUERY** — Production ignores `?dev=1` unless `VITE_E2E=1`.
+- [x] **BUG-CODING-SAVE** — Coding `$effect` returns timeout cleanup.
 - [ ] **KNOWN-MULTI-CHILD** — Uploads still attributed to `devices.child_id` (2026-07-25 §4.2). Lesson scores will lie until `child_cloud_id` is on the wire.
 - [ ] **SEC-SCHOOL-UI** — School Mode is Hub/UI only; backend never 403s journal/coding/math/etc. while a day is open.
 - [ ] **SEC-QUIZ-FORGE** — `POST /api/activity` with `quiz.submitted` + a `content_cloud_id` marks matching plan tasks done (no quiz runtime).
-- [ ] **BUG-PLAYER-STICK** — `refreshToday()` opens the School Day player on session start but never `closePlayer()` when `school.active` becomes false.
-- [ ] **BUG-LEGACY-SESSION** — Singular `school_session` pull releases every other locally-open session (sibling unlock on older clouds).
-- [ ] **BUG-DELETE-USER** — `delete_user` omits `plans` / `activity_events` / decks; FK-on makes delete fail after any school day (`Invalid reference`).
-- [ ] **BUG-WRITE-SWITCH** — Opening another Writing doc does not flush the 2s autosave; edits on A are dropped.
-- [ ] **BUG-ACK-EMPTY** — `accepted_message_cloud_ids: []` is treated as “ack everything” (`or message_cloud_ids`).
-- [ ] **BUG-SCHOOL-OR** — School Mode matches session child **or** plan owner; a mis-attributed plan locks both siblings.
-- [ ] **BUG-PLAN-PRUNE** — `archive_missing_cloud_plans` is device-global; a claimed-child-only pull can archive a sibling’s day.
-- [ ] **BUG-MATH-ACCURACY** — Unscoped math tasks ignore `min_accuracy` (module-scoped path checks it).
-- [ ] **SEC-SUDO-ALL** — `rebuild-pi.sh` grants `goji` passwordless root (`010-goji-nopasswd`); `setup-pi.sh` never removes it. Delete after rebuild; keep only narrow `nmcli`/`rfkill`/`shutdown` sudoers.
+- [x] **BUG-PLAYER-STICK** — `closePlayer()` when school becomes inactive.
+- [x] **BUG-LEGACY-SESSION** — Singular pull scopes obsolete release to that `child_id`.
+- [x] **BUG-DELETE-USER** — Cascade includes plans/activity/decks; refuse deleting `Default`.
+- [x] **BUG-WRITE-SWITCH** — Flush autosave before opening another document.
+- [x] **BUG-ACK-EMPTY** — Empty ack list means none; `None` means all.
+- [x] **BUG-SCHOOL-OR** — Plan-owner fallback only if no other user is linked to the session child.
+- [x] **BUG-PLAN-PRUNE** — Prune scoped to users in the pull.
+- [x] **BUG-MATH-ACCURACY** — Unscoped math tasks honor `min_accuracy`.
+- [x] **SEC-SUDO-ALL** — Rebuild/setup delete `010-goji-nopasswd` after the image is written.
 
 ### P2 — lesson-factory hygiene (audit §5)
 
