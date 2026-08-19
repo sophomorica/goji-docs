@@ -41,6 +41,9 @@ It is **not** yet “robust enough to start lessons” if “robust” includes 
 4. Fix parent-quiz + message profile scoping (sibling data bleed).
 5. Harden the coding-preview iframe (sandbox + HTML escape).
 6. Fix Journal autosave so a profile switch cannot write Child A’s entry as Child B.
+7. Stop summing cumulative Journal `word_count` events (autosave inflates School Day writing goals).
+8. Reset `todayPlan` + `schoolMode` on profile switch before the next fetch settles.
+9. Remove the Tailwind CDN load from HTML coding previews.
 
 Everything else in this file is ranked so it can be ticketed without re-litigating.
 
@@ -303,6 +306,9 @@ Copy into `goji_computer/TODO.md` when that repo is opened. Do **not** start les
 - [ ] **SEC-EVINCE** — Remove `open-native` + `native-viewer/status`; drop evince from the image.
 - [ ] **SEC-PREVIEW** — Preview iframe: drop `allow-same-origin`; HTML-escape error page; DEBUG-guard `/api/test-*`; stop INFO-logging source. (`SimplePreview.svelte`, `routes/user_apps.py`)
 - [ ] **BUG-JOURNAL-SAVE** — Clear Journal `saveTimeout` on destroy; pass captured `userId`; await save before Hub. (`Journal.svelte`)
+- [ ] **BUG-JOURNAL-WORDS** — Do not SUM cumulative `journal.entry` word_count; snapshot once or use `MAX` / `journal_entries.word_count`. (`database/activity.py`, `Journal.svelte`)
+- [ ] **BUG-PLAN-STALE** — On `currentUserId` change: `plan: null`, `setSchoolModeState({ active: false })`, generation-guard `refreshToday`. Key `SchoolModeBar`. (`todayPlan.js`, `Hub.svelte`)
+- [ ] **SEC-CDN-TAILWIND** — Replace `cdn.tailwindcss.com` in `HTMLChallenge.svelte` with the on-device Tailwind subset.
 
 ### P1 — first engineering week of lessons (or sooner)
 

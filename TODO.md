@@ -22,6 +22,9 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 - [ ] **SEC-EVINCE** — `POST /api/pdfs/<id>/open-native` still launches Evince (kiosk filesystem escape). Delete routes; drop evince from the image.
 - [ ] **SEC-PREVIEW** — Coding preview iframe is `allow-scripts allow-same-origin` + unsanitized error HTML (XSS / full local API). Drop same-origin; escape errors; DEBUG-guard `/api/test-*`.
 - [ ] **BUG-JOURNAL-SAVE** — Journal 2s debounce is not cleared on destroy; `backToHub()` fires `saveEntry()` without await. Profile switch can write Child A’s text under Child B.
+- [ ] **BUG-JOURNAL-WORDS** — Each Journal autosave logs cumulative `word_count`; daily summary **sums** those events, so a 20-word entry saved 3 times counts as 60 and can auto-complete a writing task.
+- [ ] **BUG-PLAN-STALE** — Profile switch does not clear `todayPlan.plan` / `schoolMode`; a failed or in-flight `getToday()` keeps the sibling’s plan and lockdown. `SchoolModeBar` is outside `{#key $currentUserId}`.
+- [ ] **SEC-CDN-TAILWIND** — `HTMLChallenge.svelte` loads `https://cdn.tailwindcss.com` in the preview `srcdoc` (offline-blank + third-party call from the Pi).
 
 ### P1 — first week of lessons (or sooner)
 
@@ -35,6 +38,12 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 - [ ] **SEC-QUIZ-FORGE** — `POST /api/activity` with `quiz.submitted` + a `content_cloud_id` marks matching plan tasks done (no quiz runtime).
 - [ ] **BUG-PLAYER-STICK** — `refreshToday()` opens the School Day player on session start but never `closePlayer()` when `school.active` becomes false.
 - [ ] **BUG-LEGACY-SESSION** — Singular `school_session` pull releases every other locally-open session (sibling unlock on older clouds).
+- [ ] **BUG-DELETE-USER** — `delete_user` omits `plans` / `activity_events` / decks; FK-on makes delete fail after any school day (`Invalid reference`).
+- [ ] **BUG-WRITE-SWITCH** — Opening another Writing doc does not flush the 2s autosave; edits on A are dropped.
+- [ ] **BUG-ACK-EMPTY** — `accepted_message_cloud_ids: []` is treated as “ack everything” (`or message_cloud_ids`).
+- [ ] **BUG-SCHOOL-OR** — School Mode matches session child **or** plan owner; a mis-attributed plan locks both siblings.
+- [ ] **BUG-PLAN-PRUNE** — `archive_missing_cloud_plans` is device-global; a claimed-child-only pull can archive a sibling’s day.
+- [ ] **BUG-MATH-ACCURACY** — Unscoped math tasks ignore `min_accuracy` (module-scoped path checks it).
 
 ### P2 — lesson-factory hygiene (audit §5)
 
