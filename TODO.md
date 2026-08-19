@@ -8,6 +8,33 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 **Owned K–12 curriculum planning (docs only for now):** [`curriculum/README.md`](./curriculum/README.md) — objectives, lesson plans, Claude Design animations, quiz strategy, existing-tools vs tools-to-build. Not a pilot-blocker; advance in planning sessions without blocking School Day e2e.
 
+**2026-08-19 Goji computer pre-lessons audit (Svelte + Bugbot + Security):** [`GOJI_COMPUTER_AUDIT_2026-08-19.md`](./GOJI_COMPUTER_AUDIT_2026-08-19.md) — full `kodi-computer` @ `5c8bbdd`. P0s are **blocking** before on-device lesson authoring. Official Cursor Bugbot/Security Review tools only run on a PR diff; this is the full-repo equivalent. Copy P0/P1 into `goji_computer/TODO.md` when that repo is opened.
+
+## Pre-lessons — Goji computer robustness (2026-08-19)
+
+Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-computer) before building out the lesson player. Detail + file list: the audit §5.
+
+### P0 — blocking
+
+- [ ] **SEC-PIN-LEAK** — `GET /api/settings` returns `household_pin` in plaintext; Hub loads it on mount. Strip from API, hash at rest, never log.
+- [ ] **SEC-API-BIND** — Flask `CORS(app)` + `0.0.0.0` with no auth. Bind loopback **or** lock privileged routes to localhost (escalate; don’t invent a third scheme).
+- [ ] **SEC-PRIV-ROUTES** — Unauthenticated shutdown, wifi mutate, users DELETE, school PIN/unlock, parent-invite, settings POST.
+- [ ] **SEC-EVINCE** — `POST /api/pdfs/<id>/open-native` still launches Evince (kiosk filesystem escape). Delete routes; drop evince from the image.
+- [ ] **SEC-PREVIEW** — Coding preview iframe is `allow-scripts allow-same-origin` + unsanitized error HTML (XSS / full local API). Drop same-origin; escape errors; DEBUG-guard `/api/test-*`.
+
+### P1 — first week of lessons (or sooner)
+
+- [ ] **BUG-QUIZ-SCOPE** — Parent quizzes are family-global; complete removes them for every sibling. `apply_pending_synced_content(user_id=1)` hardcoded. Needs `SYNC_API.md` if the cache grows `child_id`.
+- [ ] **BUG-MSG-SWITCH** — `MessageBanner` does not refetch on profile switch (up to 10s stale sibling message).
+- [ ] **BUG-APP-SWITCH** — Open Journal/Writing/Math keep the previous child’s in-memory state across profile switch.
+- [ ] **BUG-DEV-QUERY** — Production kiosk honors `?dev=1` (unlocks chrome / DevTools-class keys).
+- [ ] **BUG-CODING-SAVE** — Coding autosave `$effect` can POST after Back if challenge is cleared.
+- [ ] **KNOWN-MULTI-CHILD** — Uploads still attributed to `devices.child_id` (2026-07-25 §4.2). Lesson scores will lie until `child_cloud_id` is on the wire.
+
+### P2 — lesson-factory hygiene (audit §5)
+
+Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanitizer, `<svelte:boundary>` for the lesson player, `svelte-check` + ruff in CI, enable device firewall installer.
+
 ## Now — get v1 live (human steps, ~1 evening)
 
 - [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Anonymous auth enabled for credential-free phone app (2026-07-24).
