@@ -44,6 +44,7 @@ It is **not** yet “robust enough to start lessons” if “robust” includes 
 7. Stop summing cumulative Journal `word_count` events (autosave inflates School Day writing goals).
 8. Reset `todayPlan` + `schoolMode` on profile switch before the next fetch settles.
 9. Remove the Tailwind CDN load from HTML coding previews.
+10. Close Research article SSRF (`path` that starts with `http` is fetched as-is, then `{@html}`’d).
 
 Everything else in this file is ranked so it can be ticketed without re-litigating.
 
@@ -135,13 +136,21 @@ Preview `fetch` is wrapped to attach `X-App-ID` and then hits the real `/api/*` 
 
 **Fix:** ignore `?dev=1` unless `import.meta.env.DEV` or an env flag baked at image build. Tighten CSP on the main kiosk document (preview iframe can have a looser policy). Treat JS overrides as UX only.
 
-### S-P1 — `{@html}` Wikipedia / Kiwix
+### S-P0 — Research article fetch is open SSRF; HTML is rendered unsanitized
 
-**VERIFIED.** `Research.svelte` does `{@html result.snippet}` and `{@html articleContent}`. Backend `process_article_html` rewrites links/images with BeautifulSoup but does **not** run a sanitizer (no bleach/nh3). Snippets are text-extracted (safer). Full article HTML is Kiwix/ZIM content.
+**VERIFIED.** `GET /api/research/article?path=` (`backend/routes/research.py` ~168–181): if `path` does not start with `http`, it is prefixed with `KIWIX_BASE_URL`; **if it does**, `article_url = article_path` and Flask fetches it. That is a third-party call from the Pi (product rule break) and an SSRF into the LAN/cloud.
 
-**ASSUMED:** ZIM is a trusted offline snapshot. Risk is a compromised/malicious ZIM or a Kiwix XSS, not a random internet page. Still a lesson-phase footgun if you ever proxy live HTML.
+`process_article_html` rewrites links/images; it does not strip scripts or event handlers. `Research.svelte` `sanitizeAndProcessContent` is a no-op (`return html`). `{@html articleContent}` and `{@html result.snippet}` inject the result on the kiosk origin.
 
-**Fix:** sanitize with a allowlist (tags/attrs) before `{@html}`; never pass Kiwix HTML through unsanitized if the ZIM source isn’t yours.
+**Fix:** allow only Kiwix paths under a fixed prefix. Reject `http://` / `https://` / `//`. Sanitize with a strict allowlist before `{@html}`, or render as text. Escape snippets (they already come from `get_text()`).
+
+### S-P1 — `{@html}` Wikipedia / Kiwix (residual after SSRF close)
+
+**VERIFIED.** Even after the open-URL fetch is rejected, Kiwix/ZIM HTML is still unsanitized. Snippets are text-extracted (safer). Full article HTML is ZIM content.
+
+**ASSUMED:** ZIM is a trusted offline snapshot. Residual risk is a compromised/malicious ZIM or a Kiwix XSS.
+
+**Fix:** same sanitizer as S-P0; ticket **SEC-RESEARCH-HTML** stays P2 once the open-URL path is gone.
 
 ### S-P1 — Compile / preview logging
 
@@ -166,6 +175,9 @@ Preview `fetch` is wrapped to attach `X-App-ID` and then hits the real `/api/*` 
 | S-P2h | Medium | PDF `file_path` from DB is joined onto `PDF_READER_DIR` with no `resolve()`/`is_relative_to` guard. Safe unless the row is poisoned. | `routes/pdf_reader.py` `_get_pdf_file_path` |
 | S-P2i | Medium | `/api/school/unlock` has no rate limit / lockout. 4-digit PIN is brute-forceable on LAN. | `routes/school.py` |
 | S-P2j | Low | `/api/research/debug` and user-apps test routes are registered in production. | `research.py`, `user_apps.py` |
+| S-P1k | High | `rebuild-pi.sh` grants `goji ALL=(ALL) NOPASSWD: ALL`; `setup-pi.sh` does not remove `010-goji-nopasswd`. | `deployment/rebuild-pi.sh` |
+| S-P2k | Medium | USB browse roots are all of `/mnt` and `/media`, not live USB mountpoints only. | `routes/usb.py` |
+| S-P2l | Medium | `goji-wifi-sudoers` allows any `nmcli` subcommand, not the argv the API uses. | `deployment/goji-wifi-sudoers` |
 
 Household-task toggle: the HTTP route **does** require `child_id` (400 if omitted). The DB helper is fail-open if called with `child_id=None` — keep the route gate; don’t treat the HTTP API as broken.
 
@@ -309,6 +321,7 @@ Copy into `goji_computer/TODO.md` when that repo is opened. Do **not** start les
 - [ ] **BUG-JOURNAL-WORDS** — Do not SUM cumulative `journal.entry` word_count; snapshot once or use `MAX` / `journal_entries.word_count`. (`database/activity.py`, `Journal.svelte`)
 - [ ] **BUG-PLAN-STALE** — On `currentUserId` change: `plan: null`, `setSchoolModeState({ active: false })`, generation-guard `refreshToday`. Key `SchoolModeBar`. (`todayPlan.js`, `Hub.svelte`)
 - [ ] **SEC-CDN-TAILWIND** — Replace `cdn.tailwindcss.com` in `HTMLChallenge.svelte` with the on-device Tailwind subset.
+- [ ] **SEC-RESEARCH-SSRF** — Reject `http`/`https`/`//` on `GET /api/research/article?path=`; allow only Kiwix prefix. (`routes/research.py`, `Research.svelte`)
 
 ### P1 — first engineering week of lessons (or sooner)
 
@@ -325,16 +338,27 @@ Copy into `goji_computer/TODO.md` when that repo is opened. Do **not** start les
 - [ ] **BUG-PLAYER-STICK** — `closePlayer()` when `school.active` becomes false. (`todayPlan.js`)
 - [ ] **BUG-LEGACY-SESSION** — Don’t let singular `school_session` pull release every other child’s open session. (`database/school.py`)
 - [ ] **SEC-SETTINGS-KEYS** — Allowlist kid-writable settings; never accept `household_pin` or sync watermarks via `POST /api/settings`.
+- [ ] **BUG-DELETE-USER** — Cascade `plans` / `activity_events` / decks before `DELETE users`; add a test with a plan + event. (`database/users.py`)
+- [ ] **BUG-WRITE-SWITCH** — Flush Writing autosave before `openDocument`. (`Writing.svelte`)
+- [ ] **BUG-ACK-EMPTY** — Treat missing `accepted_message_cloud_ids` as “assume all”; treat `[]` as none. (`sync/cloud.py`)
+- [ ] **BUG-SCHOOL-OR** — Lock only on the session’s mapped child, not `OR p.user_id`. (`database/school.py`)
+- [ ] **BUG-PLAN-PRUNE** — Scope `archive_missing_cloud_plans` per child. (`sync/agent.py`, `database/plans.py`)
+- [ ] **BUG-MATH-ACCURACY** — Honor `verify.min_accuracy` on unscoped math tasks. (`database/plans.py`)
+- [ ] **SEC-SUDO-ALL** — `rebuild-pi.sh` writes `goji ALL=(ALL) NOPASSWD: ALL`; `setup-pi.sh` does not remove `010-goji-nopasswd`. Delete it at end of rebuild; keep only narrow sudoers.
 
 ### P2 — hygiene before a lesson factory
 
-- [ ] **SBP-EFFECTS** — Replace state-writing `$effect`s in School Day player/chip, Tasks `loadUsers`, FractionInput focus.
+- [ ] **SBP-EFFECTS** — Replace state-writing `$effect`s in School Day player/chip, Tasks `loadUsers`, FractionInput focus. Impure `$derived` in `SchoolTaskChip` (`shownFloor`). `$bindable` without `bind:` on `ErrorDisplay`. Unkeyed `{#each}` on `UserSelector`.
+- [ ] **SBP-SPLIT** — Lazy-import Math drills, PdfViewer, Typing games, Coding challenges (App split is intact; those menus re-bundle).
+- [ ] **SBP-TIPTAP** — Toolbar `isActive()` needs a transaction subscription; Writing `saveTimeout` on destroy.
 - [ ] **SBP-HTML** — Shared HTML sanitizer for Research (and future lesson HTML).
 - [ ] **SBP-BOUNDARY** — `<svelte:boundary>` around the lesson player when it lands.
 - [ ] **SBP-CLASS** — Migrate leftover `class:` when touching those files.
 - [ ] **CI-STATIC** — `svelte-check` + ruff (or ruff-only) + ESLint svelte plugin; keep MyApps flake from being the only red.
 - [ ] **SEC-FIREWALL** — Enable `setup-firewall.sh` on real images (human + `HUMAN_CHECKLIST`).
 - [ ] **SEC-RESEARCH-HTML** — Sanitize Kiwix HTML even if ZIM is trusted.
+- [ ] **SEC-USB-ROOTS** — Browse only live USB mountpoints (`lsblk`/`findmnt`), not all of `/mnt` + `/media`.
+- [ ] **SEC-NMCLI-SUDO** — Constrain `goji-wifi-sudoers` to the exact `nmcli`/`rfkill` argv the API uses.
 - [ ] **PERF-STATS** — Don’t load every book for `/api/stats` once the library grows.
 - [ ] **HYGIENE** — Mixed `os.path`/`pathlib`; `LOG_DIR.mkdir` at import (`config.py`); emoji fonts on Pi (existing P2).
 
@@ -346,7 +370,7 @@ E2e smoke (pair → school day → phone), OTA apply, full message center, PDF b
 
 ## 6. Suggested implementation order on `kodi-computer`
 
-1. **PIN + Evince + preview HTML escape** — small, no product debate, high severity.  
+1. **PIN + Evince + preview HTML escape + Research SSRF** — small, no product debate, high severity.  
 2. **Loopback bind / privileged-route guard** — one architectural choice (escalate; don’t invent).  
 3. **Quiz + message profile scope** — needs a SYNC_API sentence if the cache grows a `child_id`.  
 4. **Svelte effect cleanups + `?dev=1`** — cheap, unblocks lesson UI work.  

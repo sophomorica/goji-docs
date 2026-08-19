@@ -25,6 +25,7 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 - [ ] **BUG-JOURNAL-WORDS** — Each Journal autosave logs cumulative `word_count`; daily summary **sums** those events, so a 20-word entry saved 3 times counts as 60 and can auto-complete a writing task.
 - [ ] **BUG-PLAN-STALE** — Profile switch does not clear `todayPlan.plan` / `schoolMode`; a failed or in-flight `getToday()` keeps the sibling’s plan and lockdown. `SchoolModeBar` is outside `{#key $currentUserId}`.
 - [ ] **SEC-CDN-TAILWIND** — `HTMLChallenge.svelte` loads `https://cdn.tailwindcss.com` in the preview `srcdoc` (offline-blank + third-party call from the Pi).
+- [ ] **SEC-RESEARCH-SSRF** — `GET /api/research/article?path=` fetches any `http://` URL the client sends (`research.py` ~175–183), then the kiosk `{@html}`s it with a no-op sanitizer. Allow only Kiwix paths; reject `http`/`https`/`//`.
 
 ### P1 — first week of lessons (or sooner)
 
@@ -44,10 +45,11 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 - [ ] **BUG-SCHOOL-OR** — School Mode matches session child **or** plan owner; a mis-attributed plan locks both siblings.
 - [ ] **BUG-PLAN-PRUNE** — `archive_missing_cloud_plans` is device-global; a claimed-child-only pull can archive a sibling’s day.
 - [ ] **BUG-MATH-ACCURACY** — Unscoped math tasks ignore `min_accuracy` (module-scoped path checks it).
+- [ ] **SEC-SUDO-ALL** — `rebuild-pi.sh` grants `goji` passwordless root (`010-goji-nopasswd`); `setup-pi.sh` never removes it. Delete after rebuild; keep only narrow `nmcli`/`rfkill`/`shutdown` sudoers.
 
 ### P2 — lesson-factory hygiene (audit §5)
 
-Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanitizer, `<svelte:boundary>` for the lesson player, `svelte-check` + ruff in CI, enable device firewall installer, settings-key allowlist, PIN lockout, PDF `file_path` canonicalize, `delete_user` cascade, read-only `GET /api/plans/today`.
+Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanitizer, `<svelte:boundary>` for the lesson player, `svelte-check` + ruff in CI, enable device firewall installer, settings-key allowlist, PIN lockout, PDF `file_path` canonicalize, USB browse roots, narrow `nmcli` sudoers, read-only `GET /api/plans/today`.
 
 ## Now — get v1 live (human steps, ~1 evening)
 
