@@ -21,6 +21,7 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 - [ ] **SEC-PRIV-ROUTES** — Unauthenticated shutdown, wifi mutate, users DELETE, school PIN/unlock, parent-invite, settings POST.
 - [ ] **SEC-EVINCE** — `POST /api/pdfs/<id>/open-native` still launches Evince (kiosk filesystem escape). Delete routes; drop evince from the image.
 - [ ] **SEC-PREVIEW** — Coding preview iframe is `allow-scripts allow-same-origin` + unsanitized error HTML (XSS / full local API). Drop same-origin; escape errors; DEBUG-guard `/api/test-*`.
+- [ ] **BUG-JOURNAL-SAVE** — Journal 2s debounce is not cleared on destroy; `backToHub()` fires `saveEntry()` without await. Profile switch can write Child A’s text under Child B.
 
 ### P1 — first week of lessons (or sooner)
 
@@ -30,10 +31,14 @@ Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-co
 - [ ] **BUG-DEV-QUERY** — Production kiosk honors `?dev=1` (unlocks chrome / DevTools-class keys).
 - [ ] **BUG-CODING-SAVE** — Coding autosave `$effect` can POST after Back if challenge is cleared.
 - [ ] **KNOWN-MULTI-CHILD** — Uploads still attributed to `devices.child_id` (2026-07-25 §4.2). Lesson scores will lie until `child_cloud_id` is on the wire.
+- [ ] **SEC-SCHOOL-UI** — School Mode is Hub/UI only; backend never 403s journal/coding/math/etc. while a day is open.
+- [ ] **SEC-QUIZ-FORGE** — `POST /api/activity` with `quiz.submitted` + a `content_cloud_id` marks matching plan tasks done (no quiz runtime).
+- [ ] **BUG-PLAYER-STICK** — `refreshToday()` opens the School Day player on session start but never `closePlayer()` when `school.active` becomes false.
+- [ ] **BUG-LEGACY-SESSION** — Singular `school_session` pull releases every other locally-open session (sibling unlock on older clouds).
 
 ### P2 — lesson-factory hygiene (audit §5)
 
-Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanitizer, `<svelte:boundary>` for the lesson player, `svelte-check` + ruff in CI, enable device firewall installer.
+Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanitizer, `<svelte:boundary>` for the lesson player, `svelte-check` + ruff in CI, enable device firewall installer, settings-key allowlist, PIN lockout, PDF `file_path` canonicalize, `delete_user` cascade, read-only `GET /api/plans/today`.
 
 ## Now — get v1 live (human steps, ~1 evening)
 

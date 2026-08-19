@@ -40,6 +40,7 @@ It is **not** yet “robust enough to start lessons” if “robust” includes 
 3. Kill or lock the Evince native-viewer routes (kiosk escape).
 4. Fix parent-quiz + message profile scoping (sibling data bleed).
 5. Harden the coding-preview iframe (sandbox + HTML escape).
+6. Fix Journal autosave so a profile switch cannot write Child A’s entry as Child B.
 
 Everything else in this file is ranked so it can be ticketed without re-litigating.
 
@@ -156,6 +157,14 @@ Preview `fetch` is wrapped to attach `X-App-ID` and then hits the real `/api/*` 
 | S-P2e | Low | Egress firewall installer exists but is not on by default. Third-party calls from the Pi are a product rule, not an enforced kernel rule. | `deployment/FIREWALL_SYNC.md` |
 | S-P2f | Low | OTA download will follow `http://` `image_url` from cloud metadata. Trust is the Ed25519 key; still prefer HTTPS-only URL allowlist when apply is built. | `sync/ota.py` |
 | S-P2g | Info | Pairing one-shot token loss (cloud delivers `access_token` once) remains the 2026-07-25 §4 brick-pairing issue. Device handles 409 correctly; recovery is still human. | `routes/device.py` `poll_claim` |
+| S-P1h | High | School Mode is **UI-only**. No `before_request` 403s journal/coding/math while a day is open. Kid with `fetch` or `?dev=1` walks around the Hub lock. | all blueprints |
+| S-P1i | High | `POST /api/activity` with `event_type=quiz.submitted` and a `content_cloud_id` calls `mark_quiz_tasks_done` — no quiz runtime. Forges School Day completion. | `routes/activity.py` |
+| S-P1j | Medium | `POST /api/settings` accepts **any** key, including `household_pin` and sync watermarks (`household_tasks_since`). Kid-writable allowlist needed. | `routes/system.py` |
+| S-P2h | Medium | PDF `file_path` from DB is joined onto `PDF_READER_DIR` with no `resolve()`/`is_relative_to` guard. Safe unless the row is poisoned. | `routes/pdf_reader.py` `_get_pdf_file_path` |
+| S-P2i | Medium | `/api/school/unlock` has no rate limit / lockout. 4-digit PIN is brute-forceable on LAN. | `routes/school.py` |
+| S-P2j | Low | `/api/research/debug` and user-apps test routes are registered in production. | `research.py`, `user_apps.py` |
+
+Household-task toggle: the HTTP route **does** require `child_id` (400 if omitted). The DB helper is fail-open if called with `child_id=None` — keep the route gate; don’t treat the HTTP API as broken.
 
 ---
 
@@ -193,6 +202,24 @@ Today-plan and School Mode **do** refetch (controller subscribes to `currentUser
 
 **Fix:** `{#key $currentUserId + $currentApp}` around the lazy app, or an explicit “profile changed → hub” rule during School Mode (product already wants the parent to know who is at the box).
 
+### B-P0 — Journal debounce can write Child A’s entry as Child B
+
+**VERIFIED.** `Journal.svelte` `handleEditorUpdate` schedules `saveEntry()` after 2s. `onDestroy` only clears `journalLiveWords`, **not** `saveTimeout`. `backToHub()` calls `saveEntry()` without `await` then navigates. `saveEntry()` uses live `getUserId()`. On a shared kiosk: leave Journal → switch profile on Hub before the debounce or in-flight POST finishes → text lands on the new `user_id`. Corrupts journal and plan-window word counts.
+
+**Fix:** Clear `saveTimeout` in `onDestroy`; capture `userId` at edit start and pass it through the save; await save before `navigateToHub()`; cancel in-flight work on `currentUserId` change.
+
+### B-P1 — School Day Player stays open after unlock
+
+**VERIFIED.** `refreshToday()` calls `openPlayer()` when School Mode turns on; it never calls `closePlayer()` when `school.active` becomes false (parent remote release, empty pull, sibling with no session). Child can stay on the full-screen overlay while tiles are already unlocked.
+
+**Fix:** If `!school.active && !todayPlan.completed`, `closePlayer()`. Optionally key the player on `currentUserId`.
+
+### B-P1 — Legacy `school_session` pull can unlock a sibling
+
+**VERIFIED.** `apply_pulled_session()` (singular) calls `_release_obsolete_open_sessions`, which releases **every** locally-open session except the payload’s `cloud_id`. The family-scoped `apply_pulled_sessions()` does not. The agent uses the legacy path when `school_sessions` is absent (`agent.py`). An older cloud that only sends the claimed child’s session can clear a sibling’s offline-open day.
+
+**Fix:** Scope obsolete cleanup to the payload’s `child_id`, or require family-scoped pulls on multi-profile devices.
+
 ### B-P1 — Coding autosave can fire after leave
 
 **VERIFIED.** `Coding.svelte` `$effect` sets a 3s `saveTimeout` when `userCode` changes. `onDestroy` clears it, so navigate-away is OK. If `currentChallenge` becomes null while a timer is queued, the effect re-runs and does **not** clear the old timeout (clear is inside the `if`). A stale save can POST the previous challenge’s code after the user hit Back.
@@ -211,6 +238,9 @@ Today-plan and School Mode **do** refetch (controller subscribes to `currentUser
 | B-P2f | No ESLint / `svelte-check` / ruff in CI (`AGENTS.md`: “No linter is configured”). Lessons will add a lot of Svelte; catch runes mistakes in CI. | `frontend/package.json`, `.github/workflows/ci.yml` |
 | B-P2g | Known flake: `MyApps.test.js` (workspace `CLAUDE.md`). Don’t start lessons on a red main. | frontend tests |
 | B-P2h | Known product: `content-generate` stub; OTA apply not implemented; PDF bookmark seeding; full message-center UI. Not new. | workspace `TODO.md` |
+| B-P2i | `delete_user()` cascade omits plans, plan_tasks, activity_events, school_sessions, flashcard_decks; silent `except: pass`. | `database/users.py` |
+| B-P2j | `GET /api/plans/today` mutates (auto-verify / maybe-complete). Surprising races vs the sync agent. | `database/plans.py` |
+| B-P2k | Activity tracker subscribes to `currentApp` only, not `currentUserId`. Latent until profile switch exists outside Hub. | `lib/activity/tracker.js` |
 
 ---
 
@@ -272,6 +302,7 @@ Copy into `goji_computer/TODO.md` when that repo is opened. Do **not** start les
 - [ ] **SEC-PRIV-ROUTES** — Authz or delete: shutdown, wifi mutate, users DELETE, school pin/unlock, parent-invite, settings POST, Evince. (`routes/system.py`, `wifi.py`, `users.py`, `school.py`, `device.py`, `pdf_reader.py`)
 - [ ] **SEC-EVINCE** — Remove `open-native` + `native-viewer/status`; drop evince from the image.
 - [ ] **SEC-PREVIEW** — Preview iframe: drop `allow-same-origin`; HTML-escape error page; DEBUG-guard `/api/test-*`; stop INFO-logging source. (`SimplePreview.svelte`, `routes/user_apps.py`)
+- [ ] **BUG-JOURNAL-SAVE** — Clear Journal `saveTimeout` on destroy; pass captured `userId`; await save before Hub. (`Journal.svelte`)
 
 ### P1 — first engineering week of lessons (or sooner)
 
@@ -283,6 +314,11 @@ Copy into `goji_computer/TODO.md` when that repo is opened. Do **not** start les
 - [ ] **SEC-DEV-ENDPOINTS** — Gate or delete test-compile / test-preview / debug=source.
 - [ ] **SEC-CSP-DEVTOOLS** — Don’t let query-string Dev mode disable kiosk chrome; optional CSP split (kiosk vs preview).
 - [ ] **KNOWN-MULTI-CHILD** — `child_cloud_id` on the wire (2026-07-25 §4.2). Still blocks honest lesson attribution.
+- [ ] **SEC-SCHOOL-UI** — Enforce School Mode on the API, not only the Hub. 
+- [ ] **SEC-QUIZ-FORGE** — Only mark quiz tasks done from a trusted quiz-complete path, not raw `quiz.submitted` activity.
+- [ ] **BUG-PLAYER-STICK** — `closePlayer()` when `school.active` becomes false. (`todayPlan.js`)
+- [ ] **BUG-LEGACY-SESSION** — Don’t let singular `school_session` pull release every other child’s open session. (`database/school.py`)
+- [ ] **SEC-SETTINGS-KEYS** — Allowlist kid-writable settings; never accept `household_pin` or sync watermarks via `POST /api/settings`.
 
 ### P2 — hygiene before a lesson factory
 
