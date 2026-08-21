@@ -43,6 +43,7 @@ Everything else (history, science, coding, …) builds on these.
 | **[VISION.md](./VISION.md)** | Paradigm, pillars, parent metrics, VA skills, Gutenberg/Kiwix, phases |
 | **[TOOLS.md](./TOOLS.md)** | What the computer already has vs tools to invent |
 | **[ANIMATIONS.md](./ANIMATIONS.md)** | Claude Design pipeline + ID mapping |
+| **[LESSON_PACKAGES.md](./LESSON_PACKAGES.md)** | **Interactive HTML lesson packages + player + task type (K–4 animation-heavy lessons)** — exemplar `lesson.science.k2.living.01` |
 | **[QUIZZES.md](./QUIZZES.md)** | Comprehension checks, generation later |
 | **[INTEGRATION.md](./INTEGRATION.md)** | **Anchor books, app chains, Kiwix research pairings** — how everything connects |
 | **[PARENT_STANDING.md](./PARENT_STANDING.md)** | "Where the child stands" metrics spec (per pillar) |

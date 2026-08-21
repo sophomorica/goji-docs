@@ -115,7 +115,7 @@ Ranked by how often curriculum talks will hit the wall. Status = planning only.
 
 | Tool | Why | Priority |
 |------|-----|----------|
-| **Animation / explainer player** | Play Claude Design (or converted) clips mapped to objectives; skip, replay, Pi-safe | **High** |
+| **Animation / explainer player** | Play Claude Design (or converted) clips mapped to objectives; skip, replay, Pi-safe. **Proposed 2026-08-21 as `LessonPlayer` (hub app `lessons`) for self-contained HTML lesson packages — see `LESSON_PACKAGES.md`; exemplar package exists** | **High — spec'd, not built** |
 | Animation package format + seed pipeline | IDs, offline assets on image or USB/catalog sync | High |
 | Interactive visual (Svelte) for core models | Place value, fraction bars, number line — when video isn’t enough | Medium |
 

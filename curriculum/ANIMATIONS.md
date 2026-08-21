@@ -56,7 +56,7 @@ One animation may support multiple objectives; one objective may have multiple a
 
 ---
 
-## 4. On-device delivery (open — decide in P2)
+## 4. On-device delivery (proposed 2026-08-21: **self-contained HTML lesson packages** — see [`LESSON_PACKAGES.md`](./LESSON_PACKAGES.md); table kept for history)
 
 | Option | Pros | Cons |
 |--------|------|------|

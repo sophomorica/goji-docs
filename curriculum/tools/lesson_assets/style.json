@@ -1,0 +1,18 @@
+{
+  "name": "goji-storybook-watercolor",
+  "version": 1,
+  "image_model": "grok-imagine-image-2.0",
+  "video_model": "grok-imagine-video-1.5",
+  "tts_voice": "luna",
+  "tts_language": "en",
+  "tts_speed": 0.92,
+  "image_resolution": "1k",
+  "video_resolution": "720p",
+  "video_aspect": "16:9",
+  "prefix": "Children's storybook watercolor illustration, soft wet-on-wet washes, warm cream paper texture showing through, gentle hand-drawn ink outlines, muted natural palette (cream, terracotta red, sage green, sky blue, warm grey), calm and friendly, clear simple shapes readable by a five-year-old, single subject centred, generous empty margin around the subject,",
+  "suffix": ", no text, no letters, no watermark, no border, no frame, no human faces on animals or objects, no cartoon eyes on non-living things",
+  "card_suffix": ", plain warm cream background, subject fills the middle 60% of the frame",
+  "scene_suffix": ", wide storybook scene, soft horizon, lots of sky",
+  "video_prefix": "Gentle storybook animation, subtle natural motion only, camera locked off, no zoom, no cuts, no text, loopable, calm pace,",
+  "notes": "Every K-4 package inherits this. Change here, regenerate everywhere. Voice 'luna' = gentle/patient per xAI voice list; alternatives: ara, iris, ursa."
+}

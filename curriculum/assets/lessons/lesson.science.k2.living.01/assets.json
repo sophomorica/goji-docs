@@ -1,0 +1,282 @@
+{
+  "lesson": "lesson.science.k2.living.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "wolf": {
+      "prompt": "a friendly grey wolf, full body, standing in profile facing left, soft fur, warm amber eyes, calm expression, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    {
+      "id": "hook_wolf",
+      "ref": "wolf",
+      "prompt": "the same wolf trotting through a sunlit meadow at the edge of a pine wood",
+      "kind": "scene"
+    },
+    {
+      "id": "hook_river",
+      "prompt": "a lively river rushing downhill over smooth stones between green banks, white ripples, no creatures",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_grows",
+      "ref": "wolf",
+      "prompt": "the same wolf as a small fluffy pup on the left and fully grown on the right, standing side by side on a meadow, showing growth",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_eats",
+      "ref": "wolf",
+      "prompt": "the same wolf lowering its head to drink from a clear stream, a few berries on the bank",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_moves",
+      "ref": "wolf",
+      "prompt": "the same wolf mid-stride running across an open meadow, legs extended, grass bending",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_more",
+      "ref": "wolf",
+      "prompt": "the same wolf lying calmly with two small wolf pups tumbling beside her in the grass",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_river",
+      "prompt": "a wide river flowing downhill through a valley, white ripples, no creatures at all",
+      "kind": "scene"
+    },
+    {
+      "id": "card_wolf",
+      "ref": "wolf",
+      "prompt": "the same wolf sitting upright, full body",
+      "kind": "card"
+    },
+    {
+      "id": "card_river",
+      "prompt": "a small winding river with ripples, seen from above",
+      "kind": "card"
+    },
+    {
+      "id": "card_oak",
+      "prompt": "a sturdy old oak tree in full leaf with a few acorns",
+      "kind": "card"
+    },
+    {
+      "id": "card_log",
+      "prompt": "a fallen mossy log lying on the ground, cut end showing rings",
+      "kind": "card"
+    },
+    {
+      "id": "card_cloud",
+      "prompt": "a single soft white cumulus cloud",
+      "kind": "card"
+    },
+    {
+      "id": "card_ant",
+      "prompt": "a black ant carrying a crumb, seen from the side",
+      "kind": "card"
+    },
+    {
+      "id": "card_robot",
+      "prompt": "a small wind-up tin toy robot with a visible key in its back, clearly a toy",
+      "kind": "card"
+    },
+    {
+      "id": "card_seed",
+      "prompt": "a single acorn seed with a tiny green sprout just emerging",
+      "kind": "card"
+    },
+    {
+      "id": "card_fire",
+      "prompt": "a small campfire of three logs with orange flames",
+      "kind": "card"
+    },
+    {
+      "id": "card_bird",
+      "prompt": "a small brown sparrow perched on a twig",
+      "kind": "card"
+    },
+    {
+      "id": "card_fox",
+      "prompt": "a red fox mother with three small fox kits in spring grass",
+      "kind": "card"
+    },
+    {
+      "id": "badge_grows",
+      "prompt": "a tiny green seedling sprouting from soil, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_eats",
+      "prompt": "a wooden bowl of berries beside a small water droplet, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_moves",
+      "prompt": "a single animal paw print, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_more",
+      "prompt": "a bird's nest with three small speckled eggs, simple emblem",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_grows",
+      "from": "teach_grows",
+      "seconds": 6,
+      "prompt": "the small pup on the left slowly grows taller until it matches the grown wolf, grass sways gently"
+    },
+    {
+      "id": "teach_eats",
+      "from": "teach_eats",
+      "seconds": 6,
+      "prompt": "the wolf laps water from the stream, the stream ripples, the wolf's ears twitch"
+    },
+    {
+      "id": "teach_moves",
+      "from": "teach_moves",
+      "seconds": 6,
+      "prompt": "the wolf runs smoothly across the meadow from left to right, legs cycling, grass bending in its wake"
+    },
+    {
+      "id": "teach_more",
+      "from": "teach_more",
+      "seconds": 6,
+      "prompt": "the two pups tumble and play gently while the mother wolf watches, tail swaying"
+    },
+    {
+      "id": "teach_river",
+      "from": "teach_river",
+      "seconds": 6,
+      "prompt": "the river flows steadily downhill, ripples and small eddies moving, nothing else changes"
+    }
+  ],
+  "voice": [
+    {
+      "id": "hook",
+      "text": "The wolf moves. [pause] The river moves. [pause] Which one is alive? Tap your guess."
+    },
+    {
+      "id": "t_grows",
+      "text": "<emphasis>Living things grow.</emphasis> [pause] A tiny pup becomes a big wolf."
+    },
+    {
+      "id": "t_eats",
+      "text": "<emphasis>Living things need food and water.</emphasis> [pause] The wolf eats, and drinks from the stream."
+    },
+    {
+      "id": "t_moves",
+      "text": "<emphasis>Living things move on their own.</emphasis> [pause] Nobody pushes the wolf. She runs all by herself."
+    },
+    {
+      "id": "t_more",
+      "text": "<emphasis>Living things make more of their kind.</emphasis> [pause] The wolf has pups!"
+    },
+    {
+      "id": "t_river",
+      "text": "Now, the river. [pause] It moves. [pause] But does it grow? No. Does it eat or drink? No. Does it have babies? [pause] No! [pause] Moving is not enough. The river is <emphasis>not</emphasis> living."
+    },
+    {
+      "id": "sort_intro",
+      "text": "Your turn! Drag each card to Living, or Not living. [pause] Or tap a button."
+    },
+    {
+      "id": "sort_done",
+      "text": "All sorted! [pause] Now show what you know."
+    },
+    {
+      "id": "fb_moves",
+      "text": "Not quite. It moves, [pause] but check the other signs."
+    },
+    {
+      "id": "fb_still",
+      "text": "Not quite. It is still, [pause] but does it grow?"
+    },
+    {
+      "id": "fb_once",
+      "text": "Not quite. It used to be part of something living."
+    },
+    {
+      "id": "fb_looks",
+      "text": "Not quite. It looks alive, [pause] but who makes it move?"
+    },
+    {
+      "id": "q1",
+      "text": "A wolf runs through the woods. Living, or not living?"
+    },
+    {
+      "id": "q2",
+      "text": "A river rushes downhill all day. Living, or not living?"
+    },
+    {
+      "id": "q3",
+      "text": "An oak tree stands still all winter. Living, or not living?"
+    },
+    {
+      "id": "q4",
+      "text": "A log on the ground. Living, or not living?"
+    },
+    {
+      "id": "q5",
+      "text": "A fox has three babies in spring. Which sign of life is that?"
+    },
+    {
+      "id": "pass",
+      "text": "<soft>You can tell living from not living!</soft> [pause] Well done."
+    },
+    {
+      "id": "retry",
+      "text": "Good try! Let's watch the four signs once more."
+    },
+    {
+      "id": "done",
+      "text": "Lesson done! Now go find out what a real wolf eats."
+    },
+    {
+      "id": "why_card_wolf",
+      "text": "Yes! [pause] It grows, eats, runs, and has pups."
+    },
+    {
+      "id": "why_card_river",
+      "text": "Yes! [pause] It moves, but it never grows, eats, or has babies."
+    },
+    {
+      "id": "why_card_oak",
+      "text": "Yes! [pause] It stays still, but it grows, drinks water, and makes acorns."
+    },
+    {
+      "id": "why_card_log",
+      "text": "Yes! [pause] It was part of a tree once. Now it does not grow or drink."
+    },
+    {
+      "id": "why_card_cloud",
+      "text": "Yes! [pause] Clouds move and change, but they never eat or have babies."
+    },
+    {
+      "id": "why_card_ant",
+      "text": "Yes! [pause] Tiny, but it grows, eats, walks, and makes more ants."
+    },
+    {
+      "id": "why_card_robot",
+      "text": "Yes! [pause] A battery moves it. It does not grow or eat."
+    },
+    {
+      "id": "why_card_seed",
+      "text": "Yes! [pause] It looks still, but give it water and it grows into a plant!"
+    },
+    {
+      "id": "why_card_fire",
+      "text": "Yes! [pause] Fire moves and spreads, but it does not grow like a plant or have babies."
+    },
+    {
+      "id": "why_card_bird",
+      "text": "Yes! [pause] It grows, eats, flies, and lays eggs."
+    }
+  ]
+}

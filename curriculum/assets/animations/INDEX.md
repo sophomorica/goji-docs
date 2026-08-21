@@ -24,11 +24,13 @@
 | `anim.writing.k2.grammar.01` | A sentence is a who + a what-happened | `obj.writing.k2.grammar.01` | `lesson.writing.k2.grammar.01` | [brief](./anim.writing.k2.grammar.01.md) | — | `brief` |
 | `anim.writing.35.grammar.01` | Words have jobs — the sentence machine | `obj.writing.35.grammar.01` | `lesson.writing.35.grammar.01` | [brief](./anim.writing.35.grammar.01.md) | — | `brief` |
 | `anim.writing.68.grammar.01` | Clauses — sentences hiding inside sentences | `obj.writing.68.grammar.01` | `lesson.writing.68.grammar.01` | [brief](./anim.writing.68.grammar.01.md) | — | `brief` |
+| `anim.science.k2.living.01` | Four signs of life — wolf vs river | `obj.science.k2.living.01` | `lesson.science.k2.living.01` | [brief](./anim.science.k2.living.01.md) | `assets/lessons/lesson.science.k2.living.01/index.html` (inline SVG/CSS) | `shipped-inline` |
 
 ## Status values
 
 | Status | Meaning |
 |--------|---------|
+| `shipped-inline` | Animation authored as inline SVG/CSS inside an interactive lesson package (`LESSON_PACKAGES.md`) — no separate asset |
 | `brief` | Brief only |
 | `draft` | Design export in progress |
 | `ready` | Export approved; format OK for future ship |

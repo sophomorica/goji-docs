@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Living or not living? — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(36vw,300px);height:auto}
+.pick.sel{border-color:var(--gold)}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 62%,#a9c98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg{position:absolute}
+#wolf{left:8%;bottom:10%;width:34%;transition:transform 1.2s ease,left 1.5s ease}
+#wolf.pup{transform:scale(.45);transform-origin:bottom left}
+#wolf.drink{transform:rotate(12deg);transform-origin:bottom center}
+#wolf.run{left:52%}
+#wolf.run .leg{animation:trot .35s infinite alternate}
+@keyframes trot{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+#pups{left:44%;bottom:11%;width:22%;opacity:0;transition:opacity .8s}
+#pups.show{opacity:1}
+#stream{left:0;bottom:0;width:100%;opacity:0;transition:opacity .8s}
+#stream.show{opacity:1}
+#stream.flow path.w{stroke-dasharray:18 14;animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-32}}
+#bowl{left:44%;bottom:14%;width:14%;opacity:0;transition:opacity .6s}
+#bowl.show{opacity:1}
+#river{left:0;bottom:0;width:100%;opacity:0;transition:opacity .8s}
+#river.show{opacity:1}
+#river.flow path.w{stroke-dasharray:24 18;animation:flow .8s linear infinite}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.badge.fail{color:var(--ink);border-color:var(--red);transform:scale(1)}
+.badge.fail .em{background:var(--red);color:#fff}
+.stamp{position:absolute;z-index:3;right:5%;top:22%;font-size:44px;font-weight:900;letter-spacing:2px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-12deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.85)}
+.stamp.show{transform:rotate(-12deg) scale(1)}
+.stamp.no{color:var(--red);border-color:var(--red)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+/* ---- practice ---- */
+.sortwrap{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:18px;flex:1;min-height:360px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:14px;gap:10px;min-height:300px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:30px}
+.bin.live h3{color:var(--green)} .bin.dead h3{color:var(--red)}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bin .got span{font-size:40px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.item{width:min(260px,40vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:28px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:84px;line-height:1.1}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.tapbtns{display:flex;gap:12px}
+.tapbtns .btn{min-width:150px;font-size:22px;padding:14px 20px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.score{font-size:64px;font-weight:900;color:var(--red);text-align:center;margin:6px 0}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.pick img{width:min(36vw,300px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media #wolf,.scene.media #pups,.scene.media #stream,.scene.media #bowl,.scene.media #river{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.item img,.bin .got img{width:100%;max-width:170px;border-radius:14px;display:block;margin:0 auto}
+.bin .got img{width:56px;height:56px;object-fit:cover}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .sortwrap{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .bin{min-height:130px} .scene{min-height:240px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Living or not living? <button class="say" data-say="The wolf moves. The river moves. Which one is alive? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The wolf moves. The river moves. <b>Which one is alive?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="wolf">
+      <svg viewBox="0 0 200 130" aria-label="wolf"><use href="#wolfshape"/></svg><img data-img="hook_wolf" alt="" hidden>
+      <span>Wolf</span>
+    </div>
+    <div class="pick" data-guess="river">
+      <img data-img="hook_river" alt="" hidden><svg viewBox="0 0 200 130" aria-label="river"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><path d="M0 60 Q50 30 100 65 T200 60" stroke="#5aa3bf" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M0 60 Q50 30 100 65 T200 60" stroke="#fff" stroke-width="4" fill="none" stroke-dasharray="14 12" opacity=".8"/></svg>
+      <span>River</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The four signs of life <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="stream" viewBox="0 0 1000 120" preserveAspectRatio="none"><path d="M0 90 Q250 60 500 95 T1000 85 L1000 120 L0 120Z" fill="#5aa3bf"/><path class="w" d="M0 95 Q250 70 500 100 T1000 92" stroke="#fff" stroke-width="5" fill="none" opacity=".8"/></svg>
+    <svg id="river" viewBox="0 0 1000 260" preserveAspectRatio="none"><path d="M0 120 Q250 60 500 140 T1000 110 L1000 260 L0 260Z" fill="#5aa3bf"/><path class="w" d="M0 135 Q250 80 500 155 T1000 125" stroke="#fff" stroke-width="7" fill="none" opacity=".85"/><path class="w" d="M0 190 Q250 140 500 205 T1000 180" stroke="#fff" stroke-width="5" fill="none" opacity=".6"/></svg>
+    <svg id="bowl" viewBox="0 0 100 60"><ellipse cx="50" cy="48" rx="44" ry="10" fill="#8e2a23"/><ellipse cx="50" cy="44" rx="38" ry="8" fill="#e0a93b"/><circle cx="40" cy="42" r="5" fill="#b5382f"/><circle cx="58" cy="40" r="5" fill="#b5382f"/></svg>
+    <svg id="wolf" viewBox="0 0 200 130"><use href="#wolfshape"/></svg>
+    <svg id="pups" viewBox="0 0 200 130"><g transform="scale(.45) translate(0,150)"><use href="#wolfshape"/></g><g transform="scale(.45) translate(210,150)"><use href="#wolfshape"/></g></svg>
+    <div class="stamp no" id="stampNo">NOT LIVING</div>
+    <div class="stamp yes" id="stampYes">LIVING</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌱</span>Grows</div>
+    <div class="badge" id="b1"><span class="em">🍖</span>Eats &amp; drinks</div>
+    <div class="badge" id="b2"><span class="em">🐾</span>Moves itself</div>
+    <div class="badge" id="b3"><span class="em">👶</span>Makes more</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Sort them! <button class="say" data-say="Drag each card to Living or Not living. Or tap a button." data-voice="sort_intro">🔊</button></h2>
+  <p class="lead" id="pLead">Drag each card to <b>Living</b> or <b>Not living</b>.</p>
+  <div class="sortwrap">
+    <div class="bin live" data-bin="live"><h3>🌱 Living</h3><div class="got" id="gotLive"></div></div>
+    <div class="deck">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="tapbtns"><button class="btn ghost" data-tap="live">Living</button><button class="btn ghost" data-tap="dead">Not living</button></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="bin dead" data-bin="dead"><h3>🪨 Not living</h3><div class="got" id="gotDead"></div></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the signs again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="wolfshape">
+      <!-- body -->
+      <ellipse cx="105" cy="75" rx="62" ry="30" fill="#7d7569"/>
+      <!-- tail -->
+      <path d="M165 70 q30 -10 28 -35" stroke="#7d7569" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <!-- legs -->
+      <g class="leg" style="transform-origin:60px 95px"><rect x="52" y="90" width="14" height="34" rx="6" fill="#6a6256"/></g>
+      <g class="leg" style="transform-origin:80px 95px;animation-delay:.17s"><rect x="74" y="92" width="14" height="32" rx="6" fill="#5c554b"/></g>
+      <g class="leg" style="transform-origin:125px 95px;animation-delay:.17s"><rect x="118" y="92" width="14" height="32" rx="6" fill="#5c554b"/></g>
+      <g class="leg" style="transform-origin:147px 95px"><rect x="140" y="90" width="14" height="34" rx="6" fill="#6a6256"/></g>
+      <!-- head -->
+      <ellipse cx="45" cy="55" rx="28" ry="22" fill="#8a8276"/>
+      <path d="M22 40 l-4 -22 l16 14z" fill="#8a8276"/><path d="M52 38 l8 -20 l6 18z" fill="#8a8276"/>
+      <path d="M20 60 q-12 6 -8 14 q10 4 18 -4z" fill="#8a8276"/>
+      <circle cx="12" cy="72" r="4" fill="#2b2b2b"/>
+      <circle cx="36" cy="52" r="3.5" fill="#2b2b2b"/>
+      <path d="M24 66 q8 6 14 0" stroke="#5c554b" stroke-width="2" fill="none"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.living.01',version:1,quiz:'quiz.science.k2.living.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media (Grok Imagine / TTS via tools/lesson_assets) ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  // swap in illustrations where they exist
+  [['b0','badge_grows'],['b1','badge_eats'],['b2','badge_moves'],['b3','badge_more']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  // voice: recorded line if present, else speech synthesis of the text
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  // teach-stage media: clip > still > built-in SVG scene
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startSort(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const wolf=document.getElementById('wolf'),pups=document.getElementById('pups'),stream=document.getElementById('stream'),
+        bowl=document.getElementById('bowl'),river=document.getElementById('river'),cap=document.getElementById('cap'),
+        stampNo=document.getElementById('stampNo'),stampYes=document.getElementById('stampYes');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    wolf.className=''; wolf.style.display='';
+    pups.className=''; stream.className=''; bowl.className=''; river.className='';
+    badges.forEach(b=>b.className='badge'); stampNo.className='stamp no'; stampYes.className='stamp yes'; cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "Living things grow.","Living things need food and water.","Living things move on their own.","Living things make more of their kind.",
+    "Now the river. It moves — but it doesn't grow, eat, or have babies. Not living!"
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: grows
+    wolf.classList.add('pup'); cap.textContent='Living things GROW.'; say(teachScript[0],'t_grows'); showBeat('teach_grows');
+    later(()=>{ wolf.classList.remove('pup'); badges[0].classList.add('on'); },1200);
+    // beat 2: eats & drinks
+    later(()=>{ cap.textContent='Living things need FOOD and WATER.'; say(teachScript[1],'t_eats'); showBeat('teach_eats'); stream.classList.add('show','flow'); bowl.classList.add('show'); wolf.classList.add('drink'); },3600);
+    later(()=>{ badges[1].classList.add('on'); wolf.classList.remove('drink'); },5600);
+    // beat 3: moves itself
+    later(()=>{ cap.textContent='Living things MOVE on their own.'; say(teachScript[2],'t_moves'); showBeat('teach_moves'); stream.classList.remove('show','flow'); bowl.classList.remove('show'); wolf.classList.add('run'); },7200);
+    later(()=>{ badges[2].classList.add('on'); wolf.classList.remove('run'); wolf.style.left='52%'; },9400);
+    // beat 4: makes more
+    later(()=>{ cap.textContent='Living things MAKE MORE of their kind.'; say(teachScript[3],'t_more'); showBeat('teach_more'); wolf.style.left='14%'; pups.classList.add('show'); },10800);
+    later(()=>{ badges[3].classList.add('on'); stampYes.classList.add('show'); },12600);
+    // beat 5: river test
+    later(()=>{ cap.textContent='What about the RIVER?'; say(teachScript[4],'t_river'); showBeat('teach_river'); stampYes.classList.remove('show'); pups.classList.remove('show'); wolf.style.display='none'; river.classList.add('show','flow'); badges.forEach(b=>b.className='badge'); },15000);
+    later(()=>{ badges[2].classList.add('on'); cap.textContent='It moves… ✓'; },16600);
+    later(()=>{ badges[0].classList.add('fail'); cap.textContent='Does it grow? ✗'; },18000);
+    later(()=>{ badges[1].classList.add('fail'); cap.textContent='Does it eat or drink? ✗'; },19200);
+    later(()=>{ badges[3].classList.add('fail'); cap.textContent='Does it have babies? ✗'; },20400);
+    later(()=>{ stampNo.classList.add('show'); cap.textContent='Moving is not enough. The river is NOT living.'; document.getElementById('teachNext').disabled=false; },21600);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (sort) ---------- */
+  const ITEMS=[
+    {n:'Wolf',p:'🐺',k:'card_wolf',a:'live',why:'It grows, eats, runs, and has pups.'},
+    {n:'River',p:'🌊',k:'card_river',a:'dead',mis:'moves',why:'It moves, but it never grows, eats, or has babies.'},
+    {n:'Oak tree',p:'🌳',k:'card_oak',a:'live',mis:'still',why:'It stays still — but it grows, drinks water, and makes acorns.'},
+    {n:'Log',p:'🪵',k:'card_log',a:'dead',mis:'once',why:'It was part of a tree once. Now it does not grow or drink.'},
+    {n:'Cloud',p:'☁️',k:'card_cloud',a:'dead',mis:'moves',why:'Clouds move and change, but they never eat or have babies.'},
+    {n:'Ant',p:'🐜',k:'card_ant',a:'live',why:'Tiny, but it grows, eats, walks, and makes more ants.'},
+    {n:'Toy robot',p:'🤖',k:'card_robot',a:'dead',mis:'looks',why:'A battery moves it. It does not grow or eat.'},
+    {n:'Seed',p:'🌰',k:'card_seed',a:'live',mis:'still',why:'It looks still — but give it water and it grows into a plant!'},
+    {n:'Fire',p:'🔥',k:'card_fire',a:'dead',mis:'moves',why:'Fire moves and spreads, but it does not grow like a plant or have babies.'},
+    {n:'Bird',p:'🐦',k:'card_bird',a:'live',why:'It grows, eats, flies, and lays eggs.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0;
+  const item=document.getElementById('item'),fb=document.getElementById('fb');
+  function startSort(){ queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; document.getElementById('gotLive').innerHTML='';document.getElementById('gotDead').innerHTML=''; fb.textContent=''; showItem(); }
+  function showItem(){
+    if(!queue.length){ item.style.visibility='hidden'; document.getElementById('counter').textContent='All sorted! 🎉'; document.getElementById('pracNext').disabled=false; say('All sorted! Now show what you know.','sort_done'); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p; document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} sorted`;
+    say(it.n+'. Living, or not living?');
+  }
+  function answer(bin){
+    if(!queue.length || item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=bin===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n; document.getElementById(bin==='live'?'gotLive':'gotDead').appendChild(s);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint = it.mis==='moves' ? 'It moves — but check the other signs.' : it.mis==='still' ? 'It is still — but does it grow?' : it.mis==='once' ? 'It used to be part of something living…' : it.mis==='looks' ? 'It looks alive, but who makes it move?' : 'Check all four signs.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint, 'fb_'+(it.mis||'other'));
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:1800);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  // pointer drag
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🐺',k:'card_wolf',q:'A wolf runs through the woods. Living or not living?',o:['Living','Not living'],a:0},
+    {id:2,pic:'🌊',k:'card_river',q:'A river rushes downhill all day. Living or not living?',o:['Living','Not living'],a:1,mis:'moves'},
+    {id:3,pic:'🌳',k:'card_oak',q:'An oak tree stands still all winter. Living or not living?',o:['Living','Not living'],a:0,mis:'still'},
+    {id:4,pic:'🪵',k:'card_log',q:'A log on the ground. Living or not living?',o:['Living','Not living'],a:1,mis:'once'},
+    {id:5,pic:'🦊',k:'card_fox',q:'A fox has three babies in spring. Which sign of life is that?',o:['Grows','Eats & drinks','Makes more','Moves itself'],a:2}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic; document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can tell living from not living! 🌱' : 'Good try! Let\'s watch the four signs once more.';
+    document.getElementById('guessTxt').textContent = guess==='wolf' ? 'At the start you guessed the WOLF was alive — you were right!' : guess==='river' ? 'At the start you guessed the RIVER. Now you know: moving is not enough!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the signs again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go find out what a real wolf eats. 🐺'; say('Lesson done! Now go find out what a real wolf eats.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

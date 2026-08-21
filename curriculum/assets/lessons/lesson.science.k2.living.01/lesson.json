@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.living.01",
+  "title": "Living or not living?",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.living.01"],
+  "va_sol": ["K.6"],
+  "duration_min": 12,
+  "anchor": { "book": "aesop-fables", "note": "wolf week; retakes swap the fable animal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.living.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.living.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}
