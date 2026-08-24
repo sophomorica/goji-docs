@@ -8,6 +8,49 @@ Status of the cloud-sync build-out: `goji_computer/docs/CLOUD_SYNC_PLAN.md` §5.
 
 **Owned K–12 curriculum planning (docs only for now):** [`curriculum/README.md`](./curriculum/README.md) — objectives, lesson plans, Claude Design animations, quiz strategy, existing-tools vs tools-to-build. Not a pilot-blocker; advance in planning sessions without blocking School Day e2e.
 
+**2026-08-19 Goji computer pre-lessons audit (Svelte + Bugbot + Security):** [`GOJI_COMPUTER_AUDIT_2026-08-19.md`](./GOJI_COMPUTER_AUDIT_2026-08-19.md) — full `kodi-computer` @ `5c8bbdd`. P0/P1 implementation is on `kodi-computer` branch `cursor/goji-computer-hardening-db16`. Official Cursor Bugbot/Security Review tools only run on a PR diff; this is the full-repo equivalent.
+
+## Pre-lessons — Goji computer robustness (2026-08-19)
+
+Do these on [`sophomorica/kodi-computer`](https://github.com/sophomorica/kodi-computer) before building out the lesson player. Detail + file list: the audit §5.
+
+### P0 — blocking
+
+- [x] **SEC-PIN-LEAK** — PIN hashed at rest; `GET /api/settings` strips secrets; unlock rate-limited. (`kodi-computer` hardening branch)
+- [x] **SEC-API-BIND** — Bind/gunicorn default `127.0.0.1`; CORS allowlist localhost.
+- [x] **SEC-PRIV-ROUTES** — Privileged writes 403 off loopback.
+- [x] **SEC-EVINCE** — Native viewer routes removed; evince dropped from the image.
+- [x] **SEC-PREVIEW** — Preview iframe `allow-scripts` only; error HTML escaped; `/api/test-*` DEBUG-gated.
+- [x] **BUG-JOURNAL-SAVE** — Debounce captures user id; destroy clears timeout; hub navigation awaits save.
+- [x] **BUG-JOURNAL-WORDS** — Daily summary uses MAX word count, one entry.
+- [x] **BUG-PLAN-STALE** — Profile switch clears plan/school and remounts School Mode chrome.
+- [x] **SEC-CDN-TAILWIND** — Preview uses on-device `/api/static/tailwind-minimal.css`.
+- [x] **SEC-RESEARCH-SSRF** — Article path allows Kiwix only; snippet is text, not `{@html}`.
+
+### P1 — first week of lessons (or sooner)
+
+- [ ] **BUG-QUIZ-SCOPE** — Parent quizzes are family-global; complete removes them for every sibling. `apply_pending_synced_content(user_id=1)` hardcoded. Needs `SYNC_API.md` if the cache grows `child_id`.
+- [x] **BUG-MSG-SWITCH** — `MessageBanner` remounts on `$currentUserId`.
+- [x] **BUG-APP-SWITCH** — App `{#key}` includes `$currentUserId`.
+- [x] **BUG-DEV-QUERY** — Production ignores `?dev=1` unless `VITE_E2E=1`.
+- [x] **BUG-CODING-SAVE** — Coding `$effect` returns timeout cleanup.
+- [ ] **KNOWN-MULTI-CHILD** — Uploads still attributed to `devices.child_id` (2026-07-25 §4.2). Lesson scores will lie until `child_cloud_id` is on the wire.
+- [ ] **SEC-SCHOOL-UI** — School Mode is Hub/UI only; backend never 403s journal/coding/math/etc. while a day is open.
+- [ ] **SEC-QUIZ-FORGE** — `POST /api/activity` with `quiz.submitted` + a `content_cloud_id` marks matching plan tasks done (no quiz runtime).
+- [x] **BUG-PLAYER-STICK** — `closePlayer()` when school becomes inactive.
+- [x] **BUG-LEGACY-SESSION** — Singular pull scopes obsolete release to that `child_id`.
+- [x] **BUG-DELETE-USER** — Cascade includes plans/activity/decks; refuse deleting `Default`.
+- [x] **BUG-WRITE-SWITCH** — Flush autosave before opening another document.
+- [x] **BUG-ACK-EMPTY** — Empty ack list means none; `None` means all.
+- [x] **BUG-SCHOOL-OR** — Plan-owner fallback only if no other user is linked to the session child.
+- [x] **BUG-PLAN-PRUNE** — Prune scoped to users in the pull.
+- [x] **BUG-MATH-ACCURACY** — Unscoped math tasks honor `min_accuracy`.
+- [x] **SEC-SUDO-ALL** — Rebuild/setup delete `010-goji-nopasswd` after the image is written.
+
+### P2 — lesson-factory hygiene (audit §5)
+
+Svelte `$effect` state-writes (School Day player/chip), Research `{@html}` sanitizer, `<svelte:boundary>` for the lesson player, `svelte-check` + ruff in CI, enable device firewall installer, settings-key allowlist, PIN lockout, PDF `file_path` canonicalize, USB browse roots, narrow `nmcli` sudoers, read-only `GET /api/plans/today`.
+
 ## Now — get v1 live (human steps, ~1 evening)
 
 - [x] Supabase project `goji-cloud` live; Phase 1–2 + School Day schema/functions pushed (2026-07-23 — `school_day_sync` migration + edge functions). Anonymous auth enabled for credential-free phone app (2026-07-24).
