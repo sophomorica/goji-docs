@@ -48,10 +48,10 @@ one-time (do them once per fresh image, then they persist via the snapshot):
 - Run dev servers (from `goji_computer/`): backend `cd backend && source .venv/bin/activate && python app.py`
   (port 5000), frontend `cd frontend && npm run dev` (port 5173, proxies `/api` → 5000).
   `./dev.sh` starts both but uses `pkill` — prefer starting them separately (e.g. in tmux).
-- Tests: backend `cd backend && python -m pytest tests/` (386 pass); frontend
-  `cd frontend && npm run test:run`. **Known pre-existing frontend flake:**
-  `TypingParatrooper.test.js` throws an unhandled-rejection during happy-dom teardown
-  (`cancelAnimationFrame`) → 1 failing file / 436-of-438 tests pass. Not caused by setup.
+- Tests: backend `cd backend && python -m pytest tests/` (482 pass, 2 skipped); frontend
+ `cd frontend && npm run test:run` (42 files / 577 pass — both fully green as of 2026-08-25).
+ A `TypingParatrooper.test.js` unhandled-rejection flake during happy-dom teardown
+ (`cancelAnimationFrame`) has been seen before; it did not reproduce in this environment.
 - **No linter is configured** (no eslint/prettier/ruff/flake8, no `lint` script) — tests are
   the quality gate. Build: `cd frontend && npm run build`.
 - DB is a local SQLite `goji.db` created + seeded on first backend start (curriculum, default
