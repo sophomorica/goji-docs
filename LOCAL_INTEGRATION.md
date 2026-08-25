@@ -67,9 +67,10 @@ second day is ended early via `release_school_day` → `parent_release`.
 
 ## Clicking through it by hand
 
-1. `scripts/local-stack-up.sh --reset`
-2. Open the kiosk (`:5173`) and note the pairing code — the hub shows it while
-   the Goji is unpaired. (`curl -s localhost:5000/api/device` also has it.)
+1. `scripts/local-stack-up.sh --reset` — it prints the pairing code, and
+   registers it with the cloud for you (see the note below).
+2. Open the kiosk (`:5173`); the hub shows the same code while the Goji is
+   unpaired. (`curl -s localhost:5000/api/device` also has it.)
 3. Open the parent app (`:8088`), create an account (any email — local auth has
    confirmations off, and mail is captured by Inbucket on `:54324`).
 4. **Pair** tab → enter the code → Claim.
@@ -81,6 +82,13 @@ second day is ended early via `release_school_day` → `parent_release`.
 The sync agent polls about every 10s while a day is open (`.env.local-cloud`
 sets `GOJI_SYNC_INTERVAL_ACTIVE_S=10`), so the UI is not instant — that is the
 real product behaviour, not a local artifact.
+
+> **Claim before the kiosk has ever been opened and you get "Invalid pairing
+> code".** The device pushes its code to the cloud only when the hub mounts
+> `PairingBanner.svelte`, which on a real Pi happens at boot but locally does not
+> happen until you load `:5173`. `local-stack-up.sh` now calls
+> `POST /api/device/register-cloud` itself so the printed code is claimable right
+> away; if you ever recreate the device by hand, call that first.
 
 ## Two things you cannot test locally
 

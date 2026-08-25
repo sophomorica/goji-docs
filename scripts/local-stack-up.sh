@@ -72,6 +72,16 @@ goji_service "$SESS_BACKEND" "$GOJI_COMPUTER_DIR/backend" \
   "set -a && source .env.local-cloud && set +a && source .venv/bin/activate && python app.py 2>&1 | tee /tmp/goji-backend.log"
 goji_wait_http "$GOJI_BACKEND_URL/api/device" "device backend"
 
+# Register the pairing code with the cloud now, rather than waiting for the
+# kiosk to do it. The device only registers when the hub mounts PairingBanner
+# (frontend/src/components/PairingBanner.svelte), which is always true on a real
+# Pi but not here: claiming from the parent app before anyone has opened the
+# kiosk fails with a misleading "Invalid pairing code".
+if [ "$(curl -fsS "$GOJI_BACKEND_URL/api/device" | python3 -c 'import sys,json; print(json.load(sys.stdin)["claimed"])')" = "False" ]; then
+  curl -fsS -X POST "$GOJI_BACKEND_URL/api/device/register-cloud" >/dev/null \
+    && echo "  pairing code registered with the cloud: $(curl -fsS "$GOJI_BACKEND_URL/api/device" | python3 -c 'import sys,json; print(json.load(sys.stdin)["pairing_code"])')"
+fi
+
 # --- 3. Kiosk ----------------------------------------------------------------
 log "Kiosk frontend (Svelte dev server)"
 if [ ! -d "$GOJI_COMPUTER_DIR/frontend/node_modules" ]; then
