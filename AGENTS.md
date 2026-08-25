@@ -5,6 +5,21 @@ repo** for the Goji product. Start with `CLAUDE.md`, `PARENT_APP_PRODUCT.md`, an
 
 ## Cursor Cloud specific instructions
 
+### Running the whole product locally (cloud + computer + app)
+**[`LOCAL_INTEGRATION.md`](./LOCAL_INTEGRATION.md)** is the entry point. Docker *does* work in
+this sandbox (the note under `goji_cloud` below is out of date), so a local Supabase stack plus
+the device plus the parent app can all run together and a real School Day can be driven across
+them:
+```bash
+scripts/setup-docker.sh              # once per VM boot
+scripts/local-stack-up.sh --reset    # cloud + device backend + kiosk + sync agent + parent app
+scripts/local-school-day-smoke.sh    # assert the full loop over real HTTP
+```
+Two sandbox quirks break Docker and are handled by `scripts/setup-docker.sh` — overlay2 cannot
+mount on the VM's overlayfs root, and a legacy-iptables `FORWARD DROP` policy silently blocks
+container-to-container TCP. `LOCAL_INTEGRATION.md` explains both, plus which features cannot be
+tested locally because `goji_cloud` is missing edge functions the device already calls.
+
 ### Repo layout (multi-repo)
 - `goji-docs` (this repo) is **docs only** — no app code lives here.
 - The product code is in **three separate GitHub repos**, gitignored here and cloned as
@@ -22,8 +37,9 @@ The update script only refreshes per-repo dependencies. These system-level insta
 one-time (do them once per fresh image, then they persist via the snapshot):
 - `sudo apt-get install -y python3.12-venv` — required to create the backend virtualenv.
 - **Flutter SDK** (for `goji_learner_app`): `git clone https://github.com/flutter/flutter.git -b stable --depth 1 ~/flutter`
-  then add `~/flutter/bin` to `PATH` (e.g. in `~/.bashrc`). First `flutter --version` downloads the Dart SDK.
+ then add `~/flutter/bin` to `PATH` (e.g. in `~/.bashrc`). First `flutter --version` downloads the Dart SDK.
 - **Supabase CLI** (for `goji_cloud`): use `npx supabase ...` (no global install needed).
+- **Docker** (for the local Supabase stack): `scripts/setup-docker.sh` installs and configures it.
 
 ### goji_computer — the flagship, fully runnable offline (primary dev target)
 - Backend is a Python venv at `goji_computer/backend/.venv`; deps in `backend/requirements.txt`.
@@ -51,7 +67,9 @@ one-time (do them once per fresh image, then they persist via the snapshot):
 
 ### goji_cloud (Supabase-as-code) — optional for the offline device
 - Offline-first: the kiosk works fully without the cloud, so the cloud is optional for
-  exercising the core device product. The live family project is already deployed
-  (`README.md` / `HUMAN_CHECKLIST.md`).
-- A local stack (`npx supabase start`) requires **Docker** (not set up here) and downloads
-  Postgres/etc images. Only stand it up if you specifically need to test cloud sync.
+ exercising the core device product. The live family project is already deployed
+ (`README.md` / `HUMAN_CHECKLIST.md`).
+- A local stack (`npx supabase start`) **does work here** once `scripts/setup-docker.sh` has run;
+ it downloads Postgres/etc images (a few minutes on a cold VM). Stand it up whenever you need to
+ test cloud sync or the parent app — see `LOCAL_INTEGRATION.md`.
+- Its default branch is **`feat/school-day-sync-contract`** — there is no `main`. Base PRs there.
