@@ -95,6 +95,11 @@ iframe { width: 100%; height: 520px; border: 0; background: var(--carve); }
 .checkline { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; font-size: 15px; }
 .checkline input { width: 18px; height: 18px; margin-top: 3px; }
 .list { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+.author-row {
+  display: grid; grid-template-columns: 88px 1fr; gap: 10px; align-items: center;
+  margin-top: 8px;
+}
+.author-row .mini { display: flex; justify-content: center; }
 .cardface {
   min-height: 168px; display: flex; align-items: center; justify-content: center;
   background: var(--carve); border-radius: 12px; margin: 10px 0;
@@ -163,12 +168,12 @@ textarea { min-height: 88px; resize: vertical; }
         <span class="chip" id="chip-write">Write / print</span>
         <span class="chip" id="chip-check">Check</span>
       </div>
-      <p class="muted">Load this one folder: <code>curriculum/proof-k-mg-2/</code>. Do not rewrite it. Desktop browser is enough.</p>
+      <p class="muted">Loader opens <code>../proof-k-mg-2/index.html</code>. Do not rewrite that teach. Desktop browser is enough.</p>
       <div class="frame-wrap" id="frame-wrap">
         <div class="empty" id="teach-empty">
-          <h2>School’s v2 HTML is not in this folder yet</h2>
-          <p class="muted">Copy the existing file as-is into <code>proof-k-mg-2/index.html</code>, or load it here. Do not invent a teach.</p>
-          <p class="muted">Hands-on when it opens: circle trace twice; triangle 3-corner tap + draw; square 4-corner tap + draw; rectangle 4-corner tap + draw. HTML finished = all four shapes done.</p>
+          <h2>Waiting for School’s v2 HTML</h2>
+          <p class="muted">This page loads <code>curriculum/proof-k-mg-2/index.html</code>. That file is not here yet. Do not invent a teach or voice. Drop School’s existing file on that path, or load it below.</p>
+          <p class="muted">HTML finished = child completed all four shapes: circle trace twice; triangle 3 corners + draw; square 4 + draw; rectangle 4 + draw. Construct is off-device optional.</p>
         </div>
         <iframe id="teach-frame" class="hidden" title="School K.MG.2 teach" sandbox="allow-scripts"></iframe>
       </div>
@@ -187,8 +192,9 @@ textarea { min-height: 88px; resize: vertical; }
 
     <div>
       <section class="card" style="margin-bottom:16px">
-        <label class="k">Practice — School 8-card spec</label>
-        <p class="muted">Deck <code>math-k2-shapes-plane</code>. Parent authors this in flashcard-app; no seed pipeline. Tonight we sit the same 8 cards + 2 random repeats (9/10).</p>
+        <label class="k">Practice — author, then drill</label>
+        <p class="muted">Deck <code>math-k2-shapes-plane</code>. Parent types the four names. No seed pipeline. Then sit 8 cards (4 picture→name + 4 name→picture) plus 2 random repeats (9/10).</p>
+        <div id="author"></div>
         <ol class="list muted" id="deck-list"></ol>
         <div id="drill">
           <p class="score" id="drill-meta">Card 0 of 10</p>
@@ -225,11 +231,13 @@ textarea { min-height: 88px; resize: vertical; }
 <script>
 (function () {
   var PACK = null;
-  var STORAGE = 'goji.learner-mvp.k-mg-2.v1';
+  var STORAGE = 'goji.learner-mvp.k-mg-2.v2';
+  var TEACH_SRC = '../proof-k-mg-2/index.html';
   var state = {
     pace: 'now',
     htmlFinished: false,
     teachOpened: false,
+    names: { circle: '', triangle: '', square: '', rectangle: '' },
     flashcardCorrect: '',
     flashcardTotal: '',
     journal: '',
@@ -314,7 +322,23 @@ textarea { min-height: 88px; resize: vertical; }
     var card = state.run[state.runIndex];
     meta.textContent = 'Card ' + (state.runIndex + 1) + ' of 10';
     if (card.front === 'picture') face.innerHTML = figure(card.shape);
-    else face.innerHTML = '<span class="word">' + card.shape + '</span>';
+    else face.innerHTML = '<span class="word">' + (card.name || card.shape) + '</span>';
+  }
+
+  function paintAuthor() {
+    var host = document.getElementById('author');
+    var shapes = GojiKmg2Audit.SHAPES;
+    host.innerHTML = shapes.map(function (s) {
+      var val = (state.names && state.names[s]) || '';
+      return '<div class="author-row"><div class="mini">' + figure(s) + '</div>' +
+        '<input type="text" data-shape="' + s + '" placeholder="name this figure" value="' + val.replace(/"/g, '&quot;') + '"></div>';
+    }).join('');
+    host.querySelectorAll('input').forEach(function (inp) {
+      inp.oninput = function () {
+        state.names[inp.getAttribute('data-shape')] = inp.value;
+        persistUi();
+      };
+    });
   }
 
   function persistUi() {
@@ -323,13 +347,17 @@ textarea { min-height: 88px; resize: vertical; }
     paintPace();
     paintVerdict();
     paintPractice();
+    paintDeck();
     paintRow();
     saveState();
   }
 
   function startRun() {
-    if (!PACK || !PACK.practice) return;
-    state.run = GojiKmg2Audit.buildRun(PACK.practice.cards);
+    if (!GojiKmg2Audit.authored(state.names)) {
+      document.getElementById('drill-meta').textContent = 'Author the four names first.';
+      return;
+    }
+    state.run = GojiKmg2Audit.buildRun(GojiKmg2Audit.buildDeck(state.names));
     state.runIndex = 0;
     state.runCorrect = 0;
     state.runActive = true;
@@ -361,12 +389,11 @@ textarea { min-height: 88px; resize: vertical; }
   }
 
   function probeTeach() {
-    fetch('../proof-k-mg-2/index.html', { cache: 'no-store' }).then(function (res) {
+    fetch(TEACH_SRC, { cache: 'no-store' }).then(function (res) {
       if (!res.ok) return;
       return res.text().then(function (html) {
-        if (html && html.indexOf('<html') !== -1 && html.length > 400) {
-          showTeach('../proof-k-mg-2/index.html');
-        }
+        var looksLikeTeach = html && /<html/i.test(html) && html.length > 800;
+        if (looksLikeTeach) showTeach(TEACH_SRC);
       });
     }).catch(function () {});
   }
@@ -405,21 +432,25 @@ textarea { min-height: 88px; resize: vertical; }
     });
   }
 
-  function renderDeck(pack) {
+  function paintDeck() {
     var ol = document.getElementById('deck-list');
-    ol.innerHTML = pack.practice.cards.map(function (c, i) {
-      var a = c.front === 'picture' ? 'Picture of a ' + c.shape : 'Word ' + c.shape;
-      var b = c.back === 'picture' ? 'picture of a ' + c.shape : c.shape;
-      return '<li>' + a + ' → ' + b + '</li>';
+    if (!GojiKmg2Audit.authored(state.names)) {
+      ol.innerHTML = '<li class="muted">Type the four names to build the 8-card deck.</li>';
+      return;
+    }
+    ol.innerHTML = GojiKmg2Audit.buildDeck(state.names).map(function (c) {
+      var a = c.front === 'picture' ? 'Picture → ' + c.name : c.name + ' → picture';
+      return '<li>' + a + '</li>';
     }).join('');
   }
 
   loadState();
+  if (!state.names) state.names = { circle: '', triangle: '', square: '', rectangle: '' };
   bind();
+  paintAuthor();
 
   fetch('pack.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (pack) {
     PACK = pack;
-    renderDeck(pack);
     persistUi();
     probeTeach();
   }).catch(function () {

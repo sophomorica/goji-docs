@@ -30,7 +30,7 @@
   },
   "practice": {
     "deck_id": "math-k2-shapes-plane",
-    "author_in": "flashcard-app",
+    "author_in": "audit/flashcard UI",
     "seed_pipeline": false,
     "pictures": "plain figures; square equal sides; rectangle clearly wider than tall",
     "cards": [

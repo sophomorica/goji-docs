@@ -22,5 +22,5 @@ That one page is the sit-through. Do not look for a second audit page.
 | Teach HTML | [`../proof-k-mg-2/index.html`](../proof-k-mg-2/index.html) — School v2, **do not rewrite**. If missing, copy School’s file as-is or use **Load School HTML** on the page. |
 | Catalog | [`../skills/math-k.md`](../skills/math-k.md) K.MG.2 stays **gap** |
 
-Sit: teach (School HTML) → 8 cards + 2 repeats → journal → parent Pass / Not yet.  
-If the check is not confident, Passed stays hidden.
+Sit: load School teach at `../proof-k-mg-2/index.html` → parent authors four names → 8 cards + 2 repeats → journal → parent Pass / Not yet.  
+If the check is not confident, Passed stays hidden. Do not invent teach HTML or voice.

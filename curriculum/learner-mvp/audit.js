@@ -76,6 +76,29 @@
     };
   }
 
+  var SHAPES = ['circle', 'triangle', 'square', 'rectangle'];
+
+  function authored(names) {
+    names = names || {};
+    for (var i = 0; i < SHAPES.length; i++) {
+      if (!String(names[SHAPES[i]] || '').trim()) return false;
+    }
+    return true;
+  }
+
+  function buildDeck(names) {
+    names = names || {};
+    var cards = [];
+    var i;
+    for (i = 0; i < SHAPES.length; i++) {
+      cards.push({ front: 'picture', back: 'name', shape: SHAPES[i], name: String(names[SHAPES[i]] || '').trim() });
+    }
+    for (i = 0; i < SHAPES.length; i++) {
+      cards.push({ front: 'name', back: 'picture', shape: SHAPES[i], name: String(names[SHAPES[i]] || '').trim() });
+    }
+    return cards;
+  }
+
   function buildRun(cards, rand) {
     var list = (cards || []).slice();
     var rnd = typeof rand === 'function' ? rand : Math.random;
@@ -96,7 +119,10 @@
   return {
     FLASH_PASS: FLASH_PASS,
     FLASH_TOTAL: FLASH_TOTAL,
+    SHAPES: SHAPES,
     journalOk: journalOk,
+    authored: authored,
+    buildDeck: buildDeck,
     derive: derive,
     buildRun: buildRun
   };

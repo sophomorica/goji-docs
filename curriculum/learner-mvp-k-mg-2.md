@@ -17,9 +17,12 @@ School owns the pack. Goji plays it (parent app + computer). This repo does **no
 | **Goji** | Parent app + computer path that *plays* that one cached pack | Curriculum / teach HTML |
 | **This doc + sit-through page** | Product loop for tonight: pace + one audit row + evidence | A factory, a player product, a second skill |
 
-School fixture (source of truth): [Goji School — K.MG.2 fixture pack](https://docs.google.com/document/d/16QD419w2BoWjIzEnlVLoV6GtcKWtnwo3yaeIfRiYdkU/edit) · writeup: [proof pack v2 (hands-on)](https://docs.google.com/document/d/1i0WSoBVeZZoClJ3xxIwheJ1heW0caA6bJi7If-yUA9w/edit)
+School fixture (source of truth — **link only, do not scrape into a new lesson**):
 
-Handed into this repo as [`learner-mvp/pack.json`](./learner-mvp/pack.json). The sit-through page **plays that pack**. It does not invent a second curriculum.
+- [K.MG.2 fixture pack](https://docs.google.com/document/d/16QD419w2BoWjIzEnlVLoV6GtcKWtnwo3yaeIfRiYdkU/edit)
+- [proof pack v2 (hands-on)](https://docs.google.com/document/d/1i0WSoBVeZZoClJ3xxIwheJ1heW0caA6bJi7If-yUA9w/edit)
+
+Handed into this repo as [`learner-mvp/pack.json`](./learner-mvp/pack.json). The sit-through page **plays that pack**. It does not invent teach HTML, voice, or a second skill.
 
 ---
 
@@ -40,10 +43,9 @@ If the check is **not confident**, the parent **does not see passed**.
 
 ## Teach — load School’s v2 HTML (do not rewrite)
 
-**File to load:** [`proof-k-mg-2/index.html`](./proof-k-mg-2/index.html)  
-School path: `/workspace/goji-curriculum/proof-k-mg-2/index.html`
+**File they own:** [`proof-k-mg-2/index.html`](./proof-k-mg-2/index.html) (relative path the loader opens)
 
-If that file is already in this repo, the sit-through page opens it. If it is missing, **do not recreate the teach.** Copy School’s existing file as-is into `curriculum/proof-k-mg-2/`, or use **Load School HTML** on the sit-through page. Desktop browser is enough. There is no player product in this slice.
+If that file is already in this repo, the sit-through page iframes it. If it is missing, **do not rewrite the teach.** The sit-through page is the loader: it points at that relative path and keeps the parent-audit shell. Drop School’s existing v2 file as-is into `curriculum/proof-k-mg-2/index.html`, or use **Load School HTML**. Desktop browser is enough. There is no player product and no invented voice.
 
 Hands-on (School): each shape stroke-draws, then the child traces / taps / draws.
 
@@ -61,11 +63,11 @@ Browser voice in the School HTML, if any, is a stand-in. **Not Eve.**
 
 ---
 
-## Practice — School’s 8-card spec (no seed pipeline)
+## Practice — School’s 8-card spec only (no seed pipeline)
 
-Parent authors deck **`math-k2-shapes-plane`** in the existing flashcard-app. This repo does not seed or rewrite Memory.
+Parent authors deck **`math-k2-shapes-plane`** in the sit-through audit / flashcard UI (same page). This repo does not seed a pipeline or rewrite Memory.
 
-Pictures: plain figures. Square = equal sides. Rectangle = clearly wider than tall.
+Spec: **4 picture→name + 4 name→picture**, one pair per shape. Pictures are plain figures; square = equal sides; rectangle = clearly wider than tall. Parent types the four names; the page does not invent card copy.
 
 | # | Front | Back |
 |---|-------|------|
@@ -80,7 +82,7 @@ Pictures: plain figures. Square = equal sides. Rectangle = clearly wider than ta
 
 **Check run** = the 8 cards plus **2 random repeats** (10 items). Gate: **9/10**.
 
-The sit-through page can walk that exact spec tonight so a human can sit the cards without a seed pipeline. That is the pack, not a new flashcard product.
+Author tonight, then drill the 10-item run. That is the pack, not a new flashcard product.
 
 ---
 
@@ -111,7 +113,7 @@ Open [`learner-mvp/index.html`](./learner-mvp/index.html) (see that folder’s R
 
 ## Out of this slice
 
-Eve / voice lock · second skill · `english-k.md` · factory · clocks / patterns · science / history packs · Bluetooth · store / IAP · Speed Read / Memory / Tutor · siblings · standing dashboard · coverage flip · inventing or rewriting School’s teach HTML · building a computer player product.
+Eve / voice · second skill · `english-k.md` · factory · clocks / patterns · science / history packs · Bluetooth · store / IAP · Speed Read / Memory / Tutor · siblings · standing dashboard · coverage flip · inventing or rewriting School’s teach HTML · scraping the School Docs into a new lesson · building a computer player product.
 
 ---
 

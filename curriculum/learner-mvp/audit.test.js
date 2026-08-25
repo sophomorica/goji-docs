@@ -95,6 +95,24 @@ test('journal needs because plus a School attribute', function () {
   assert.equal(audit.journalOk('round'), false);
 });
 
+test('parent-authored deck is 4 picture→name + 4 name→picture', function () {
+  assert.equal(audit.authored({}), false);
+  assert.equal(audit.authored({ circle: 'circle', triangle: 'triangle', square: 'square', rectangle: '' }), false);
+  var names = { circle: 'circle', triangle: 'triangle', square: 'square', rectangle: 'rectangle' };
+  assert.equal(audit.authored(names), true);
+  var deck = audit.buildDeck(names);
+  assert.equal(deck.length, 8);
+  assert.equal(deck.filter(function (c) { return c.front === 'picture'; }).length, 4);
+  assert.equal(deck.filter(function (c) { return c.front === 'name'; }).length, 4);
+});
+
+test('this repo does not invent the School teach HTML', function () {
+  var teach = path.join(__dirname, '..', 'proof-k-mg-2', 'index.html');
+  if (!fs.existsSync(teach)) return;
+  var html = fs.readFileSync(teach, 'utf8');
+  assert.ok(html.length > 800, 'if present, must be School v2, not a stub we wrote');
+});
+
 test('run is 8 cards plus 2 repeats', function () {
   var cards = [1, 2, 3, 4, 5, 6, 7, 8];
   var n = 0;
