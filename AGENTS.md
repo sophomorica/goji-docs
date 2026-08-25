@@ -73,3 +73,4 @@ one-time (do them once per fresh image, then they persist via the snapshot):
  it downloads Postgres/etc images (a few minutes on a cold VM). Stand it up whenever you need to
  test cloud sync or the parent app — see `LOCAL_INTEGRATION.md`.
 - Its default branch is **`feat/school-day-sync-contract`** — there is no `main`. Base PRs there.
+ (`goji_learner_app` likewise defaults to **`feat/school-day-parent`** with no `main`.)

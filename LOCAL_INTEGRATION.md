@@ -108,9 +108,11 @@ cannot be exercised locally. Per `CLAUDE.md` rule 1 the fix starts by writing
 them into `SYNC_API.md`, then adding the migrations and functions — that is
 product work, not a harness gap.
 
-**`goji_cloud`'s default branch is `feat/school-day-sync-contract`, not `main`.**
-It has no `main` branch, despite `TODO.md` saying the School Day branches were
-merged to main.
+**Two of the repos have no `main` branch**, despite `TODO.md` saying the School
+Day branches were merged to main. `goji-cloud` defaults to
+`feat/school-day-sync-contract` and `goji-learner-app` to `feat/school-day-parent`;
+only `goji-docs` and `kodi-computer` have `main`. Base PRs on each repo's actual
+default.
 
 ## Docker in the sandbox
 
