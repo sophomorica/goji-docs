@@ -12,10 +12,14 @@ repo** for the Goji product. Start with `CLAUDE.md`, `PARENT_APP_PRODUCT.md`, an
   - `goji_computer/`   → `sophomorica/kodi-computer` (device: Flask+SQLite backend, Svelte 5 kiosk, sync agent)
   - `goji_cloud/`      → `sophomorica/goji-cloud` (Supabase-as-code: migrations, RLS, edge functions)
   - `goji_learner_app/`→ `sophomorica/goji-learner-app` (Flutter parent app `goji_parent`)
-- These are **private** repos. A Cloud Agent can only clone them if its git token has
-  `Contents: Read` for all three. The most reliable setup is a **multi-repo Cloud
-  environment** with all four repos selected so they are checked out automatically. If they
-  are missing, clone them into `goji_computer/`, `goji_cloud/`, `goji_learner_app/`.
+- These are **private** repos. A Cloud Agent can only `git clone` them if the Cloud
+  environment includes all four remotes (so the generated token has `Contents: Read`).
+  That is the reliable setup. If the folders are missing, run
+  `scripts/clone-product-repos.sh` (`gh api` tarball; git clone of private siblings
+  is often intercepted and returns “repository not found”).
+- **School-day playthrough** (kiosk + parent app + live cloud) is documented in
+  [`CLOUD_AGENT_SCHOOL_DAY.md`](./CLOUD_AGENT_SCHOOL_DAY.md). Do not pair this VM
+  with the household Pi. Use a throwaway anonymous family.
 
 ### One-time environment deps (not in the update script)
 The update script only refreshes per-repo dependencies. These system-level installs are
@@ -48,6 +52,10 @@ one-time (do them once per fresh image, then they persist via the snapshot):
 - **Running the app live needs the family Supabase cloud:** pass
   `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...` (see `run_with_cloud.sh`).
   Without those it builds/tests but can't authenticate/pair.
+- `flutter run` is debug: the pair gate is skipped (`kDebugMode`). To attach this
+  web session to a kiosk you already claimed, Settings → Pair another Goji →
+  **Join family** with the 8-character invite from the computer
+  (`GET /api/device/parent-invite`), then reload the Family board.
 
 ### goji_cloud (Supabase-as-code) — optional for the offline device
 - Offline-first: the kiosk works fully without the cloud, so the cloud is optional for
