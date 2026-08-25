@@ -106,11 +106,26 @@ test('parent-authored deck is 4 picture→name + 4 name→picture', function () 
   assert.equal(deck.filter(function (c) { return c.front === 'name'; }).length, 4);
 });
 
-test('this repo does not invent the School teach HTML', function () {
+test('parent-audit Start points at the School folder file', function () {
+  var page = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  assert.match(page, /id="teach-start"/);
+  assert.match(page, /var TEACH_SRC = '\.\.\/proof-k-mg-2\/index\.html'/);
+  assert.match(page, /showTeach\(TEACH_SRC\)/);
+  assert.match(page, /href="\.\.\/proof-k-mg-2\/index\.html"/);
+});
+
+test('School teach folder is loaded Proof v2, not a stub', function () {
   var teach = path.join(__dirname, '..', 'proof-k-mg-2', 'index.html');
-  if (!fs.existsSync(teach)) return;
+  assert.ok(fs.existsSync(teach), 'curriculum/proof-k-mg-2/index.html must be loaded');
   var html = fs.readFileSync(teach, 'utf8');
-  assert.ok(html.length > 800, 'if present, must be School v2, not a stub we wrote');
+  assert.ok(html.length > 800, 'must be School v2, not a stub');
+  assert.match(html, /Four plane figures/);
+  assert.match(html, /Proof v2/);
+  assert.match(html, /var SHAPES/);
+  assert.match(html, /circle/);
+  assert.match(html, /triangle/);
+  assert.match(html, /square/);
+  assert.match(html, /rectangle/);
 });
 
 test('run is 8 cards plus 2 repeats', function () {

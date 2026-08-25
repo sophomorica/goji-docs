@@ -45,7 +45,7 @@ If the check is **not confident**, the parent **does not see passed**.
 
 **File they own:** [`proof-k-mg-2/index.html`](./proof-k-mg-2/index.html) (relative path the loader opens)
 
-If that file is already in this repo, the sit-through page iframes it. If it is missing, **do not rewrite the teach.** The sit-through page is the loader: it points at that relative path and keeps the parent-audit shell. Drop School’s existing v2 file as-is into `curriculum/proof-k-mg-2/index.html`, or use **Load School HTML**. Desktop browser is enough. There is no player product and no invented voice.
+The sit-through **Start** button opens that file in the same page. Do not rewrite the teach. Desktop browser is enough. There is no player product and no invented voice.
 
 Hands-on (School): each shape stroke-draws, then the child traces / taps / draws.
 

@@ -168,21 +168,21 @@ textarea { min-height: 88px; resize: vertical; }
         <span class="chip" id="chip-write">Write / print</span>
         <span class="chip" id="chip-check">Check</span>
       </div>
-      <p class="muted">Loader opens <code>../proof-k-mg-2/index.html</code>. Do not rewrite that teach. Desktop browser is enough.</p>
+      <p class="muted">Start opens <code>../proof-k-mg-2/index.html</code> (School v2). Do not rewrite that teach. Desktop browser is enough.</p>
       <div class="frame-wrap" id="frame-wrap">
         <div class="empty" id="teach-empty">
-          <h2>Waiting for School’s v2 HTML</h2>
-          <p class="muted">This page loads <code>curriculum/proof-k-mg-2/index.html</code>. That file is not here yet. Do not invent a teach or voice. Drop School’s existing file on that path, or load it below.</p>
-          <p class="muted">HTML finished = child completed all four shapes: circle trace twice; triangle 3 corners + draw; square 4 + draw; rectangle 4 + draw. Construct is off-device optional.</p>
+          <h2>School’s v2 HTML is loaded</h2>
+          <p class="muted">Start sits <code>curriculum/proof-k-mg-2/index.html</code>. Four plane figures — K.MG.2, Proof v2. HTML finished = all four shapes: circle trace twice; triangle 3 corners + draw; square 4 + draw; rectangle 4 + draw. Construct is off-device optional.</p>
         </div>
         <iframe id="teach-frame" class="hidden" title="School K.MG.2 teach" sandbox="allow-scripts"></iframe>
       </div>
       <div class="row">
-        <label class="btn">
+        <button type="button" class="btn primary" id="teach-start">Start</button>
+        <a class="btn ghost" id="teach-newtab" href="../proof-k-mg-2/index.html" target="_blank" rel="noopener">Open folder file</a>
+        <label class="btn ghost">
           Load School HTML
           <input id="teach-file" type="file" accept=".html,text/html" hidden>
         </label>
-        <a class="btn ghost" id="teach-newtab" href="../proof-k-mg-2/index.html" target="_blank" rel="noopener">Open folder file</a>
       </div>
       <label class="checkline">
         <input type="checkbox" id="html-finished">
@@ -414,6 +414,7 @@ textarea { min-height: 88px; resize: vertical; }
     document.getElementById('drill-restart').onclick = startRun;
     document.getElementById('mark-right').onclick = function () { mark(true); };
     document.getElementById('mark-miss').onclick = function () { mark(false); };
+    document.getElementById('teach-start').onclick = function () { showTeach(TEACH_SRC); };
     document.getElementById('teach-file').onchange = function (e) {
       var file = e.target.files && e.target.files[0];
       if (!file) return;
