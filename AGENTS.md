@@ -53,5 +53,49 @@ one-time (do them once per fresh image, then they persist via the snapshot):
 - Offline-first: the kiosk works fully without the cloud, so the cloud is optional for
   exercising the core device product. The live family project is already deployed
   (`README.md` / `HUMAN_CHECKLIST.md`).
-- A local stack (`npx supabase start`) requires **Docker** (not set up here) and downloads
-  Postgres/etc images. Only stand it up if you specifically need to test cloud sync.
+- A local stack (`npx supabase start`) requires **Docker** and downloads Postgres/etc
+  images. Only stand it up if you specifically need to test cloud sync — the full recipe
+  for THIS VM is below (several Docker quirks must be fixed first).
+- **Gotcha:** a fresh clone of `goji-cloud` checks out `feat/school-day-sync-contract`
+  (stale `origin/HEAD`), not `main`. Run `git -C goji_cloud checkout main` first.
+
+### Full school-day e2e in this VM (app ↔ local cloud ↔ kiosk) — proven 2026-08-25
+The whole parent-app → cloud → Pi → parent-app loop (pair, wizard + Start, School Mode,
+drill/journal play-through, auto-complete + unlock, dashboard) runs inside this VM against
+a **local** Supabase. No live-project secrets needed. Steps:
+
+1. **Docker (no systemd here):** `sudo apt-get install -y docker.io fuse-overlayfs`, write
+   `/etc/docker/daemon.json` = `{"storage-driver":"fuse-overlayfs","features":{"containerd-snapshotter":false}}`,
+   then run `sudo dockerd` in a tmux session. The defaults break in this sandbox:
+   containerd-snapshotter/overlay2 fail extracting image whiteouts ("operation not
+   permitted"), and vfs is too slow (DB health checks time out).
+2. **Container networking fixes (required, or edge functions hang / DB init fails):**
+   `sudo sysctl -w net.bridge.bridge-nf-call-iptables=0 net.bridge.bridge-nf-call-ip6tables=0`
+   (container↔container traffic is otherwise dropped by iptables), and
+   `sudo iptables-legacy -I FORWARD 1 -s 172.18.0.0/16 -j ACCEPT` +
+   `sudo iptables-legacy -I FORWARD 1 -d 172.18.0.0/16 -j ACCEPT`
+   (the VM's legacy FORWARD DROP policy only whitelists docker0, so the Supabase
+   network has no IPv4 egress and the edge runtime can never fetch `npm:` imports).
+3. **Local stack** (from `goji_cloud/`, on `main`):
+   `npx supabase start -x studio -x imgproxy -x realtime -x storage-api -x logflare -x vector -x mailpit -x postgres-meta`
+   then `npx supabase functions serve` in another tmux session. `supabase/seed.sql`
+   mirrors the hosted default grants (newer local postgres images no longer auto-grant to
+   anon/authenticated/service_role — without the seed every table read is
+   "permission denied"). Note the ANON_KEY from the start output (the standard local demo
+   JWT). API is `http://127.0.0.1:54321`.
+4. **Pi in live sync mode** (each in its own tmux session, from `goji_computer/`):
+   backend `cd backend && source .venv/bin/activate && python app.py`, sync agent
+   `python -m sync.agent --loop`, frontend `cd frontend && npm run dev` — with env
+   `GOJI_SYNC_MODE=live`, `GOJI_CLOUD_URL=http://127.0.0.1:54321/functions/v1`,
+   `GOJI_CLOUD_ANON_KEY=<local anon key>`, `GOJI_SYNC_INTERVAL_S=15`,
+   `GOJI_SYNC_INTERVAL_ACTIVE_S=15`. Kiosk: http://localhost:5173.
+5. **Parent app on web:** `flutter build web --dart-define=SUPABASE_URL=http://127.0.0.1:54321
+   --dart-define=SUPABASE_ANON_KEY=<local anon key>` then
+   `python3 -m http.server 8090 -d build/web`. Open http://localhost:8090 — the app mints a
+   silent anonymous session (anonymous sign-ins are enabled in `config.toml`).
+6. **Play-through notes:** pair with the 6-char code from the kiosk hub banner (codes
+   expire in 15 min — "New code" rotates + re-registers). Math tasks only auto-verify from
+   completed drill sessions: the child must finish the WHOLE flash-card deck so the kiosk
+   saves the session and the backend emits `math.drill`; quitting mid-deck records nothing.
+   Journal tasks verify on save. Both dashboards are poll-based — allow one ~15s sync hop
+   per transition.
