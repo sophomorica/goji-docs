@@ -48,6 +48,8 @@ one-time (do them once per fresh image, then they persist via the snapshot):
 - **Running the app live needs the family Supabase cloud:** pass
   `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...` (see `run_with_cloud.sh`).
   Without those it builds/tests but can't authenticate/pair.
+- Prefer `./run_with_cloud.sh -d chrome` (or `flutter run -d web-server --web-port 8080 …`)
+  after `goji_learner_app/.env` is written from environment secrets.
 
 ### goji_cloud (Supabase-as-code) — optional for the offline device
 - Offline-first: the kiosk works fully without the cloud, so the cloud is optional for
@@ -55,3 +57,34 @@ one-time (do them once per fresh image, then they persist via the snapshot):
   (`README.md` / `HUMAN_CHECKLIST.md`).
 - A local stack (`npx supabase start`) requires **Docker** (not set up here) and downloads
   Postgres/etc images. Only stand it up if you specifically need to test cloud sync.
+
+### School Day integration testing (computer ↔ app ↔ cloud)
+Goal: parent **Start school day** → Pi sync pulls plan + enters School Mode → child completes
+tasks → status syncs back → parent sees completed.
+
+**Hermetic (no secrets, no network):**
+```bash
+cd goji_computer/backend && source .venv/bin/activate
+python -m sync.mock_family_cloud
+python -m pytest tests/integration/test_school_day_e2e_mock.py -v
+# or: ./scripts/school-day-smoke.sh
+```
+
+**Live loop (needs secrets):** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GOJI_CLOUD_URL`
+(`https://<ref>.supabase.co/functions/v1`), `GOJI_CLOUD_ANON_KEY` (same anon key), plus
+`GOJI_PARENT_TEST_EMAIL` / `GOJI_PARENT_TEST_PASSWORD` for the Flutter AuthGate.
+Install writes gitignored `.env` files via `scripts/cloud-agent-install.sh`.
+
+Live smoke steps:
+1. Backend `GOJI_SYNC_MODE=live` + frontend on `:5173`; parent app with dart-defines.
+2. `POST /api/device/register-cloud` → parent Pair screen / `device-claim` with the 6-char code
+   → `POST /api/device/poll-claim`.
+3. Parent wizard: draft plan with ≥1 task → **Start school day**.
+4. On device: `python -m sync.agent --once` (or wait for the sync interval) → Hub Today shows
+   the plan; School Mode locks to allowed apps.
+5. Complete tasks on the kiosk (or log `app.session` activity) → another sync cycle → cloud
+   `school_sessions.status=completed` / `ended_how=all_tasks_done`.
+
+**Environment bootstrap scripts** (this repo): `scripts/cloud-agent-install.sh`,
+`scripts/cloud-agent-start.sh`, `scripts/school-day-smoke.sh`. Prefer a **multi-repo** Cloud
+environment that also checks out `kodi-computer`, `goji-learner-app`, and `goji-cloud`.
