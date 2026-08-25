@@ -309,14 +309,14 @@ textarea { min-height: 88px; resize: vertical; }
     }
     var meta = document.getElementById('drill-meta');
     var face = document.getElementById('drill-face');
+    if (state.run.length && state.runIndex >= state.run.length) {
+      meta.textContent = 'Run finished';
+      face.innerHTML = '<span class="serif">' + state.runCorrect + ' / 10</span>';
+      return;
+    }
     if (!state.runActive || !state.run.length) {
       meta.textContent = 'Card 0 of 10 — start a run';
       face.innerHTML = '<span class="muted">Start the 10-card run (8 + 2 repeats).</span>';
-      return;
-    }
-    if (state.runIndex >= state.run.length) {
-      meta.textContent = 'Run finished';
-      face.innerHTML = '<span class="serif">' + state.runCorrect + ' / 10</span>';
       return;
     }
     var card = state.run[state.runIndex];
