@@ -306,16 +306,16 @@ canvas.draw { touch-action: none; cursor: crosshair; }
     if (phase === 'trace') {
       var g = geom(SHAPES[idx]);
       var d = Math.hypot(p.x - g.cx, p.y - g.cy);
-      if (Math.abs(d - g.r) > 28) { lastAng = null; return; }
+      if (Math.abs(d - g.r) > 46) return;
       var ang = Math.atan2(p.y - g.cy, p.x - g.cx);
       if (lastAng != null) {
         var delta = ang - lastAng;
         if (delta > Math.PI) delta -= Math.PI * 2;
         if (delta < -Math.PI) delta += Math.PI * 2;
-        spun += Math.abs(delta);
+        if (Math.abs(delta) < 1.2) spun += Math.abs(delta);
       }
       lastAng = ang;
-      if (spun >= Math.PI * 2 * SHAPES[idx].traces) nextShape();
+      if (spun >= Math.PI * 2 * SHAPES[idx].traces * 0.92) nextShape();
       return;
     }
     if (!drawing) return;
@@ -393,10 +393,11 @@ canvas.draw { touch-action: none; cursor: crosshair; }
     playShape();
   };
 
-  canvas.addEventListener('pointerdown', pointerDown);
-  canvas.addEventListener('pointermove', onPointer);
-  canvas.addEventListener('pointerup', pointerUp);
-  canvas.addEventListener('pointercancel', pointerUp);
+  var card = document.getElementById('card');
+  card.addEventListener('pointerdown', pointerDown);
+  card.addEventListener('pointermove', onPointer);
+  card.addEventListener('pointerup', pointerUp);
+  card.addEventListener('pointercancel', pointerUp);
   window.addEventListener('resize', function () {
     if (phase === 'draw' || phase === 'trace') sizeCanvas();
   });
