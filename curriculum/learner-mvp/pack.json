@@ -1,0 +1,76 @@
+{
+  "owner": "Goji School",
+  "play_owner": "Goji",
+  "coverage": "gap",
+  "do_not_flip_coverage": true,
+  "skill": {
+    "sol": "K.MG.2",
+    "grade": "K",
+    "subject": "math",
+    "name": "Plane figures: circle, triangle, square, rectangle — identify, describe, construct",
+    "objective_id": "obj.math.k2.shapes.01",
+    "lesson_id": "lesson.math.k2.shapes.01",
+    "animation_id": "anim.math.k2.shapes.01",
+    "construct": "off-device optional; not required to pass"
+  },
+  "teach": {
+    "kind": "school_v2_html",
+    "entry": "../proof-k-mg-2/index.html",
+    "school_path": "/workspace/goji-curriculum/proof-k-mg-2/index.html",
+    "writeup": "https://docs.google.com/document/d/1i0WSoBVeZZoClJ3xxIwheJ1heW0caA6bJi7If-yUA9w/edit",
+    "fixture_doc": "https://docs.google.com/document/d/16QD419w2BoWjIzEnlVLoV6GtcKWtnwo3yaeIfRiYdkU/edit",
+    "html_finished": "all four shapes completed",
+    "do_not_rewrite": true,
+    "shapes": [
+      { "id": "circle", "do": "Trace around twice. No corners." },
+      { "id": "triangle", "do": "Tap 3 corners, draw the sides." },
+      { "id": "square", "do": "Tap 4 corners, draw the square." },
+      { "id": "rectangle", "do": "Tap 4 corners, draw the rectangle." }
+    ]
+  },
+  "practice": {
+    "deck_id": "math-k2-shapes-plane",
+    "author_in": "flashcard-app",
+    "seed_pipeline": false,
+    "pictures": "plain figures; square equal sides; rectangle clearly wider than tall",
+    "cards": [
+      { "id": "c1", "front": "picture", "back": "name", "shape": "circle" },
+      { "id": "c2", "front": "picture", "back": "name", "shape": "triangle" },
+      { "id": "c3", "front": "picture", "back": "name", "shape": "square" },
+      { "id": "c4", "front": "picture", "back": "name", "shape": "rectangle" },
+      { "id": "c5", "front": "name", "back": "picture", "shape": "circle" },
+      { "id": "c6", "front": "name", "back": "picture", "shape": "triangle" },
+      { "id": "c7", "front": "name", "back": "picture", "shape": "square" },
+      { "id": "c8", "front": "name", "back": "picture", "shape": "rectangle" }
+    ]
+  },
+  "check": {
+    "all_three_or_not_passed": true,
+    "html_finished": true,
+    "flashcards": { "correct": 9, "total": 10, "run": "8 cards plus 2 random repeats" },
+    "journal": {
+      "stem": "This is a ___ because …",
+      "true_attributes": [
+        "round",
+        "three corners",
+        "four same sides",
+        "two long and two short"
+      ]
+    },
+    "parent": "pass or not yet",
+    "lucky_tap_cannot_pass": true
+  },
+  "out": [
+    "Eve / voice lock",
+    "second skill",
+    "english-k.md",
+    "factory",
+    "clocks / patterns",
+    "science / history",
+    "player product",
+    "Bluetooth",
+    "store / IAP",
+    "Speed Read / Memory / Tutor",
+    "coverage flip"
+  ]
+}
