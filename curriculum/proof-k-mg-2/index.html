@@ -167,6 +167,8 @@ canvas.draw { touch-action: none; cursor: crosshair; }
   var ink = [];
   var lastAng = null;
   var spun = 0;
+  var buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+  var laps = 0;
 
   function say(text) {
     promptEl.textContent = text;
@@ -306,16 +308,25 @@ canvas.draw { touch-action: none; cursor: crosshair; }
     if (phase === 'trace') {
       var g = geom(SHAPES[idx]);
       var d = Math.hypot(p.x - g.cx, p.y - g.cy);
-      if (Math.abs(d - g.r) > 46) return;
+      if (Math.abs(d - g.r) > 52) return;
       var ang = Math.atan2(p.y - g.cy, p.x - g.cx);
       if (lastAng != null) {
         var delta = ang - lastAng;
         if (delta > Math.PI) delta -= Math.PI * 2;
         if (delta < -Math.PI) delta += Math.PI * 2;
-        if (Math.abs(delta) < 1.2) spun += Math.abs(delta);
+        if (Math.abs(delta) < 1.4) spun += Math.abs(delta);
       }
       lastAng = ang;
-      if (spun >= Math.PI * 2 * SHAPES[idx].traces * 0.92) nextShape();
+      var b = Math.floor(((ang + Math.PI) / (Math.PI * 2)) * 8) % 8;
+      if (!buckets[b]) buckets[b] = 1;
+      var filled = buckets[0] && buckets[1] && buckets[2] && buckets[3] && buckets[4] && buckets[5] && buckets[6] && buckets[7];
+      if (filled) {
+        laps += 1;
+        buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+      }
+      promptEl.setAttribute('data-spun', String(spun.toFixed(2)));
+      promptEl.setAttribute('data-laps', String(laps));
+      if (spun >= Math.PI * 2 * SHAPES[idx].traces * 0.85 || laps >= SHAPES[idx].traces) nextShape();
       return;
     }
     if (!drawing) return;
@@ -331,7 +342,7 @@ canvas.draw { touch-action: none; cursor: crosshair; }
       ink.push(p);
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
-      canvas.setPointerCapture(ev.pointerId);
+      card.setPointerCapture(ev.pointerId);
     }
     if (phase === 'trace') lastAng = null;
   }
@@ -359,6 +370,8 @@ canvas.draw { touch-action: none; cursor: crosshair; }
         phase = 'trace';
         spun = 0;
         lastAng = null;
+        buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+        laps = 0;
         canvas.classList.remove('hidden');
         sizeCanvas();
         say(shape.do);
