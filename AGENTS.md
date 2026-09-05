@@ -1,4 +1,8 @@
-# AGENTS.md — goji-docs
+# AGENTS.md
+
+Standing brain for Grok Bot, Grok Build, Cursor, and GitHub. Start here. Then read `CLAUDE.md`. This clone is the instruction set. Hub is not here.
+
+**Repo:** Goji docs (`sophomorica/goji-docs`).
 
 This repository (`sophomorica/goji-docs`) is the **workspace coordination / documentation
 repo** for the Goji product. Start with `CLAUDE.md`, `PARENT_APP_PRODUCT.md`, and `TODO.md`.

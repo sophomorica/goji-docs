@@ -1,5 +1,22 @@
 # Goji — workspace guide (goji_learner/)
 
+<!-- nr-agent-contract:1 -->
+## Agent contract (all models)
+
+Start here. Do not search the disk for “how we work.”
+This file is the instruction set on GitHub and on disk.
+
+Definition of done (all must be true):
+1. This repo’s analyze or lint command exits 0.
+2. This repo’s test command exits 0. New behavior has a test.
+3. Build or typecheck succeeds when the repo has one.
+4. No orphans (unreachable screens, unused new files).
+5. No secrets in git.
+6. If `.claude/stop-gate.sh` exists, you ran it and it exited 0. If it does not exist, do not write that a Stop hook ran.
+
+Workers escalate architecture instead of inventing it.
+Hub `standards/` and poteto-mode skills apply only when this session already loaded them. A clone of this repo alone does not have hub.
+
 Goji is a family learning product by Narrow Road Studios: a self-contained
 Raspberry Pi learning computer for kids ("the Goji computer", on-device brand
 "Codi" for now), a parent phone app, and a small cloud that connects them.
@@ -70,10 +87,9 @@ Curriculum lead may be a non-engineering family member — keep answers in this 
 
 ## Working here (for Claude sessions)
 
-- goji_computer follows Narrow Road standards via `../../hub/standards/`
-  (operating manual, code standards, `/review` PASS = done). The other two repos
-  follow the same spirit: tests green, no orphaned code, escalate rather than
-  invent architecture, label guesses `ASSUMED:`.
+- Child repos follow the Agent contract in their own `CLAUDE.md`. Hub standards
+  apply only when this session already loaded hub. Tests green, no orphaned code,
+  escalate rather than invent architecture, label guesses `ASSUMED:`.
 - Tests: `cd goji_computer/backend && python -m pytest tests/` ·
   `cd goji_computer/frontend && npm run test:run` (one known pre-existing
   MyApps.test.js flake) · e2e in `frontend/e2e/` (import `test` from
