@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+VERIFY=$SCRIPT_DIR/verify
+ROOT=${VERIFY_ROOT:-/tmp/goji-docs-verify-self-test}
+PORT=${VERIFY_PORT:-4179}
+EVIDENCE=$ROOT/evidence
+export VERIFY_ROOT=$ROOT
+export VERIFY_PORT=$PORT
+export VERIFY_EVIDENCE_DIR=$EVIDENCE
+export VERIFY_RUN_ID=self-test-studio-zoom
+
+"$VERIFY" cleanup >/dev/null || true
+"$VERIFY" launch
+"$VERIFY" doctor
+"$VERIFY" drive studio-zoom
+
+AFTER=$EVIDENCE/$VERIFY_RUN_ID/after.png
+STATE=$EVIDENCE/$VERIFY_RUN_ID/state.txt
+ACTION=$EVIDENCE/$VERIFY_RUN_ID/action.json
+[ -f "$AFTER" ] || { echo "self-test: missing $AFTER" >&2; exit 1; }
+[ -f "$STATE" ] || { echo "self-test: missing $STATE" >&2; exit 1; }
+[ -f "$ACTION" ] || { echo "self-test: missing $ACTION" >&2; exit 1; }
+grep -q 'zoom.on=true' "$STATE" || { echo "self-test: state.txt missing zoom.on=true" >&2; exit 1; }
+
+"$VERIFY" cleanup
+if "$VERIFY" doctor >/dev/null 2>&1; then
+  echo "self-test: doctor succeeded after cleanup" >&2
+  exit 1
+fi
+[ -f "$AFTER" ] || { echo "self-test: cleanup deleted evidence $AFTER" >&2; exit 1; }
+[ -f "$STATE" ] || { echo "self-test: cleanup deleted evidence $STATE" >&2; exit 1; }
+
+echo "self-test ok evidence=$EVIDENCE/$VERIFY_RUN_ID"
