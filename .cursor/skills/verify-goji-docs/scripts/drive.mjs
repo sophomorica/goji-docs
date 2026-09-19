@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -10,7 +10,7 @@ const args = parseArgs(process.argv.slice(2));
 const feature = required(args, 'feature');
 const baseUrl = required(args, 'base-url').replace(/\/$/, '');
 const evidenceDir = required(args, 'evidence-dir');
-const chromeBin = args['chrome-bin'] || 'google-chrome';
+const chromeBin = resolveChrome(args['chrome-bin']);
 
 const FEATURES = {
   'studio-board': driveStudioBoard,
@@ -26,14 +26,17 @@ if (!FEATURES[feature]) {
 
 mkdirSync(evidenceDir, { recursive: true });
 const chrome = await launchChrome(chromeBin);
+let code = 1;
 try {
   const page = await chrome.connect();
   const result = await FEATURES[feature](page);
   writeFileSync(join(evidenceDir, 'action.json'), `${JSON.stringify(result, null, 2)}\n`);
   writeFileSync(join(evidenceDir, 'state.txt'), `${result.stateText}\n`);
   process.stdout.write(`drove ${feature}\n${result.stateText}\n`);
+  code = 0;
 } finally {
   await chrome.close();
+  process.exit(code);
 }
 
 function parseArgs(argv) {
@@ -52,9 +55,25 @@ function required(map, key) {
   return map[key];
 }
 
+function resolveChrome(explicit) {
+  if (explicit === '/usr/local/bin/google-chrome') {
+    fail('refusing /usr/local/bin/google-chrome because it pins the shared profile');
+  }
+  if (explicit && explicit !== 'google-chrome') return explicit;
+  const candidates = [
+    '/opt/google/chrome/chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/google-chrome',
+  ];
+  for (const bin of candidates) {
+    if (existsSync(bin)) return bin;
+  }
+  return 'google-chrome';
+}
+
 function fail(message) {
   process.stderr.write(`drive: ${message}\n`);
-  process.exit(1);
+  throw new Error(message);
 }
 
 function assert(cond, message) {
@@ -70,19 +89,21 @@ async function launchChrome(bin) {
       '--no-sandbox',
       '--disable-gpu',
       '--disable-dev-shm-usage',
+      '--disable-crash-reporter',
       '--remote-debugging-port=0',
       `--user-data-dir=${userData}`,
+      `--crash-dumps-dir=${userData}`,
       '--force-prefers-reduced-motion',
       'about:blank',
     ],
-    { stdio: ['ignore', 'pipe', 'pipe'] },
+    { stdio: 'ignore', detached: true },
   );
   const closed = new Promise((resolve) => child.once('exit', resolve));
-  let port;
+  let ws;
   try {
-    port = await waitForDevtoolsPort(userData, child);
+    const port = await waitForDevtoolsPort(userData, child);
     const version = await waitJson(`http://127.0.0.1:${port}/json/version`);
-    const ws = new WebSocket(version.webSocketDebuggerUrl);
+    ws = new WebSocket(version.webSocketDebuggerUrl);
     await onceOpen(ws);
     const session = cdpSession(ws);
     return {
@@ -98,16 +119,20 @@ async function launchChrome(bin) {
         return page;
       },
       async close() {
-        try { child.kill('TERM'); } catch {}
-        const timer = setTimeout(() => { try { child.kill('KILL'); } catch {} }, 2000);
-        await closed;
-        clearTimeout(timer);
+        try { ws?.close(); } catch {}
+        try { process.kill(-child.pid, 'SIGKILL'); } catch {}
+        try { child.kill('KILL'); } catch {}
+        await Promise.race([closed, sleep(1500)]);
+        try { child.unref(); } catch {}
         rmSync(userData, { recursive: true, force: true });
       },
     };
   } catch (err) {
+    try { ws?.close(); } catch {}
+    try { process.kill(-child.pid, 'SIGKILL'); } catch {}
     try { child.kill('KILL'); } catch {}
-    await closed;
+    await Promise.race([closed, sleep(1500)]);
+    try { child.unref(); } catch {}
     rmSync(userData, { recursive: true, force: true });
     throw err;
   }

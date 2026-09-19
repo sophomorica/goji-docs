@@ -110,7 +110,7 @@ Environment:
 - `VERIFY_ROOT` default `/tmp/goji-docs-verify`
 - `VERIFY_EVIDENCE_DIR` default `$VERIFY_ROOT/evidence`
 - `VERIFY_REPO_ROOT` default the repo root discovered from the script path
-- `CHROME_BIN` default `google-chrome`
+- `CHROME_BIN` default `/opt/google/chrome/chrome` when that binary exists. Do not use `/usr/local/bin/google-chrome` on this image. That wrapper pins port 9222 and the shared user profile.
 
 ## Out of scope
 

@@ -15,6 +15,16 @@ URL_FILE=$RUN_DIR/base.url
 ROOT_FILE=$RUN_DIR/repo.root
 LOG_FILE=$RUN_DIR/http.log
 
+if [ -z "${CHROME_BIN:-}" ]; then
+  if [ -x /opt/google/chrome/chrome ]; then
+    CHROME_BIN=/opt/google/chrome/chrome
+  elif [ -x /usr/bin/google-chrome-stable ]; then
+    CHROME_BIN=/usr/bin/google-chrome-stable
+  else
+    CHROME_BIN=google-chrome
+  fi
+fi
+
 STUDIO_PATH=/PARENT_APP_LAYOUT_STUDIO.html
 LESSON_PATH=/curriculum/assets/lessons/lesson.science.k2.living.01/index.html
 STUDIO_TITLE='goji parent app — layout studio'
@@ -133,7 +143,7 @@ cmd_drive() {
     --feature "$feature" \
     --base-url "$(base_url)" \
     --evidence-dir "$dest" \
-    --chrome-bin "${CHROME_BIN:-google-chrome}"
+    --chrome-bin "$CHROME_BIN"
   echo "evidence=$dest"
 }
 

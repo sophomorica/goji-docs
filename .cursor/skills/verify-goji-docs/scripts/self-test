@@ -31,5 +31,9 @@ if "$VERIFY" doctor >/dev/null 2>&1; then
 fi
 [ -f "$AFTER" ] || { echo "self-test: cleanup deleted evidence $AFTER" >&2; exit 1; }
 [ -f "$STATE" ] || { echo "self-test: cleanup deleted evidence $STATE" >&2; exit 1; }
+if ps -ef | grep 'user-data-dir=/tmp/goji-docs-chrome-' | grep -v grep >/dev/null; then
+  echo "self-test: chrome leftover after drive" >&2
+  exit 1
+fi
 
 echo "self-test ok evidence=$EVIDENCE/$VERIFY_RUN_ID"
