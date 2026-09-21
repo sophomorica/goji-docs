@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SKILL_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+DEFAULT_REPO=$(CDPATH= cd -- "$SKILL_DIR/../../.." && pwd)
+REPO_ROOT=${VERIFY_REPO_ROOT:-$DEFAULT_REPO}
+VERIFY_ROOT=${VERIFY_ROOT:-/tmp/goji-docs-verify}
+VERIFY_PORT=${VERIFY_PORT:-4177}
+VERIFY_EVIDENCE_DIR=${VERIFY_EVIDENCE_DIR:-$VERIFY_ROOT/evidence}
+RUN_DIR=$VERIFY_ROOT/run
+PID_FILE=$RUN_DIR/http.pid
+PORT_FILE=$RUN_DIR/http.port
+URL_FILE=$RUN_DIR/base.url
+ROOT_FILE=$RUN_DIR/repo.root
+LOG_FILE=$RUN_DIR/http.log
+
+if [ -z "${CHROME_BIN:-}" ]; then
+  if [ -x /opt/google/chrome/chrome ]; then
+    CHROME_BIN=/opt/google/chrome/chrome
+  elif [ -x /usr/bin/google-chrome-stable ]; then
+    CHROME_BIN=/usr/bin/google-chrome-stable
+  else
+    CHROME_BIN=google-chrome
+  fi
+fi
+
+STUDIO_PATH=/PARENT_APP_LAYOUT_STUDIO.html
+LESSON_PATH=/curriculum/assets/lessons/lesson.science.k2.living.01/index.html
+STUDIO_TITLE='goji parent app — layout studio'
+LESSON_TITLE='Living or not living? — Goji'
+
+die() {
+  echo "verify: $*" >&2
+  exit 1
+}
+
+need_repo() {
+  if [ ! -f "$REPO_ROOT/PARENT_APP_LAYOUT_STUDIO.html" ]; then
+    die "repo root missing PARENT_APP_LAYOUT_STUDIO.html ($REPO_ROOT)"
+  fi
+  if [ ! -f "$REPO_ROOT/curriculum/assets/lessons/lesson.science.k2.living.01/index.html" ]; then
+    die "repo root missing the living lesson ($REPO_ROOT)"
+  fi
+}
+
+recorded_pid() {
+  if [ -f "$PID_FILE" ]; then
+    cat "$PID_FILE"
+  fi
+}
+
+pid_alive() {
+  local pid=$1
+  [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
+}
+
+port_owner_pid() {
+  local port=$1
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltnp "sport = :$port" 2>/dev/null | sed -n 's/.*pid=\([0-9][0-9]*\).*/\1/p' | head -n 1
+    return
+  fi
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null | head -n 1
+  fi
+}
+
+base_url() {
+  if [ -f "$URL_FILE" ]; then
+    cat "$URL_FILE"
+  else
+    echo "http://127.0.0.1:$VERIFY_PORT"
+  fi
+}
+
+cmd_launch() {
+  need_repo
+  mkdir -p "$RUN_DIR"
+  local existing
+  existing=$(recorded_pid || true)
+  if pid_alive "${existing:-}"; then
+    local existing_port
+    existing_port=$(cat "$PORT_FILE" 2>/dev/null || echo "")
+    if [ "$existing_port" = "$VERIFY_PORT" ]; then
+      die "already running pid $existing on port $VERIFY_PORT (VERIFY_ROOT=$VERIFY_ROOT)"
+    fi
+    die "already running pid $existing (VERIFY_ROOT=$VERIFY_ROOT). Use another VERIFY_ROOT."
+  fi
+  rm -f "$PID_FILE" "$PORT_FILE" "$URL_FILE" "$ROOT_FILE"
+  python3 -m http.server "$VERIFY_PORT" --bind 127.0.0.1 --directory "$REPO_ROOT" >"$LOG_FILE" 2>&1 &
+  local pid=$!
+  echo "$pid" >"$PID_FILE"
+  echo "$VERIFY_PORT" >"$PORT_FILE"
+  echo "http://127.0.0.1:$VERIFY_PORT" >"$URL_FILE"
+  echo "$REPO_ROOT" >"$ROOT_FILE"
+  local i
+  for i in $(seq 1 40); do
+    if curl -fsS --max-time 1 "http://127.0.0.1:$VERIFY_PORT$STUDIO_PATH" >/dev/null 2>&1; then
+      echo "ready pid=$pid port=$VERIFY_PORT url=http://127.0.0.1:$VERIFY_PORT"
+      return 0
+    fi
+    if ! pid_alive "$pid"; then
+      die "http.server exited. See $LOG_FILE"
+    fi
+    sleep 0.1
+  done
+  cmd_cleanup >/dev/null || true
+  die "server did not become ready on port $VERIFY_PORT"
+}
+
+cmd_doctor() {
+  need_repo
+  local pid
+  pid=$(recorded_pid || true)
+  [ -n "${pid:-}" ] || die "no pid file at $PID_FILE"
+  pid_alive "$pid" || die "recorded pid $pid is not running"
+  local port
+  port=$(cat "$PORT_FILE" 2>/dev/null || true)
+  [ "$port" = "$VERIFY_PORT" ] || die "recorded port ${port:-unset} != VERIFY_PORT $VERIFY_PORT"
+  local owner
+  owner=$(port_owner_pid "$port" || true)
+  if [ -n "${owner:-}" ] && [ "$owner" != "$pid" ]; then
+    die "port $port is owned by pid $owner, not $pid"
+  fi
+  local studio lesson
+  studio=$(curl -fsS --max-time 3 "$(base_url)$STUDIO_PATH" || die "studio URL failed")
+  lesson=$(curl -fsS --max-time 3 "$(base_url)$LESSON_PATH" || die "lesson URL failed")
+  printf '%s' "$studio" | grep -F "$STUDIO_TITLE" >/dev/null || die "studio title missing"
+  printf '%s' "$lesson" | grep -F "$LESSON_TITLE" >/dev/null || die "lesson title missing"
+  echo "ok pid=$pid port=$port url=$(base_url)"
+}
+
+cmd_drive() {
+  local feature=${1:-}
+  [ -n "$feature" ] || die "usage: verify drive <feature-id>"
+  cmd_doctor
+  local run_id
+  run_id=${VERIFY_RUN_ID:-$(date +%Y%m%d-%H%M%S)-$feature}
+  local dest=$VERIFY_EVIDENCE_DIR/$run_id
+  mkdir -p "$dest"
+  node "$SCRIPT_DIR/drive.mjs" \
+    --feature "$feature" \
+    --base-url "$(base_url)" \
+    --evidence-dir "$dest" \
+    --chrome-bin "$CHROME_BIN"
+  echo "evidence=$dest"
+}
+
+cmd_cleanup() {
+  local pid
+  pid=$(recorded_pid || true)
+  if pid_alive "${pid:-}"; then
+    kill -TERM "$pid" 2>/dev/null || true
+    local i
+    for i in $(seq 1 20); do
+      pid_alive "$pid" || break
+      sleep 0.1
+    done
+    if pid_alive "$pid"; then
+      kill -KILL "$pid" 2>/dev/null || true
+    fi
+  fi
+  rm -rf "$RUN_DIR"
+  echo "cleaned VERIFY_ROOT=$VERIFY_ROOT (evidence kept at $VERIFY_EVIDENCE_DIR)"
+}
+
+usage() {
+  die "usage: verify launch|doctor|drive <feature-id>|cleanup"
+}
+
+cmd=${1:-}
+shift || true
+case "$cmd" in
+  launch) cmd_launch ;;
+  doctor) cmd_doctor ;;
+  drive) cmd_drive "${1:-}" ;;
+  cleanup) cmd_cleanup ;;
+  *) usage ;;
+esac
