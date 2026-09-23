@@ -1,6 +1,6 @@
 # lesson_assets — Grok Imagine + Grok TTS pipeline for lesson packages
 
-Turns a lesson's `assets.json` into illustrations, short teach clips, and narration, baked into the package's `media/` folder. The HTML lesson loads `media/index.js` and uses whatever exists; anything missing falls back to the built-in SVG/emoji/browser-speech — so a package always runs, generated or not.
+Turns a lesson's `assets.json` into illustrations, short teach clips, and narration, baked into the package's `media/` folder. The HTML lesson loads `media/index.js` and uses whatever exists; anything missing falls back to the built-in SVG drawings and browser speech — so a package always runs, generated or not.
 
 ```
 assets/lessons/<lesson.id>/
