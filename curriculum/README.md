@@ -47,6 +47,7 @@ Everything else (history, science, coding, …) builds on these.
 | **[QUIZZES.md](./QUIZZES.md)** | Comprehension checks, generation later |
 | **[INTEGRATION.md](./INTEGRATION.md)** | **Anchor books, app chains, Kiwix research pairings** — how everything connects |
 | **[PARENT_STANDING.md](./PARENT_STANDING.md)** | "Where the child stands" metrics spec (per pillar) |
+| **[paths/](./paths/PLAN.md)** | Parent assigns one skill and gets a lesson path. Survey, data shapes, and the framework build order. Content stays out. |
 | **[skills/](./skills/)** | **VA SOL coverage checklist** (math K–8 + HS courses, English 1–12, science, history — verified) |
 | **[subjects/](./subjects/)** | Pillar subjects — math K–2 + 3–5 + **6–8 first slice**; reading/writing spines authored |
 | **[bands/](./bands/)** | K–2 … 9–12 notes |
