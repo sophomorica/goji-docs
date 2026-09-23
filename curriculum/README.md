@@ -52,6 +52,7 @@ Everything else (history, science, coding, …) builds on these.
 | **[bands/](./bands/)** | K–2 … 9–12 notes |
 | **[assets/animations/](./assets/animations/)** | Animation registry (briefs; generation pending) |
 | **[assets/templates/](./assets/templates/)** | Objective / lesson / animation brief templates |
+| **[learner-mvp-k-mg-2.md](./learner-mvp-k-mg-2.md)** | **K.MG.2 Learner MVP** — School pack, parent+computer sit-through. Catalog stays **gap**. Open [`learner-mvp/index.html`](./learner-mvp/index.html) |
 
 ### Product context (outside this folder)
 
@@ -100,6 +101,9 @@ Everything else (history, science, coding, …) builds on these.
 curriculum/
 ├── README.md              ← you are here
 ├── VISION.md              ← full paradigm (pillars, parent, VA, offline knowledge)
+├── learner-mvp-k-mg-2.md  ← one-skill Learner MVP (School pack; catalog stays gap)
+├── learner-mvp/           ← parent-audit sit-through page (open index.html)
+├── proof-k-mg-2/          ← load School’s v2 HTML here (do not rewrite)
 ├── TOOLS.md
 ├── ANIMATIONS.md
 ├── QUIZZES.md

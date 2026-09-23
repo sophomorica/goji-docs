@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Four plane figures — K.MG.2</title>
+<style>
+:root {
+  --seal: #C6392F;
+  --cream: #FBF6EE;
+  --card: #FFFDF8;
+  --ink: #2A211E;
+  --leaf: #5A7C4C;
+  --hair: rgba(42, 33, 30, 0.14);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  background: #EFE8DC;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100%;
+  user-select: none;
+}
+header {
+  width: min(720px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 0;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.seal {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--seal);
+  box-shadow: inset 0 0 0 5px var(--cream), inset 0 0 0 8px var(--seal);
+  flex: none;
+}
+.brand h1 { margin: 0; font-size: 20px; font-family: Palatino, "Iowan Old Style", Georgia, serif; }
+.brand p { margin: 0; font-size: 12px; color: rgba(42,33,30,.58); }
+.v2 {
+  font-size: 11px; font-weight: 800; letter-spacing: 1.1px; text-transform: uppercase;
+  border: 1px solid var(--hair); background: var(--cream); border-radius: 999px; padding: 6px 10px;
+}
+main { width: min(720px, 100%); padding: 12px 16px 28px; flex: 1; display: flex; flex-direction: column; }
+.prompt {
+  min-height: 52px; font-size: 22px; line-height: 1.3; margin: 8px 0 12px;
+  font-family: Palatino, "Iowan Old Style", Georgia, serif;
+}
+.card {
+  position: relative;
+  flex: 1;
+  min-height: 380px;
+  background: var(--cream);
+  border-radius: 18px;
+  border: 1px solid var(--hair);
+  box-shadow: 0 1px 2px rgba(42,33,30,.06), 0 8px 20px rgba(42,33,30,.06);
+  overflow: hidden;
+}
+svg.fig, canvas.draw {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+canvas.draw { touch-action: none; cursor: crosshair; }
+.dots { position: absolute; inset: 0; pointer-events: none; }
+.dot {
+  position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px;
+  border-radius: 50%; background: var(--seal); border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(42,33,30,.25); pointer-events: auto; cursor: pointer;
+}
+.dot.hit { background: var(--leaf); }
+.start-wrap {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px; padding: 24px; text-align: center;
+}
+.start-wrap h2 { margin: 0; font-size: 32px; font-family: Palatino, Georgia, serif; }
+.start-wrap p { margin: 0; color: rgba(42,33,30,.62); font-size: 16px; max-width: 28em; }
+.btn {
+  font: inherit; font-weight: 800; font-size: 20px; border: 0; border-radius: 14px;
+  padding: 14px 28px; min-height: 56px; min-width: 160px; cursor: pointer;
+  background: var(--seal); color: #fff;
+}
+.done {
+  position: absolute; inset: 0; display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 24px;
+  background: var(--cream);
+}
+.done.show { display: flex; }
+.done h2 { margin: 0; font-size: 28px; font-family: Palatino, Georgia, serif; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="seal" aria-hidden="true"></span>
+    <div>
+      <h1>Four plane figures — K.MG.2</h1>
+      <p>obj.math.k2.shapes.01 · lesson.math.k2.shapes.01 · anim.math.k2.shapes.01</p>
+    </div>
+  </div>
+  <div class="v2">Proof v2</div>
+</header>
+<main>
+  <p class="prompt" id="prompt">Press Start. Use a finger or mouse on the cream card.</p>
+  <div class="card" id="card">
+    <div class="start-wrap" id="start-wrap">
+      <h2>Four plane figures</h2>
+      <p>Circle, triangle, square, rectangle. Each shape stroke-draws, then you trace, tap, or draw.</p>
+      <button type="button" class="btn" id="start">Start</button>
+    </div>
+    <svg class="fig hidden" id="fig" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    <canvas class="draw hidden" id="draw"></canvas>
+    <div class="dots hidden" id="dots"></div>
+    <div class="done" id="done">
+      <h2>You made four plane figures.</h2>
+      <p>Circle. Triangle. Square. Rectangle.</p>
+    </div>
+  </div>
+</main>
+<script>
+(function () {
+  var SHAPES = [
+    {
+      id: 'circle',
+      watch: 'A circle is round. Watch it go around. No corners.',
+      do: 'Now you. Trace the circle. Go around, then around again.',
+      corners: 0,
+      traces: 2
+    },
+    {
+      id: 'triangle',
+      watch: 'A triangle. Three sides. Three corners.',
+      do: 'Tap each corner.',
+      draw: 'Draw the sides.',
+      corners: 3
+    },
+    {
+      id: 'square',
+      watch: 'A square. Four sides, all the same. Four corners.',
+      do: 'Tap each corner.',
+      draw: 'Draw the square.',
+      corners: 4
+    },
+    {
+      id: 'rectangle',
+      watch: 'A rectangle. Four sides too. Two long. Two shorter.',
+      do: 'Tap each corner.',
+      draw: 'Draw the rectangle.',
+      corners: 4
+    }
+  ];
+
+  var promptEl = document.getElementById('prompt');
+  var startWrap = document.getElementById('start-wrap');
+  var fig = document.getElementById('fig');
+  var canvas = document.getElementById('draw');
+  var dots = document.getElementById('dots');
+  var done = document.getElementById('done');
+  var ctx = canvas.getContext('2d');
+  var idx = 0;
+  var phase = 'start';
+  var hits = {};
+  var drawing = false;
+  var ink = [];
+  var lastAng = null;
+  var spun = 0;
+  var buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+  var laps = 0;
+
+  function say(text) {
+    promptEl.textContent = text;
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.92;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  function post(type, extra) {
+    try {
+      window.parent.postMessage(Object.assign({ type: type, skill: 'K.MG.2' }, extra || {}), '*');
+    } catch (e) {}
+  }
+
+  function geom(shape) {
+    if (shape.id === 'circle') return { kind: 'circle', cx: 200, cy: 150, r: 86 };
+    if (shape.id === 'triangle') return { kind: 'poly', pts: [[200, 42], [318, 246], [82, 246]] };
+    if (shape.id === 'square') return { kind: 'poly', pts: [[108, 58], [292, 58], [292, 242], [108, 242]] };
+    return { kind: 'poly', pts: [[56, 88], [344, 88], [344, 212], [56, 212]] };
+  }
+
+  function pathD(g) {
+    if (g.kind === 'circle') {
+      return 'M ' + (g.cx + g.r) + ' ' + g.cy + ' A ' + g.r + ' ' + g.r + ' 0 1 1 ' + (g.cx - g.r) + ' ' + g.cy + ' A ' + g.r + ' ' + g.r + ' 0 1 1 ' + (g.cx + g.r) + ' ' + g.cy;
+    }
+    var d = 'M ' + g.pts[0][0] + ' ' + g.pts[0][1];
+    for (var i = 1; i < g.pts.length; i++) d += ' L ' + g.pts[i][0] + ' ' + g.pts[i][1];
+    return d + ' Z';
+  }
+
+  function strokeDraw(shape, then) {
+    var g = geom(shape);
+    fig.innerHTML = '<path id="stroke" d="' + pathD(g) + '" fill="none" stroke="#2A211E" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>';
+    var p = fig.querySelector('#stroke');
+    var len = p.getTotalLength();
+    p.style.strokeDasharray = String(len);
+    p.style.strokeDashoffset = String(len);
+    p.getBoundingClientRect();
+    p.style.transition = 'stroke-dashoffset 1.6s ease';
+    p.style.strokeDashoffset = '0';
+    setTimeout(then, 1700);
+  }
+
+  function viewBoxMap(el) {
+    var r = el.getBoundingClientRect();
+    var scale = Math.min(r.width / 400, r.height / 300);
+    return {
+      r: r,
+      scale: scale,
+      ox: (r.width - 400 * scale) / 2,
+      oy: (r.height - 300 * scale) / 2
+    };
+  }
+
+  function svgPt(ev) {
+    var m = viewBoxMap(fig);
+    return {
+      x: (ev.clientX - m.r.left - m.ox) / m.scale,
+      y: (ev.clientY - m.r.top - m.oy) / m.scale
+    };
+  }
+
+  function showDots(shape) {
+    var g = geom(shape);
+    dots.innerHTML = '';
+    hits = {};
+    var map = viewBoxMap(fig);
+    g.pts.forEach(function (pt, i) {
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'dot';
+      el.setAttribute('aria-label', 'corner ' + (i + 1));
+      el.style.left = (map.ox + pt[0] * map.scale) + 'px';
+      el.style.top = (map.oy + pt[1] * map.scale) + 'px';
+      el.onclick = function () {
+        if (phase !== 'tap') return;
+        hits[i] = true;
+        el.classList.add('hit');
+        if (Object.keys(hits).length >= shape.corners) beginDraw(shape);
+      };
+      dots.appendChild(el);
+    });
+    dots.classList.remove('hidden');
+  }
+
+  function sizeCanvas() {
+    var r = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.max(1, Math.floor(r.width * dpr));
+    canvas.height = Math.max(1, Math.floor(r.height * dpr));
+    var m = viewBoxMap(canvas);
+    ctx.setTransform(m.scale * dpr, 0, 0, m.scale * dpr, m.ox * dpr, m.oy * dpr);
+    ctx.lineWidth = 7;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#C6392F';
+  }
+
+  function nearEdge(pt, a, b) {
+    var dx = b[0] - a[0], dy = b[1] - a[1];
+    var l2 = dx * dx + dy * dy || 1;
+    var t = Math.max(0, Math.min(1, ((pt.x - a[0]) * dx + (pt.y - a[1]) * dy) / l2));
+    var x = a[0] + t * dx, y = a[1] + t * dy;
+    var d = Math.hypot(pt.x - x, pt.y - y);
+    return d < 40;
+  }
+
+  function edgesCovered(shape) {
+    var g = geom(shape);
+    var pts = g.pts;
+    for (var i = 0; i < pts.length; i++) {
+      var a = pts[i], b = pts[(i + 1) % pts.length];
+      var ok = false;
+      for (var j = 0; j < ink.length; j++) {
+        if (nearEdge(ink[j], a, b)) { ok = true; break; }
+      }
+      if (!ok) return false;
+    }
+    return ink.length > 12;
+  }
+
+  function beginDraw(shape) {
+    phase = 'draw';
+    say(shape.draw);
+    canvas.classList.remove('hidden');
+    sizeCanvas();
+    ink = [];
+  }
+
+  function onPointer(ev) {
+    if (phase !== 'trace' && phase !== 'draw') return;
+    var p = svgPt(ev);
+    if (phase === 'trace') {
+      var g = geom(SHAPES[idx]);
+      var d = Math.hypot(p.x - g.cx, p.y - g.cy);
+      if (Math.abs(d - g.r) > 52) return;
+      var ang = Math.atan2(p.y - g.cy, p.x - g.cx);
+      if (lastAng != null) {
+        var delta = ang - lastAng;
+        if (delta > Math.PI) delta -= Math.PI * 2;
+        if (delta < -Math.PI) delta += Math.PI * 2;
+        if (Math.abs(delta) < 1.4) spun += Math.abs(delta);
+      }
+      lastAng = ang;
+      var b = Math.floor(((ang + Math.PI) / (Math.PI * 2)) * 8) % 8;
+      if (!buckets[b]) buckets[b] = 1;
+      var filled = buckets[0] && buckets[1] && buckets[2] && buckets[3] && buckets[4] && buckets[5] && buckets[6] && buckets[7];
+      if (filled) {
+        laps += 1;
+        buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+      }
+      promptEl.setAttribute('data-spun', String(spun.toFixed(2)));
+      promptEl.setAttribute('data-laps', String(laps));
+      if (spun >= Math.PI * 2 * SHAPES[idx].traces * 0.85 || laps >= SHAPES[idx].traces) nextShape();
+      return;
+    }
+    if (!drawing) return;
+    ink.push(p);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  }
+
+  function pointerDown(ev) {
+    if (phase === 'draw') {
+      drawing = true;
+      var p = svgPt(ev);
+      ink.push(p);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      card.setPointerCapture(ev.pointerId);
+    }
+    if (phase === 'trace') lastAng = null;
+  }
+
+  function pointerUp() {
+    if (phase === 'draw' && drawing) {
+      drawing = false;
+      if (edgesCovered(SHAPES[idx])) nextShape();
+    }
+  }
+
+  function playShape() {
+    var shape = SHAPES[idx];
+    phase = 'watch';
+    startWrap.classList.add('hidden');
+    done.classList.remove('show');
+    canvas.classList.add('hidden');
+    dots.classList.add('hidden');
+    fig.classList.remove('hidden');
+    fig.innerHTML = '';
+    say(shape.watch);
+    post('lesson.stage', { shape: shape.id, phase: 'watch' });
+    strokeDraw(shape, function () {
+      if (shape.id === 'circle') {
+        phase = 'trace';
+        spun = 0;
+        lastAng = null;
+        buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+        laps = 0;
+        canvas.classList.remove('hidden');
+        sizeCanvas();
+        say(shape.do);
+        post('lesson.stage', { shape: shape.id, phase: 'trace' });
+        return;
+      }
+      phase = 'tap';
+      showDots(shape);
+      say(shape.do);
+      post('lesson.stage', { shape: shape.id, phase: 'tap' });
+    });
+  }
+
+  function nextShape() {
+    idx += 1;
+    if (idx >= SHAPES.length) {
+      phase = 'done';
+      fig.classList.add('hidden');
+      canvas.classList.add('hidden');
+      dots.classList.add('hidden');
+      done.classList.add('show');
+      say('Circle. Triangle. Square. Rectangle. You made four plane figures.');
+      post('lesson.complete', { htmlFinished: true });
+      return;
+    }
+    playShape();
+  }
+
+  document.getElementById('start').onclick = function () {
+    idx = 0;
+    post('lesson.ready');
+    playShape();
+  };
+
+  var card = document.getElementById('card');
+  card.addEventListener('pointerdown', pointerDown);
+  card.addEventListener('pointermove', onPointer);
+  card.addEventListener('pointerup', pointerUp);
+  card.addEventListener('pointercancel', pointerUp);
+  window.addEventListener('resize', function () {
+    if (phase === 'draw' || phase === 'trace') sizeCanvas();
+  });
+})();
+</script>
+</body>
+</html>
