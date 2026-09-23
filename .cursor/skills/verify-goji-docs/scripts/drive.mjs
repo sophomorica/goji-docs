@@ -18,6 +18,8 @@ const FEATURES = {
   'studio-zoom': driveStudioZoom,
   'studio-child-tabs': driveStudioChildTabs,
   'lesson-living': driveLessonLiving,
+  'lesson-practice': driveLessonPractice,
+  'studio-walk': driveStudioWalk,
 };
 
 if (!FEATURES[feature]) {
@@ -439,5 +441,108 @@ async function driveLessonLiving(page) {
     commands: ['click [data-guess="wolf"]', 'click #hookNext'],
     observed: { start, guessed, teach },
     stateText: `title=${start.title}\nhook->teach s1=${teach.s1}\nheading=${teach.heading}`,
+  };
+}
+
+async function driveLessonPractice(page) {
+  const url = `${baseUrl}/curriculum/assets/lessons/lesson.science.k2.living.01/index.html`;
+  await goto(page, url);
+  await evaluate(page, `document.querySelector('[data-guess="wolf"]').click()`);
+  await screenshot(page, 'before.png');
+  await evaluate(page, `document.getElementById('hookNext').click()`);
+  let teachReady = false;
+  for (let i = 0; i < 40; i += 1) {
+    teachReady = await evaluate(page, `!document.getElementById('teachNext').disabled`);
+    if (teachReady) break;
+    await sleep(250);
+  }
+  assert(teachReady, 'Your turn stayed disabled');
+  await evaluate(page, `document.getElementById('teachNext').click()`);
+  const sort = await evaluate(page, `({
+    s2: document.getElementById('s2').classList.contains('active'),
+    lead: document.getElementById('pLead').textContent,
+    name: document.getElementById('itemName').textContent,
+    signs: document.getElementById('signstrip').hidden === false,
+    svg: !!document.getElementById('itemPic').querySelector('svg'),
+    emoji: document.getElementById('itemPic').textContent,
+  })`);
+  assert(sort.s2, 'practice stage did not open');
+  assert(sort.lead.includes('four signs'), `lead was ${sort.lead}`);
+  assert(sort.name === 'Tree' && sort.signs, 'guided sort did not start on Tree with the signs');
+  assert(sort.svg && !sort.emoji.includes('🌳'), 'sort card was not an SVG drawing');
+  await evaluate(page, `document.querySelector('[data-tap="dead"]').click()`);
+  const missed = await evaluate(page, `document.getElementById('fb').textContent`);
+  assert(missed.includes('still') && missed.includes('grow'), `feedback was ${missed}`);
+  await screenshot(page, 'after.png');
+  return {
+    feature: 'lesson-practice',
+    entry: '#teachNext then [data-tap="dead"]',
+    commands: ['click #hookNext', 'wait #teachNext', 'click #teachNext', 'click [data-tap="dead"]'],
+    observed: { sort, missed },
+    stateText: `practice=${sort.s2} card=${sort.name} signs=${sort.signs}\nfeedback=${missed}`,
+  };
+}
+
+async function driveStudioWalk(page) {
+  const url = `${baseUrl}/PARENT_APP_LAYOUT_STUDIO.html`;
+  await goto(page, url);
+  const closed = await evaluate(page, `document.getElementById('walk').classList.contains('on')`);
+  assert(!closed, 'walk started open');
+  await screenshot(page, 'before.png');
+  await evaluate(page, `document.getElementById('walkgo').click()`);
+  const glance = await evaluate(page, `({
+    on: document.getElementById('walk').classList.contains('on'),
+    title: document.getElementById('wtitle').textContent,
+    copy: document.getElementById('wcopy').textContent,
+    phone: document.getElementById('wholder').textContent,
+  })`);
+  assert(glance.on, '#walk did not open');
+  assert(glance.title === 'Six children. One look.', `title was ${glance.title}`);
+  assert(glance.copy.includes('Needs you'), 'glance copy missing Needs you');
+  assert(glance.phone.includes('Tuesday') && glance.phone.includes('Halfway'), 'family phone missing from the walk');
+  await evaluate(page, `document.getElementById('wnext').click()`);
+  const day = await evaluate(page, `({
+    title: document.getElementById('wtitle').textContent,
+    phone: document.getElementById('wholder').textContent,
+  })`);
+  assert(day.title === 'One red button.', `day title was ${day.title}`);
+  assert(day.phone.includes("Today's plan · 3 of 5 done"), 'today plan missing from the walk');
+  assert(day.phone.includes('Release day'), 'release action missing');
+  await evaluate(page, `document.getElementById('wnext').click()`);
+  const standing = await evaluate(page, `document.getElementById('wholder').textContent`);
+  assert(standing.includes('Where Eli stands'), 'standing pane missing from the walk');
+  assert(standing.includes('Needs help'), 'math struggle missing from the walk');
+  await evaluate(page, `document.getElementById('wnext').click()`);
+  const lessonTitle = await evaluate(page, `new Promise((resolve) => {
+    const frame = document.getElementById('wframe');
+    const read = () => resolve(frame.contentDocument ? frame.contentDocument.title : '');
+    if (frame.contentDocument && frame.contentDocument.readyState === 'complete' && frame.contentDocument.title) read();
+    else frame.addEventListener('load', read, { once: true });
+  })`);
+  assert(lessonTitle === 'Living or not living? — Goji', `lesson title was ${lessonTitle}`);
+  const lessonStep = await evaluate(page, `({
+    title: document.getElementById('wtitle').textContent,
+    src: document.getElementById('wframe').getAttribute('src'),
+    hook: document.getElementById('wframe').contentDocument.body.innerText,
+  })`);
+  assert(lessonStep.title === 'Living or not living.', `lesson step title was ${lessonStep.title}`);
+  assert(String(lessonStep.src).includes('lesson.science.k2.living.01'), `src was ${lessonStep.src}`);
+  assert(lessonStep.hook.includes('Which one is alive?'), 'lesson hook was not visible in the frame');
+  await screenshot(page, 'after.png');
+  await evaluate(page, `document.getElementById('wclose').click()`);
+  const restored = await evaluate(page, `({
+    on: document.getElementById('walk').classList.contains('on'),
+    today: document.querySelector('.slot[data-title="Child detail"] button[data-pane="p-today"]').getAttribute('aria-selected'),
+    tuesday: document.querySelector('.slot[data-title="Family board"]').innerText.includes('Tuesday'),
+  })`);
+  assert(!restored.on, 'walk stayed open');
+  assert(restored.today === 'true', 'Today tab was not restored');
+  assert(restored.tuesday, 'Family board phone did not return to its slot');
+  return {
+    feature: 'studio-walk',
+    entry: '#walkgo',
+    commands: ['click #walkgo', 'click #wnext', 'click #wnext', 'click #wnext', 'click #wclose'],
+    observed: { glance: { title: glance.title }, day: { title: day.title }, lessonTitle, restored },
+    stateText: `walk=${glance.title} -> ${day.title} -> lesson=${lessonTitle}\nrestored today=${restored.today} board=${restored.tuesday}`,
   };
 }
