@@ -357,6 +357,44 @@
     color:rgba(237,228,218,.4);margin:18px 0 6px}
   .zoom .close{position:absolute;top:22px;right:26px;border:1px solid rgba(239,232,220,.25);
     background:transparent;color:#EDE4DA;border-radius:999px;padding:7px 15px;font:500 13px var(--sans);cursor:pointer}
+  .later{font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink40);
+    border:1px solid var(--hair2);border-radius:999px;padding:2px 7px;margin-left:8px;vertical-align:1px}
+  #walkgo{appearance:none;border:0;background:var(--cream);color:var(--ink);font:600 12.5px var(--sans);
+    padding:7px 14px;border-radius:999px;cursor:pointer}
+  #walkgo:hover{background:#fff}
+  .walk{position:fixed;inset:0;z-index:120;display:none;background:rgba(18,12,10,.94);
+    color:rgba(237,228,218,.8)}
+  .walk.on{display:flex}
+  .walk-copy{width:min(420px,100%);padding:56px 36px 32px;display:flex;flex-direction:column;flex:none}
+  .walk-kicker{font:700 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:rgba(237,228,218,.48)}
+  .walk-copy h2{font:600 32px/1.15 var(--serif);color:#EDE4DA;margin:10px 0 14px;letter-spacing:-.015em}
+  .walk-copy p{font:400 16.5px/1.55 var(--sans);margin:0}
+  .walk-nav{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:28px}
+  .walk-nav button{appearance:none;border:1px solid rgba(239,232,220,.28);background:transparent;color:#EDE4DA;
+    border-radius:999px;padding:10px 18px;font:600 14px var(--sans);cursor:pointer}
+  .walk-nav button.primary{background:var(--cream);color:var(--ink);border-color:transparent}
+  .walk-nav button:disabled{opacity:.35;cursor:default}
+  .walk-nav span{font:500 13px var(--sans);color:rgba(237,228,218,.5)}
+  .walk-stage{flex:1;display:flex;align-items:center;justify-content:center;min-width:0;padding:28px 32px 28px 0}
+  #wholder{width:336px;height:688px;overflow:hidden;flex:none}
+  #wholder .phone{transform:scale(.86);transform-origin:top left}
+  #wlesson{width:min(980px,100%);height:min(680px,86vh);border-radius:22px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);background:#fbf5ea}
+  #wlesson[hidden]{display:none}
+  #wlesson iframe{width:100%;height:100%;border:0;background:#fbf5ea}
+  .walk .close{position:absolute;top:22px;right:26px;border:1px solid rgba(239,232,220,.25);
+    background:transparent;color:#EDE4DA;border-radius:999px;padding:7px 15px;font:500 13px var(--sans);cursor:pointer;z-index:2}
+  @media (min-height:980px) and (min-width:1100px){
+    #wholder{width:390px;height:800px}
+    #wholder .phone{transform:none}
+  }
+  @media (max-width:980px){
+    .walk.on{flex-direction:column;overflow:auto}
+    .walk-copy{width:auto;padding:64px 22px 8px}
+    .walk-stage{padding:8px 16px 28px}
+    #wholder{width:281px;height:576px}
+    #wholder .phone{transform:scale(.72)}
+  }
 
 </style>
 </head>
@@ -418,6 +456,7 @@
   <div class="mark"><svg viewBox="0 0 310 126"><use href="#lockup-cream"/></svg></div>
   <h1>parent app — layout studio<small>redesign pass · crafted &amp; warm · brand tokens locked to PARENT_APP_PRODUCT §8</small></h1>
   <div class="spacer"></div>
+  <button type="button" id="walkgo">Show a family</button>
   <span class="hint">click a screen title to zoom</span>
   <div class="seg" id="noteseg">
     <button aria-pressed="true" data-notes="on">Notes on</button>
@@ -839,7 +878,8 @@
         <div class="grow"><div class="lt">Ivy</div><div class="ls">No tasks yet</div></div>
         <button class="btn ghost sm">Add</button></div>
 
-      <div class="sect">Quick add to everyone</div>
+      <div class="sect">Quick add to everyone <span class="later">Later</span></div>
+      <div class="sub" style="margin:-2px 0 8px">Not in this version. Add a chore on one child's list.</div>
       <div class="composer"><div class="input" style="color:var(--ink40)">Tidy the living room…</div>
         <button class="send">+</button></div>
     </div></div>
@@ -849,7 +889,7 @@
       <button data-goto="11"><span class="ic">▤</span>Content</button>
     </div>
   </div>
-  <div class="note"><b>Why:</b> today every card is a pure navigation hop — the board is always one tap away from being useful and never is. <span class="was">Fix:</span> add inline where a child has nothing, plus a quick-add that fans one chore out to the family.</div>
+  <div class="note"><b>Why:</b> today every card is a pure navigation hop — the board is always one tap away from being useful and never is. <span class="was">Fix:</span> add inline where a child has nothing. <b>Quick add to everyone</b> stays on this frame as a later idea. This version adds chores one child at a time.</div>
 </div>
 
 <!-- ============================================================ 9. CHILD TASKS -->
@@ -1061,6 +1101,26 @@
   <div class="side" id="zside"></div>
 </div>
 
+<div class="walk" id="walk">
+  <button class="close" id="wclose" type="button">close</button>
+  <div class="walk-copy">
+    <div class="walk-kicker" id="wkick"></div>
+    <h2 id="wtitle"></h2>
+    <p id="wcopy"></p>
+    <div class="walk-nav">
+      <button type="button" id="wback">Back</button>
+      <span id="wstep"></span>
+      <button type="button" class="primary" id="wnext">Next</button>
+    </div>
+  </div>
+  <div class="walk-stage">
+    <div id="wholder"></div>
+    <div id="wlesson" hidden>
+      <iframe id="wframe" title="Living or not living on the Goji"></iframe>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   // notes toggle
@@ -1137,7 +1197,86 @@
   });
   document.getElementById('zclose').addEventListener('click',close);
   zoom.addEventListener('click',function(e){ if(e.target===zoom) close(); });
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+
+  var walk=document.getElementById('walk'), wholder=document.getElementById('wholder'),
+      wlesson=document.getElementById('wlesson'), wframe=document.getElementById('wframe');
+  var wplaceholder=null, wmoved=null, windex=0;
+  var WALK=[
+    {slot:'Family board', kicker:'1 · The glance', title:'Six children. One look.',
+      copy:'Ada finished. Eli is halfway. Nora needs help in math. This screen has no scores and no buttons on the cards. Anything that needs a parent sits in Needs you.'},
+    {slot:'Child detail', tab:'p-today', kicker:'2 · The day', title:'One red button.',
+      copy:'Eli is at the Goji with a school day open. Release is the only primary action. The checklist is the day: three done, reading still open, journal not started.'},
+    {slot:'Child detail', tab:'p-standing', kicker:'3 · Where he stands', title:'Reading, writing, math.',
+      copy:'Standing is words plus a small bar, not a gradebook. Red is only a real struggle. A journal is waiting for you to read.'},
+    {lesson:true, kicker:'4 · On the Goji', title:'Living or not living.',
+      copy:'This is the lesson Eli plays on the computer. Tap the wolf or the river, then sort. It runs with no internet. When he passes, the day on your phone can move.'}
+  ];
+  function walkRestore(){
+    if(wmoved && wplaceholder && wplaceholder.parentNode){
+      wplaceholder.parentNode.replaceChild(wmoved, wplaceholder);
+    }
+    wmoved=null; wplaceholder=null;
+  }
+  function walkShow(i){
+    walkRestore();
+    var step=WALK[i];
+    var lesson=!!step.lesson;
+    wlesson.hidden=!lesson;
+    wholder.style.display=lesson?'none':'';
+    if(lesson){
+      if(!wframe.getAttribute('src') || wframe.getAttribute('src')==='about:blank'){
+        wframe.src='curriculum/assets/lessons/lesson.science.k2.living.01/index.html';
+      }
+    } else {
+      var slot=document.querySelector('.slot[data-title="'+step.slot+'"]');
+      var phone=slot.querySelector('.phone');
+      wplaceholder=document.createElement('div');
+      wplaceholder.style.width='390px';
+      wplaceholder.style.height='800px';
+      phone.parentNode.insertBefore(wplaceholder, phone);
+      wholder.appendChild(phone);
+      wmoved=phone;
+      if(step.tab){
+        var tab=phone.querySelector('button[data-pane="'+step.tab+'"]');
+        if(tab) tab.click();
+      }
+    }
+    document.getElementById('wkick').textContent=step.kicker;
+    document.getElementById('wtitle').textContent=step.title;
+    document.getElementById('wcopy').textContent=step.copy;
+    document.getElementById('wstep').textContent=(i+1)+' of '+WALK.length;
+    document.getElementById('wback').disabled=i===0;
+    document.getElementById('wnext').textContent=i===WALK.length-1?'Done':'Next';
+  }
+  function walkClose(){
+    var today=document.querySelector('button[data-pane="p-today"]');
+    if(today) today.click();
+    walkRestore();
+    walk.classList.remove('on');
+    if(wframe) wframe.src='about:blank';
+  }
+  function walkOpen(){
+    if(zoom.classList.contains('on')) close();
+    windex=0;
+    walk.classList.add('on');
+    walkShow(0);
+  }
+  document.getElementById('walkgo').addEventListener('click', walkOpen);
+  document.getElementById('wclose').addEventListener('click', walkClose);
+  document.getElementById('wback').addEventListener('click', function(){
+    if(windex>0){ windex-=1; walkShow(windex); }
+  });
+  document.getElementById('wnext').addEventListener('click', function(){
+    if(windex<WALK.length-1){ windex+=1; walkShow(windex); }
+    else walkClose();
+  });
+  walk.addEventListener('click', function(e){ if(e.target===walk) walkClose(); });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      if(walk.classList.contains('on')) walkClose();
+      else close();
+    }
+  });
 })();
 </script>
 </body>
