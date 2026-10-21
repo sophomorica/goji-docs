@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.35.ecosystems.01",
+  "title": "The jungle is a team — ecosystems",
+  "subject": "science",
+  "band": "35",
+  "grade_hint": "3",
+  "objectives": ["obj.science.35.ecosystems.01"],
+  "va_sol": ["3.5"],
+  "duration_min": 15,
+  "anchor": { "book": "jungle-book", "note": "the Indian jungle IS the ecosystem under study; river and grassland are the contrast cases" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.35.ecosystems.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.35.ecosystems.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

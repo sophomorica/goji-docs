@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.35.moon.01",
+  "title": "Our closest neighbor — moon, seasons, tides",
+  "subject": "science",
+  "band": "35",
+  "grade_hint": "4",
+  "objectives": ["obj.science.35.moon.01"],
+  "va_sol": ["4.6"],
+  "duration_min": 15,
+  "anchor": { "book": null, "note": "n/a — Earth & space unit; hand-off = real moon-phase log with parent (4 nights over 2 weeks) → journal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.35.moon.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.35.moon.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

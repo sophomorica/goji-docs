@@ -1,0 +1,176 @@
+{
+  "lesson": "lesson.science.k2.senses.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "kid": {
+      "prompt": "a curious young child explorer, about six years old, short dark curly hair, warm brown skin, simple green shirt, friendly open expression, full body, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    {
+      "id": "hook_cookies",
+      "prompt": "a tray of golden chocolate-chip cookies inside a warm oven with the door ajar, gentle steam wisps rising, cozy kitchen, no people, no faces on any object",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_eyes",
+      "ref": "kid",
+      "prompt": "the same child standing in a green meadow looking up at a big bright rainbow arcing across a soft blue sky",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_ears",
+      "ref": "kid",
+      "prompt": "the same child cupping a hand to one ear beneath a leafy tree; a small brown songbird sits half-hidden among the leaves above",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_nose",
+      "ref": "kid",
+      "prompt": "the same child leaning toward a fresh loaf of bread on a wooden table, eyes closed, gentle steam wisps rising from the loaf, no face on the bread",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_tongue",
+      "ref": "kid",
+      "prompt": "the same child happily biting a shiny red apple, one bite already taken, apple held in both hands",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_hands",
+      "ref": "kid",
+      "prompt": "the same child gently stroking a very fluffy grey-and-white cat curled on a cushion, the cat calm and content",
+      "kind": "scene"
+    },
+    {
+      "id": "card_cookie",
+      "prompt": "one golden chocolate-chip cookie with a bite taken out, on a small plate, no face on the cookie",
+      "kind": "card"
+    },
+    {
+      "id": "card_bird",
+      "prompt": "a small brown songbird singing on a twig, beak open, tiny music notes floating above",
+      "kind": "card"
+    },
+    {
+      "id": "card_rainbow",
+      "prompt": "a bright rainbow arcing over two soft white clouds, nothing else, no faces on clouds",
+      "kind": "card"
+    },
+    {
+      "id": "card_bread",
+      "prompt": "a warm loaf of crusty bread with gentle steam wisps rising, on a cutting board, no face on the loaf",
+      "kind": "card"
+    },
+    {
+      "id": "card_kitten",
+      "prompt": "a very fluffy grey-and-white kitten sitting upright, soft fur clearly visible",
+      "kind": "card"
+    },
+    {
+      "id": "card_lemon",
+      "prompt": "a bright yellow lemon cut in half, juicy segments showing, no face on the lemon",
+      "kind": "card"
+    },
+    {
+      "id": "card_sock",
+      "prompt": "a rumpled striped sock lying on the floor with faint wavy smell lines rising from it, clearly laundry, no face on the sock",
+      "kind": "card"
+    },
+    {
+      "id": "card_popcorn",
+      "prompt": "a covered metal pot on a stove with popcorn kernels popping, the lid slightly lifted by popcorn, small motion and steam lines, contents mostly hidden, no faces on anything",
+      "kind": "card"
+    },
+    {
+      "id": "badge_eyes",
+      "prompt": "one friendly simple open eye emblem, round iris, storybook style, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_ears",
+      "prompt": "one simple friendly ear emblem in profile, storybook style, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_nose",
+      "prompt": "one simple friendly nose emblem in profile with two tiny scent wisps, storybook style, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_tongue",
+      "prompt": "one simple friendly smiling open mouth with the tongue showing, storybook style, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_hands",
+      "prompt": "one simple friendly open hand, palm forward, storybook style, simple emblem",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_eyes",
+      "from": "teach_eyes",
+      "seconds": 6,
+      "prompt": "the rainbow's colors brighten gently band by band while the child watches, clouds drift slowly"
+    },
+    {
+      "id": "teach_ears",
+      "from": "teach_ears",
+      "seconds": 6,
+      "prompt": "the small bird opens its beak and tiny music notes drift up and fade, leaves sway gently, the child listens"
+    },
+    {
+      "id": "teach_nose",
+      "from": "teach_nose",
+      "seconds": 6,
+      "prompt": "steam wisps rise slowly from the loaf and curl toward the child, who breathes in happily"
+    },
+    {
+      "id": "teach_tongue",
+      "from": "teach_tongue",
+      "seconds": 6,
+      "prompt": "the child takes a slow happy bite of the apple and smiles, nothing else moves"
+    },
+    {
+      "id": "teach_hands",
+      "from": "teach_hands",
+      "seconds": 6,
+      "prompt": "the child's hand strokes the cat's fluffy fur slowly, the cat's tail sways with contentment"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "Cookies are baking! [pause] Your eyes are closed. [pause] Which body part tells you? Tap your guess." },
+    { "id": "t_eyes", "text": "<emphasis>Your eyes see.</emphasis> [pause] Look — a rainbow! Only eyes can catch colors." },
+    { "id": "t_ears", "text": "<emphasis>Your ears hear.</emphasis> [pause] A bird sings — even when you can't see it." },
+    { "id": "t_nose", "text": "<emphasis>Your nose smells.</emphasis> [pause] Mmm. Warm bread!" },
+    { "id": "t_tongue", "text": "<emphasis>Your tongue tastes.</emphasis> [pause] Sweet apple!" },
+    { "id": "t_hands", "text": "<emphasis>Your hands feel.</emphasis> [pause] So soft and fluffy!" },
+    { "id": "t_team", "text": "Five senses. [pause] Your body's detective team!" },
+    { "id": "sort_intro", "text": "Be a sense detective! [pause] Drag each card to the body part that finds the clue. Or tap the body part." },
+    { "id": "sort_done", "text": "All solved, detective! [pause] Now show what you know." },
+    { "id": "fb_eyes", "text": "Not quite. Your eyes see. [pause] Which body part could find this clue?" },
+    { "id": "fb_ears", "text": "Not quite. Your ears hear — they can't smell or taste. [pause] Try again." },
+    { "id": "fb_nose", "text": "Not quite. Your nose smells — it can't hear. [pause] Try again." },
+    { "id": "fb_tongue", "text": "Not quite. Your tongue tastes. [pause] Which body part could find this clue?" },
+    { "id": "fb_hands", "text": "Not quite. Your hands feel. [pause] Which body part could find this clue?" },
+    { "id": "why_card_cookie", "text": "Yes! [pause] Your tongue tastes the sweet." },
+    { "id": "why_card_bird", "text": "Yes! [pause] Your ears hear the song — no eyes needed." },
+    { "id": "why_card_rainbow", "text": "Yes! [pause] Your eyes see the colors." },
+    { "id": "why_card_bread", "text": "Yes! [pause] Your nose smells the warm bread." },
+    { "id": "why_card_kitten", "text": "Yes! [pause] Your hands feel the soft fur." },
+    { "id": "why_card_lemon", "text": "Yes! [pause] Your tongue tastes the sour. Whew!" },
+    { "id": "why_card_sock", "text": "Yes! [pause] Your nose found that one. Pee-yew!" },
+    { "id": "why_card_popcorn", "text": "Yes! [pause] You can HEAR it pop, and SMELL it too. [pause] Senses work together!" },
+    { "id": "q1", "text": "You bite a cookie. It is sweet! Which body part told you? Tongue, ears, or hands?" },
+    { "id": "q2", "text": "A bird sings high in a tree. You cannot see it. How do you know it is there?" },
+    { "id": "q3", "text": "Bread is baking in the oven. Which body part smells it? Nose, mouth, or ears?" },
+    { "id": "q4", "text": "The kitten is soft and fluffy. Which sense tells you?" },
+    { "id": "q5", "text": "Popcorn pops under a lid. You cannot see it. Which senses can tell you?" },
+    { "id": "pass", "text": "<soft>You are a real sense detective!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try, detective! Let's meet the five senses once more." },
+    { "id": "done", "text": "Lesson done! Now go on a sense walk — find one thing for every sense." }
+  ]
+}

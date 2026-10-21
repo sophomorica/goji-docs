@@ -71,7 +71,7 @@
     },
     {
       "id": "card_cloud",
-      "prompt": "a single soft white cumulus cloud",
+      "prompt": "one fluffy white cumulus cloud floating alone in a pale blue sky, nothing else in the picture, no ground, no buildings, no animals",
       "kind": "card"
     },
     {
@@ -86,7 +86,7 @@
     },
     {
       "id": "card_seed",
-      "prompt": "a single acorn seed with a tiny green sprout just emerging",
+      "prompt": "a single acorn lying on soil with a small green sprout and root just emerging from it",
       "kind": "card"
     },
     {

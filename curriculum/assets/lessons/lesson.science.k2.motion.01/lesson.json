@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.motion.01",
+  "title": "The motion museum",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": ["obj.science.k2.motion.01"],
+  "va_sol": ["1.2"],
+  "duration_min": 13,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off: rubber-band-and-spoon sound hunt with parent + journal sentence" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.motion.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.motion.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

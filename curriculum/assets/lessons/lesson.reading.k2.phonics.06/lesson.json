@@ -1,0 +1,37 @@
+{
+  "id": "lesson.reading.k2.phonics.06",
+  "title": "Two bites",
+  "subject": "reading",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": [
+    "obj.reading.k2.phonics.06"
+  ],
+  "va_sol": [
+    "1.FFR.3",
+    "2.FFR.3"
+  ],
+  "duration_min": 12,
+  "anchor": {
+    "book": "aesop-fables",
+    "note": "picnic / rabbit \u2014 Aesop's hare family",
+    "research": "Rabbit"
+  },
+  "stages": [
+    "hook",
+    "teach",
+    "practice",
+    "check"
+  ],
+  "check": {
+    "quiz_id": "quiz.reading.k2.phonics.06",
+    "n_items": 5,
+    "pass": 4
+  },
+  "animations": [
+    "anim.reading.k2.phonics.06"
+  ],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

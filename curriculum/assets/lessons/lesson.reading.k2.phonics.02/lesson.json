@@ -1,0 +1,36 @@
+{
+  "id": "lesson.reading.k2.phonics.02",
+  "title": "Magic-e",
+  "subject": "reading",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": [
+    "obj.reading.k2.phonics.02"
+  ],
+  "va_sol": [
+    "1.FFR.3"
+  ],
+  "duration_min": 12,
+  "anchor": {
+    "book": "aesop-fables",
+    "note": "hop / hope \u2014 the hare can hop; we hope he wins",
+    "research": "Hare"
+  },
+  "stages": [
+    "hook",
+    "teach",
+    "practice",
+    "check"
+  ],
+  "check": {
+    "quiz_id": "quiz.reading.k2.phonics.02",
+    "n_items": 5,
+    "pass": 4
+  },
+  "animations": [
+    "anim.reading.k2.phonics.02"
+  ],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

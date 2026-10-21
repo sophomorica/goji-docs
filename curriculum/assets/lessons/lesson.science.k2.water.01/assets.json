@@ -1,0 +1,169 @@
+{
+  "lesson": "lesson.science.k2.water.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "images": [
+    {
+      "id": "hook_icepuddle",
+      "prompt": "one clear ice cube and one small round puddle side by side on a plain cream kitchen counter, both softly reflecting light, nothing else in the picture, no faces, no creatures",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_uses",
+      "prompt": "three small vignettes in a row: a glass of drinking water, a green watering can sprinkling drops, a young bean seedling in a brown pot, plain cream background, no people, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_found",
+      "prompt": "a gentle landscape: a grey rain cloud with falling drops at the upper left, a blue river winding down a green hill into a round lake, and a wide dark-blue ocean with small waves at the right, no creatures, no boats, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_forms",
+      "prompt": "three vignettes in a row on a cream background: a clear ice cube, a small blue puddle, a grey cooking pot with soft white steam curling up, no fire visible, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_same",
+      "prompt": "the ice cube, the puddle and the steaming pot from before, now connected by soft curved arrows going ice to puddle to steam, showing they are the same water in three forms, no text, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_down",
+      "prompt": "a single blue water drop rolling down a smooth green hillside toward the low ground, a dotted path behind it always going downward, clear downhill slope, no creatures, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "card_ice",
+      "prompt": "one clear square ice cube with frosty sparkle lines, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_puddle",
+      "prompt": "a small blue rain puddle seen at a low angle on plain ground, gentle ripple, no reflection of any creature, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_pot",
+      "prompt": "a grey cooking pot with soft white steam curling up from it, no stove flame visible, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_icicle",
+      "prompt": "three clear icicles hanging from a wooden roof edge, plain pale sky behind, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_rain",
+      "prompt": "a small grey cloud with straight falling raindrops and a puddle forming below, plain background, no face on the cloud",
+      "kind": "card"
+    },
+    {
+      "id": "card_hill",
+      "prompt": "a smooth green hill sloping down to one side with a single blue water drop at the top, plain sky, no creatures, no faces",
+      "kind": "card"
+    },
+    {
+      "id": "card_plant",
+      "prompt": "a young green bean plant with two leaves in a brown clay pot, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_plastic",
+      "prompt": "a stiff shiny plastic toy flower with a grey plastic stem, clearly fake and made of plastic, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_rock",
+      "prompt": "a small rough grey rock, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "badge_use",
+      "prompt": "a drinking glass of water, simple emblem, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "badge_find",
+      "prompt": "a small rain cloud over a wavy water line, simple emblem, no face on the cloud",
+      "kind": "card"
+    },
+    {
+      "id": "badge_forms",
+      "prompt": "an ice cube, a water drop and a steam curl in a row, simple emblem, no faces",
+      "kind": "card"
+    },
+    {
+      "id": "badge_down",
+      "prompt": "a water drop on a slope with an arrow pointing downhill, simple emblem, no creatures",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_found",
+      "from": "teach_found",
+      "seconds": 6,
+      "prompt": "rain drops fall gently from the cloud, the river's surface glides toward the lake, small waves roll in the ocean, everything calm and slow"
+    },
+    {
+      "id": "teach_forms",
+      "from": "teach_forms",
+      "seconds": 6,
+      "prompt": "the ice cube glistens, the puddle ripples once, and the steam curls slowly upward from the pot, calm looping motion"
+    },
+    {
+      "id": "teach_same",
+      "from": "teach_same",
+      "seconds": 6,
+      "prompt": "a soft glow travels along the arrows from ice to puddle to steam and back, showing the same water changing form, slow and calm"
+    },
+    {
+      "id": "teach_down",
+      "from": "teach_down",
+      "seconds": 6,
+      "prompt": "the single drop rolls smoothly down the hillside along the dotted path and settles at the low ground, never moving upward"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "An ice cube, [pause] and a puddle. Are they both water? Tap your guess." },
+    { "id": "t_uses", "text": "We use water every day. [pause] We drink it. We wash with it. Plants drink it to <emphasis>grow</emphasis>." },
+    { "id": "t_found", "text": "Where do we find water? [pause] Rain falls from clouds. Rivers run into lakes, [pause] and into the big ocean." },
+    { "id": "t_forms", "text": "Water has <emphasis>three forms</emphasis>. [pause] Cold freezes it into ice. Warm melts it back. Very hot makes steam!" },
+    { "id": "t_same", "text": "Ice is water, frozen. [pause] Steam is water, floating up as a gas. [pause] <emphasis>Same water, three forms!</emphasis>" },
+    { "id": "t_down", "text": "And water always flows <emphasis>downhill</emphasis>. [pause] It never climbs up. It finds the low path." },
+    { "id": "prac_intro", "text": "Which form of water is this? And which way will it flow? Guess, then watch!" },
+    { "id": "prac_done", "text": "All done! [pause] Now show what you know." },
+    { "id": "p_f1", "text": "An ice cube. What is it?" },
+    { "id": "p_f2", "text": "A puddle on the ground. Which form of water?" },
+    { "id": "p_f3", "text": "The white cloud over the hot pot. What is it?" },
+    { "id": "p_f4", "text": "Icicles on a roof. What are they?" },
+    { "id": "p_f5", "text": "Rain falling from a cloud. Which form of water?" },
+    { "id": "p_s1", "text": "The rain drop lands at the top. Which way will it flow?" },
+    { "id": "p_s2", "text": "Now the hill leans the other way. Which way will the drop flow?" },
+    { "id": "p_s3", "text": "The water sits in the low dip. Can it climb over the little hill by itself?" },
+    { "id": "why_f1", "text": "Yes! [pause] Ice is frozen water." },
+    { "id": "why_f2", "text": "Yes! [pause] A puddle is liquid water." },
+    { "id": "why_f3", "text": "Yes! [pause] Steam is water, floating up as a gas." },
+    { "id": "why_f4", "text": "Yes! [pause] Icicles are frozen water. Ice!" },
+    { "id": "why_f5", "text": "Yes! [pause] Raindrops are liquid water." },
+    { "id": "why_s1", "text": "Yes! [pause] Down it goes. Water always flows downhill." },
+    { "id": "why_s2", "text": "Yes! [pause] Downhill again. It always finds the low path." },
+    { "id": "why_s3", "text": "Yes! [pause] It stays. Water cannot climb uphill by itself." },
+    { "id": "fb_ice_not", "text": "Not quite. It IS water, [pause] frozen hard into ice." },
+    { "id": "fb_ice_liq", "text": "Not quite. Not liquid yet. It is frozen hard. Ice is frozen water." },
+    { "id": "fb_liq_ice", "text": "Not quite. It is not frozen. You can splash it. Liquid water." },
+    { "id": "fb_liq_steam", "text": "Not quite. Steam floats up hot. This is cool, wet, liquid water." },
+    { "id": "fb_steam_air", "text": "Not quite. It looks like air, [pause] but steam is tiny bits of water, floating up!" },
+    { "id": "fb_steam_liq", "text": "Not quite. It is not in the pot any more. It floats. That is steam, water as a gas." },
+    { "id": "fb_uphill", "text": "Not quite. Watch. [pause] Water never flows uphill. It always finds the low path." },
+    { "id": "fb_climb", "text": "Not quite. See? It cannot climb by itself. Water stays in the low place." },
+    { "id": "q1", "text": "What is an ice cube?" },
+    { "id": "q2", "text": "What is the steam above hot soup?" },
+    { "id": "q3", "text": "Rain lands on top of a hill. Which way does it flow?" },
+    { "id": "q4", "text": "Which one needs water to grow?" },
+    { "id": "q5", "text": "Can water flow up a hill all by itself?" },
+    { "id": "pass", "text": "<soft>You know water's three forms, and its low path!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the water journey once more." },
+    { "id": "done", "text": "Lesson done! Now go watch an ice cube melt with your grown-up." }
+  ]
+}

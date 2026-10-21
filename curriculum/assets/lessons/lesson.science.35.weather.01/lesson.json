@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.35.weather.01",
+  "title": "Reading the sky — records, storms, and climate",
+  "subject": "science",
+  "band": "35",
+  "grade_hint": "4",
+  "objectives": ["obj.science.35.weather.01"],
+  "va_sol": ["4.4"],
+  "duration_min": 15,
+  "anchor": { "book": "wizard-of-oz", "note": "the tornado over the Kansas prairie is the extreme-weather case study; prairie summers anchor weather-vs-climate" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.35.weather.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.35.weather.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grow a plant — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --soil:#8a6b45; --soil2:#6f5436;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+.hookplant{text-align:center}
+.hookplant svg{width:min(44vw,320px);height:auto}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:340px;background:linear-gradient(var(--cream) 0 66%,#c99f6c 66% 68%,var(--soil) 68% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg.ex{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media svg.ex{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* part highlight per beat */
+.part{transition:opacity .4s}
+.ex .glow{opacity:0;transition:opacity .5s}
+.ex.b-roots #gRoots,.ex.b-stem #gStem,.ex.b-leaves #gLeaves,.ex.b-flower #gFlower{opacity:1}
+.ex .drop{opacity:0}
+.ex.b-roots .drop,.ex.b-stem .drop{opacity:1;animation:drip 2.2s linear infinite}
+@keyframes drip{0%{transform:translate(0,0)}100%{transform:translate(0,-190px)}}
+.ex.b-leaves .ray{animation:raypulse 1.6s ease-in-out infinite}
+@keyframes raypulse{0%,100%{opacity:.35}50%{opacity:1}}
+.ex .ray,.ex .swirl{opacity:.35}
+.ex.b-leaves .swirl{animation:swirlmove 2.6s ease-in-out infinite alternate}
+@keyframes swirlmove{from{transform:translateX(0)}to{transform:translateX(-34px)}}
+.ex .seed{opacity:0}
+.ex.b-flower .seed{opacity:1;animation:seedfall 2.4s ease-in infinite}
+@keyframes seedfall{0%{transform:translateY(0)}80%{transform:translateY(150px)}100%{transform:translateY(150px)}}
+.ex .sprout{opacity:0;transition:opacity .8s}
+.ex.b-flower .sprout{opacity:1}
+#wiltG{opacity:0;transition:opacity .5s}
+.ex.b-needs #wiltG{opacity:1}
+.ex.b-needs #mainPlant{opacity:.25}
+#wiltP{transform:rotate(0);transform-origin:500px 285px;transition:transform 1.2s ease}
+#wiltP.droop{transform:rotate(0)}
+.ex.b-needs #wiltP{transform:rotate(0)}
+#wiltTop{transform:rotate(46deg);transform-origin:500px 200px;transition:transform 1.4s ease}
+#wiltTop.up{transform:rotate(0)}
+.needico{opacity:0;transition:opacity .5s,transform .5s;transform:scale(.7)}
+.needico.on{opacity:1;transform:scale(1)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.stamp{position:absolute;z-index:3;right:5%;top:22%;font-size:36px;font-weight:900;letter-spacing:2px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-12deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.88)}
+.stamp.show{transform:rotate(-12deg) scale(1)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+/* ---- practice ---- */
+.pstage{display:flex;flex-direction:column;flex:1;gap:10px}
+.pv{position:relative;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);min-height:230px;flex:1;overflow:hidden}
+.pv svg{position:absolute;inset:0;width:100%;height:100%}
+.pv img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.pv .zone{cursor:pointer}
+.pv .zone:active .zshape{opacity:.75}
+.pq{font-size:28px;font-weight:800;text-align:center;margin:2px 0}
+.mbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.mbtn{font:inherit;font-weight:800;font-size:24px;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 10px;cursor:pointer;box-shadow:var(--shadow);min-height:78px}
+.mbtn:active{transform:translateY(3px);box-shadow:none}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .ex .drop,.ex .seed{opacity:1!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px} .pv{min-height:180px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Grow a plant <button class="say" data-say="This plant is droopy. What will make it better? Water, or candy? Tap your guess." data-voice="hook">🔊</button></h1>
+  <div class="hookplant">
+    <svg viewBox="0 0 300 190" aria-label="droopy plant"><rect x="0" y="150" width="300" height="40" fill="#8a6b45"/><path d="M120 100 h60 l-8 60 h-44 Z" fill="#b5382f"/><path d="M150 100 Q150 60 150 52 Q186 40 208 66" stroke="#3f7d4e" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M208 66 q26 8 30 30 q-30 4 -40 -14" fill="#69a577"/><path d="M150 66 q-30 -2 -38 20 q26 10 40 -6" fill="#69a577"/></svg>
+  </div>
+  <p class="lead" style="text-align:center">This plant is droopy. <b>What will make it better?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="water">
+      <img data-img="hook_water" alt="" hidden><svg viewBox="0 0 200 130" aria-label="water"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><path d="M60 45 h55 v50 h-55 Z M115 55 l30 -14 v22 l-30 -2 M60 55 q-24 4 -22 34" stroke="#5aa3bf" stroke-width="8" fill="none" stroke-linejoin="round"/><path d="M45 96 q4 12 -6 14 q-10 -2 -6 -14 l6 -10 Z" fill="#5aa3bf"/></svg>
+      <span>Water</span>
+    </div>
+    <div class="pick" data-guess="candy">
+      <img data-img="hook_candy" alt="" hidden><svg viewBox="0 0 200 130" aria-label="candy"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><circle cx="100" cy="65" r="28" fill="#b5382f"/><path d="M74 55 q10 10 0 20 M100 45 q10 10 0 20 M112 70 q8 8 0 16" stroke="#fbf5ea" stroke-width="5" fill="none"/><path d="M72 55 L44 38 L52 65 L44 92 Z" fill="#e0a93b"/><path d="M128 55 L156 38 L148 65 L156 92 Z" fill="#e0a93b"/></svg>
+      <span>Candy</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's grow →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Every part has a job <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg class="ex" id="ex" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <!-- soil line at y=280 -->
+      <rect x="0" y="280" width="1000" height="140" fill="#8a6b45"/>
+      <rect x="0" y="280" width="1000" height="10" fill="#c99f6c"/>
+      <!-- sun -->
+      <g id="sun"><circle cx="120" cy="80" r="42" fill="#e0a93b"/>
+        <g class="ray"><path d="M120 20 v-14 M120 140 v14 M60 80 h-14 M180 80 h14 M78 38 l-10 -10 M162 122 l10 10 M78 122 l-10 10 M162 38 l10 -10" stroke="#e0a93b" stroke-width="7" stroke-linecap="round"/></g>
+        <path class="ray" d="M160 106 L330 176" stroke="#f5d97a" stroke-width="9" stroke-linecap="round"/>
+      </g>
+      <!-- air swirls -->
+      <g class="swirl"><path d="M900 120 q-40 -18 -80 0 q-30 14 -60 4" stroke="#9fc7d6" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M910 170 q-50 -16 -100 2" stroke="#9fc7d6" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+      <!-- main plant -->
+      <g id="mainPlant" class="part">
+        <ellipse id="gRoots" class="glow" cx="500" cy="330" rx="150" ry="60" fill="#f5d97a" opacity="0"/>
+        <rect id="gStem" class="glow" x="470" y="130" width="60" height="160" rx="26" fill="#f5d97a" opacity="0"/>
+        <ellipse id="gLeaves" class="glow" cx="500" cy="205" rx="180" ry="70" fill="#f5d97a" opacity="0"/>
+        <circle id="gFlower" class="glow" cx="500" cy="105" r="70" fill="#f5d97a" opacity="0"/>
+        <!-- roots -->
+        <g id="pRoots"><path d="M500 285 q-40 30 -90 44 M500 285 q-8 44 -20 66 M500 285 q40 28 86 40 M500 285 q16 46 30 64" stroke="#c9a878" stroke-width="10" fill="none" stroke-linecap="round"/></g>
+        <!-- stem -->
+        <path id="pStem" d="M500 285 L500 120" stroke="#3f7d4e" stroke-width="16" stroke-linecap="round"/>
+        <!-- leaves -->
+        <g id="pLeaves"><path d="M500 225 q-56 -8 -74 34 q48 20 74 -12 Z" fill="#69a577"/><path d="M500 185 q56 -8 74 34 q-48 20 -74 -12 Z" fill="#69a577"/></g>
+        <!-- flower: petals + center, seeds -->
+        <g id="pFlower">
+          <g fill="#b5382f"><circle cx="500" cy="72" r="20"/><circle cx="532" cy="95" r="20"/><circle cx="520" cy="132" r="20"/><circle cx="480" cy="132" r="20"/><circle cx="468" cy="95" r="20"/></g>
+          <circle cx="500" cy="105" r="20" fill="#e0a93b"/>
+          <g class="seed"><circle cx="552" cy="140" r="8" fill="#6f5436"/><circle cx="576" cy="128" r="7" fill="#6f5436"/></g>
+        </g>
+        <!-- water drops climbing -->
+        <g fill="#5aa3bf"><circle class="drop" cx="492" cy="330" r="9"/><circle class="drop" style="animation-delay:.7s" cx="507" cy="345" r="8"/><circle class="drop" style="animation-delay:1.3s" cx="500" cy="360" r="8"/></g>
+      </g>
+      <!-- sprout from seed -->
+      <g class="sprout"><path d="M640 280 q0 -22 0 -28 M640 252 q-16 -12 -26 -2 M640 252 q16 -12 26 -2" stroke="#3f7d4e" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+      <!-- wilting plant beat -->
+      <g id="wiltG">
+        <g id="wiltP">
+          <path d="M760 285 q-24 18 -50 26 M760 285 q20 18 46 24" stroke="#c9a878" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <g id="wiltTop" class="">
+            <path d="M760 285 L760 170" stroke="#3f7d4e" stroke-width="13" stroke-linecap="round"/>
+            <path d="M760 225 q-44 -6 -58 26 q38 16 58 -10 Z" fill="#69a577"/>
+            <path d="M760 195 q44 -6 58 26 q-38 16 -58 -10 Z" fill="#69a577"/>
+            <g fill="#b5382f"><circle cx="760" cy="148" r="13"/><circle cx="781" cy="163" r="13"/><circle cx="773" cy="187" r="13"/><circle cx="747" cy="187" r="13"/><circle cx="739" cy="163" r="13"/></g>
+            <circle cx="760" cy="170" r="13" fill="#e0a93b"/>
+          </g>
+        </g>
+        <g id="needIcos">
+          <g class="needico" data-n="0"><circle cx="640" cy="60" r="24" fill="#e0a93b"/><path d="M640 24 v-10 M640 96 v10 M604 60 h-10 M676 60 h10" stroke="#e0a93b" stroke-width="5" stroke-linecap="round"/></g>
+          <g class="needico" data-n="1"><path d="M710 46 q10 18 0 26 q-12 -8 0 -26" fill="#5aa3bf"/><path d="M706 90 h40" stroke="#5aa3bf" stroke-width="0"/></g>
+          <g class="needico" data-n="2"><path d="M770 40 q-20 -10 -40 0 q-14 8 -30 2" stroke="#9fc7d6" stroke-width="6" fill="none" stroke-linecap="round" transform="translate(60,20)"/></g>
+          <g class="needico" data-n="3"><rect x="880" y="46" width="46" height="30" rx="6" fill="#8a6b45"/><rect x="884" y="40" width="38" height="8" rx="4" fill="#c99f6c"/></g>
+          <g class="needico" data-n="4"><path d="M950 90 h40 l-6 34 h-28 Z" fill="#b5382f" transform="translate(-16,-50)"/></g>
+        </g>
+      </g>
+    </svg>
+    <div class="stamp yes" id="stampSeeds">SEEDS = NEW PLANTS</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🥕</span>Roots drink &amp; hold</div>
+    <div class="badge" id="b1"><span class="em">🪜</span>Stem carries &amp; holds up</div>
+    <div class="badge" id="b2"><span class="em">🍃</span>Leaves make food</div>
+    <div class="badge" id="b3"><span class="em">🌸</span>Flower makes seeds</div>
+    <div class="badge" id="b4"><span class="em">💧</span>Five needs</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Tap the part with this job <button class="say" data-say="Listen to the job. Then tap the plant part that does it. You can tap the plant, or the name buttons." data-voice="prac_intro">🔊</button></h2>
+  <div class="pstage">
+    <div class="pv" id="pv"></div>
+    <div class="pq" id="pq"></div>
+    <div class="mbtns" id="mbtns"></div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the plant again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.plants.01',version:1,quiz:'quiz.science.k2.plants.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_roots'],['b1','badge_stem'],['b2','badge_leaves'],['b3','badge_flower'],['b4','badge_needs']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), ex=document.getElementById('ex'), stampSeeds=document.getElementById('stampSeeds');
+  const badges=[0,1,2,3,4].map(i=>document.getElementById('b'+i));
+  const wiltTop=document.getElementById('wiltTop');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const teachScript=[
+    "Meet the roots. Two jobs! They drink water from the soil — and they hold the plant tight, even in wind.",
+    "The stem is the water road. It carries water up — and it holds the plant up tall.",
+    "The leaves are the kitchen! They make the plant's food — from light and air. Plants do not eat soil. The leaves make the food.",
+    "The flower has a job too. It makes seeds — and seeds grow into new plants!",
+    "This plant is droopy. It needs water, light, air, soil, and a place to grow. There! Every need met — and it stands tall again."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function setBeat(cls){ ex.classList.remove('b-roots','b-stem','b-leaves','b-flower','b-needs'); if(cls) ex.classList.add(cls); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    setBeat(null); badges.forEach(b=>b.className='badge'); stampSeeds.className='stamp yes'; cap.textContent='';
+    wiltTop.classList.remove('up');
+    document.querySelectorAll('.needico').forEach(n=>n.classList.remove('on'));
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    setBeat('b-roots'); cap.textContent='ROOTS drink water — and hold the plant tight.'; say(teachScript[0],'t_roots'); showBeat('teach_roots');
+    later(()=>{ badges[0].classList.add('on'); },4200);
+    later(()=>{ setBeat('b-stem'); cap.textContent='The STEM carries water UP — and holds the plant up.'; say(teachScript[1],'t_stem'); showBeat('teach_stem'); },5600);
+    later(()=>{ badges[1].classList.add('on'); },9200);
+    later(()=>{ setBeat('b-leaves'); cap.textContent='LEAVES make the plant\'s FOOD — from light and air.'; say(teachScript[2],'t_leaves'); showBeat('teach_leaves'); },10600);
+    later(()=>{ cap.textContent='Plants do NOT eat soil. The leaves MAKE the food.'; },15400);
+    later(()=>{ badges[2].classList.add('on'); },17200);
+    later(()=>{ setBeat('b-flower'); cap.textContent='The FLOWER makes SEEDS — for new plants.'; say(teachScript[3],'t_flower'); showBeat('teach_flower'); stampSeeds.classList.add('show'); },18600);
+    later(()=>{ badges[3].classList.add('on'); stampSeeds.classList.remove('show'); },22600);
+    later(()=>{ setBeat('b-needs'); cap.textContent='A droopy plant needs: water · light · air · soil · a place to grow.'; say(teachScript[4],'t_needs'); showBeat('teach_needs'); },24000);
+    [0,1,2,3,4].forEach(i=>later(()=>{ const n=document.querySelector('.needico[data-n="'+i+'"]'); if(n) n.classList.add('on'); },25400+i*900));
+    later(()=>{ wiltTop.classList.add('up'); },29800);
+    later(()=>{ badges[4].classList.add('on'); cap.textContent='Every need met — it stands tall again!'; document.getElementById('teachNext').disabled=false; },31200);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  function plantSVG(){
+    return '<svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">'
+      +'<rect x="0" y="200" width="800" height="100" fill="#8a6b45"/><rect x="0" y="200" width="800" height="8" fill="#c99f6c"/>'
+      +'<g class="zone" data-part="roots"><rect class="zshape" x="290" y="204" width="220" height="92" rx="14" fill="#fff" opacity="0"/><path d="M400 205 q-34 26 -78 38 M400 205 q-7 38 -17 56 M400 205 q34 24 74 34 M400 205 q14 40 26 54" stroke="#c9a878" stroke-width="9" fill="none" stroke-linecap="round"/></g>'
+      +'<g class="zone" data-part="stem"><rect class="zshape" x="366" y="96" width="68" height="108" rx="14" fill="#fff" opacity="0"/><path d="M400 205 L400 88" stroke="#3f7d4e" stroke-width="13" stroke-linecap="round"/></g>'
+      +'<g class="zone" data-part="leaves"><rect class="zshape" x="220" y="118" width="150" height="70" rx="14" fill="#fff" opacity="0"/><rect class="zshape" x="430" y="88" width="150" height="70" rx="14" fill="#fff" opacity="0"/><path d="M400 160 q-48 -6 -64 30 q42 16 64 -10 Z" fill="#69a577"/><path d="M400 125 q48 -6 64 30 q-42 16 -64 -10 Z" fill="#69a577"/></g>'
+      +'<g class="zone" data-part="flower"><circle class="zshape" cx="400" cy="52" r="52" fill="#fff" opacity="0"/><g fill="#b5382f"><circle cx="400" cy="28" r="15"/><circle cx="424" cy="45" r="15"/><circle cx="415" cy="72" r="15"/><circle cx="385" cy="72" r="15"/><circle cx="376" cy="45" r="15"/></g><circle cx="400" cy="52" r="15" fill="#e0a93b"/></g>'
+      +'</svg>';
+  }
+  function needSVG(kind){
+    const art={
+      sun:'<circle cx="400" cy="140" r="60" fill="#e0a93b"/><path d="M400 50 v-24 M400 230 v24 M310 140 h-24 M490 140 h24 M336 76 l-16 -16 M464 204 l16 16 M336 204 l-16 16 M464 76 l16 -16" stroke="#e0a93b" stroke-width="9" stroke-linecap="round"/>',
+      water:'<path d="M310 100 h120 v90 h-120 Z M430 116 l60 -26 v44 l-60 -6 M310 116 q-46 8 -42 66" stroke="#5aa3bf" stroke-width="12" fill="none" stroke-linejoin="round"/><path d="M282 200 q8 22 -10 26 q-18 -4 -10 -26 l10 -18 Z" fill="#5aa3bf"/>',
+      soil:'<path d="M320 110 h160 l-18 120 h-124 Z" fill="#b5382f"/><ellipse cx="400" cy="110" rx="80" ry="20" fill="#8a6b45"/><ellipse cx="400" cy="106" rx="66" ry="14" fill="#6f5436"/>',
+      air:'<path d="M280 120 q60 -30 120 0 q50 24 100 4" stroke="#9fc7d6" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M300 180 q70 -26 140 0 q40 16 80 2" stroke="#9fc7d6" stroke-width="10" fill="none" stroke-linecap="round"/>',
+      candy:'<circle cx="400" cy="150" r="46" fill="#b5382f"/><path d="M356 134 q16 16 0 32 M400 118 q16 16 0 32 M420 158 q12 12 0 26" stroke="#fbf5ea" stroke-width="7" fill="none"/><path d="M356 134 L306 106 L318 150 L306 194 Z" fill="#e0a93b"/><path d="M444 134 L494 106 L482 150 L494 194 Z" fill="#e0a93b"/>',
+      toy:'<circle cx="400" cy="150" r="56" fill="#8a6fb3"/><path d="M344 150 a56 56 0 0 1 112 0" fill="#e0a93b"/><path d="M344 150 h112" stroke="#fbf5ea" stroke-width="7"/><circle cx="400" cy="150" r="15" fill="#fbf5ea"/>'
+    };
+    return '<svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">'+art[kind]+'</svg>';
+  }
+  const PARTNAMES={roots:'Roots',stem:'Stem',leaves:'Leaves',flower:'Flower'};
+  const ITEMS=[
+    {t:'part',k:'drink', q:'Which part DRINKS water from the soil?', a:'roots', why:'The roots drink the water — down in the soil.'},
+    {t:'part',k:'carry', q:'Which part CARRIES the water up and holds the plant up?', a:'stem', why:'The stem is the water road — and it holds the plant tall.'},
+    {t:'part',k:'food',  q:'Which part MAKES FOOD from light and air?', a:'leaves', why:'The leaves are the kitchen — they make food from light and air.'},
+    {t:'part',k:'seeds', q:'Which part MAKES SEEDS for new plants?', a:'flower', why:'The flower makes seeds — that is its real job!'},
+    {t:'part',k:'hold',  q:'Which part HOLDS the plant tight in the soil?', a:'roots', why:'The roots grip the soil and hold the plant tight.'},
+    {t:'need',k:'sun',   n:'Sun light', a:'yes', why:'Light is a plant need — the leaves use it to make food.'},
+    {t:'need',k:'water', n:'Water', a:'yes', why:'Water is a plant need — the roots drink it up.'},
+    {t:'need',k:'soil',  n:'A pot of soil', a:'yes', why:'Soil holds the roots and gives nutrients — a real need.'},
+    {t:'need',k:'air',   n:'Air', a:'yes', mis:'air', why:'Air is a plant need — the leaves use air to make food.'},
+    {t:'need',k:'candy', n:'Candy', a:'no', mis:'treat', why:'Candy is a people-treat. Plants never need it.'},
+    {t:'need',k:'toy',   n:'A toy ball', a:'no', mis:'treat', why:'Toys are for playing — a plant has no use for one.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,curItem=null;
+  const pv=document.getElementById('pv'),fb=document.getElementById('fb'),mb=document.getElementById('mbtns');
+  function startPrac(){ queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; fb.textContent=''; document.getElementById('pracNext').disabled=true; showItem(); }
+  function showItem(){
+    if(!queue.length){ curItem=null; pv.innerHTML=''; document.getElementById('pq').textContent=''; mb.innerHTML=''; document.getElementById('counter').textContent='All eleven done! 🎉'; document.getElementById('pracNext').disabled=false; say('All eleven done! Now show what you know.','prac_done'); return; }
+    const it=curItem=queue[0];
+    if(it.t==='part'){
+      pv.innerHTML = img('card_plant') ? '<img src="'+img('card_plant')+'" alt="">'+plantSVG() : plantSVG();
+      pv.querySelectorAll('.zone').forEach(z=>z.addEventListener('click',()=>answer(z.dataset.part)));
+      document.getElementById('pq').textContent=it.q;
+      mb.innerHTML='';
+      Object.entries(PARTNAMES).forEach(([v,t])=>{ const b=document.createElement('button'); b.className='mbtn'; b.textContent=t; b.onclick=()=>answer(v); mb.appendChild(b); });
+      say(it.q);
+    } else {
+      pv.innerHTML = img('card_'+it.k) ? '<img src="'+img('card_'+it.k)+'" alt="">' : needSVG(it.k);
+      document.getElementById('pq').textContent=it.n+' — does the plant need it?';
+      mb.innerHTML='';
+      [['yes','✅ The plant needs it'],['no','🚫 It does not']].forEach(([v,t])=>{ const b=document.createElement('button'); b.className='mbtn'; b.textContent=t; b.onclick=()=>answer(v); mb.appendChild(b); });
+      say(it.n+'. Does the plant need it?');
+    }
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} done`;
+  }
+  function answer(v){
+    if(!queue.length||!curItem) return;
+    const it=queue.shift(); curItem=null; tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=v===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+    } else {
+      let hint,vid,mtag;
+      if(it.t==='part'&&it.a==='roots'&&v==='leaves'){ hint='Leaves do not drink from the soil — they make food from light and air. The ROOTS drink.'; vid='fb_eatdirt'; mtag='eatdirt'; }
+      else if(it.t==='part'&&it.a==='leaves'&&v==='roots'){ hint='Plants do not eat soil! Roots drink water; the LEAVES make the food — from light and air.'; vid='fb_eatsoil'; mtag='eatsoil'; }
+      else if(it.t==='part'&&it.a==='flower'){ hint='The flower is not just for pretty — seeds come from the FLOWER.'; vid='fb_decor'; mtag='decor'; }
+      else if(it.t==='part'){ hint='Listen to the job again, then tap the part that does it.'; vid='fb_part'; mtag='part'; }
+      else if(it.mis==='air'){ hint='Plants DO need air! The leaves take in air to make their food.'; vid='fb_air'; mtag='air'; }
+      else if(it.mis==='treat'){ hint='That is a people-treat. Plants need real things: water, light, air, soil, a place to grow.'; vid='fb_treat'; mtag='treat'; }
+      else { hint='It really needs that! Without it, the plant droops.'; vid='fb_need'; mtag='need'; }
+      misses[mtag]=(misses[mtag]||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,vid);
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:2000);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🥕',k:'card_plant',q:'Which part DRINKS water from the soil?',o:['The roots','The leaves — they eat the dirt','The flower'],a:0,mis:'eatdirt'},
+    {id:2,pic:'🍃',k:'card_plant',q:'Which part MAKES FOOD for the plant?',o:['The leaves — from light and air','The roots — plants eat soil','The stem'],a:0,mis:'eatsoil'},
+    {id:3,pic:'🌸',k:'card_flowerq',q:'What is the flower\'s JOB?',o:['It makes seeds, so new plants can grow','It is just for pretty','It drinks the water'],a:0,mis:'decor'},
+    {id:4,pic:'🌬️',k:'card_air',q:'Does a plant need AIR?',o:['Yes — the leaves use air to make food','No — plants do not breathe'],a:0,mis:'air'},
+    {id:5,pic:'🥀',k:'card_droopy',q:'Your plant is droopy. What will help it?',o:['Water and light','Candy','A toy to play with'],a:0,mis:'treat'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic; document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know every part\'s job! 🌱' : 'Good try! Let\'s watch the plant grow once more.';
+    document.getElementById('guessTxt').textContent = guess==='water' ? 'At the start you guessed WATER for the droopy plant — you were right!' : guess==='candy' ? 'At the start you guessed CANDY. Now you know: plants need water and light — candy is a people-treat!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the plant again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go plant a real seed cup with your grown-up. 🌱'; say('Lesson done! Now go plant a real seed cup with your grown-up.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

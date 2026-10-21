@@ -7,7 +7,7 @@
 | **Band** | K–2 |
 | **Duration (target)** | 15 min on Goji (repeatable — run until the deck gate passes) |
 | **Objectives** | `obj.reading.k2.phonics.01` |
-| **Status** | ready (animation playback = parent-side preview until player ships) |
+| **Status** | ready (interactive package + seeded deck + typing; Lessons player on the Goji) |
 
 ---
 
@@ -26,8 +26,12 @@ After this lesson (run over several days), the child can sound out any short-vow
 
 ## 3. School Day mapping (how a parent would assign today)
 
-- [ ] Task 1: Flashcards — deck `read-k2-cvc`, read-aloud run with parent nearby
-- [ ] Task 2: Typing — same 5–10 words as a custom exercise
+- [ ] Lessons — `lesson.reading.k2.phonics.01` (luna voice; pass 4/5)
+- [ ] Flashcards — deck `read-k2-cvc`, read-aloud run with parent nearby
+- [ ] Typing — `Phonics — fox hen dog`
+- [ ] Reader — `aesop-fables` (Fox / Hen / Dog)
+- [ ] Journal — three sounded-out sentences
+- [ ] Kiwix — Fox (or tonight's animal)
 
 ## 4. Checks
 
@@ -37,8 +41,8 @@ After this lesson (run over several days), the child can sound out any short-vow
 
 ## 5. Tools
 
-- **Uses existing:** flashcards (parent-synced deck), typing, parent observation.
-- **Blocked on new tool:** none. (Audio-per-card would help pre-readers — noted in TOOLS.md backlog territory, not required.)
+- **Uses existing:** Lessons player, seeded `read-k2-cvc` deck, phonics typing lines, reader (`aesop-fables`), journal, Kiwix, parent heat map on `obj.reading.k2.phonics.01`.
+- **Blocked on new tool:** none. Audio-per-card still a nice later add.
 
 ## 6. Authoring notes
 

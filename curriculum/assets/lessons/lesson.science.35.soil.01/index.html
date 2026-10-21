@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dig deeper — what soil is made of — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --top:#5a4128; --sub:#8a6a4a; --rock:#9d9d9d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.12}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.gloss{font-size:19px;color:var(--ink2);background:var(--cream2);border-radius:12px;padding:2px 10px;white-space:nowrap}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:24px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:170px;min-height:70px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:25px;font-weight:800;padding:16px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+.scene{position:relative;flex:1;min-height:320px;background:linear-gradient(var(--sky) 0 34%,#b7d29a 34% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg.beatart{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s}
+.scene>svg.beatart.on{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 18px;font-size:24px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.75)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media svg.beatart{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:32px}
+.stamp{position:absolute;z-index:3;right:5%;bottom:12%;font-size:30px;font-weight:900;letter-spacing:1px;padding:10px 18px;border:6px solid var(--green);border-radius:14px;
+  color:var(--green);transform:rotate(-8deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.88)}
+.stamp.show{transform:rotate(-8deg) scale(1)}
+.wormwig{animation:wig 2.2s ease-in-out infinite alternate}
+@keyframes wig{from{transform:translateX(0)}to{transform:translateX(10px)}}
+/* practice */
+.pracvis{position:relative;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;min-height:170px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.pracvis svg{max-width:100%;height:auto}
+#mixgot .in{opacity:0;transition:opacity .5s}
+#mixgot .in.show{opacity:1}
+#colgot rect.layer{opacity:0;transition:opacity .5s}
+#colgot rect.layer.show,#colgot g.layer.show{opacity:1}
+#colgot g.layer{opacity:0;transition:opacity .5s}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.item{width:min(320px,64vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;text-align:center;
+  font-size:24px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:64px;line-height:1.1}
+.item .pic img{width:100%;max-width:180px;border-radius:14px;display:block;margin:0 auto}
+.tapbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:150px;font-size:21px;padding:14px 18px;min-height:66px}
+.fb{min-height:60px;font-size:22px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:20px;color:var(--ink2);text-align:center}
+/* check */
+.q{font-size:26px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:86px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:92px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:26px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:19px}
+  .choice2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Dig deeper! <button class="say" data-say="Scoop up a handful of garden soil. What is really inside it? Just one thing, or a mix of many things? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Scoop up a handful of garden soil and look closely.
+  What is really inside it? Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="one">
+      <img data-img="hook_one" alt="" hidden><svg viewBox="0 0 200 120" aria-label="plain brown lump"><rect width="200" height="120" rx="16" fill="#f3e9d6"/><ellipse cx="100" cy="70" rx="60" ry="34" fill="#8a6a4a"/></svg>
+      <span>Just one thing — "dirt"</span>
+    </div>
+    <div class="pick" data-guess="mix">
+      <img data-img="hook_mix" alt="" hidden><svg viewBox="0 0 200 120" aria-label="soil with rock bits, leaves, water and air inside"><rect width="200" height="120" rx="16" fill="#f3e9d6"/><ellipse cx="100" cy="70" rx="60" ry="34" fill="#8a6a4a"/><circle cx="78" cy="62" r="7" fill="#9d9d9d"/><path d="M118 58 q8 -10 16 0 q-8 10 -16 0" fill="#7a5230"/><path d="M92 78 q5 8 0 12 a6 6 0 1 1 0 -12" fill="#5aa3bf"/><circle cx="122" cy="80" r="5" fill="#fbf5ea"/></svg>
+      <span>A mix of many things</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's dig →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Soil is a recipe <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <!-- beat 1: the mix, magnified -->
+    <svg class="beatart" id="ba1" viewBox="0 0 1000 420">
+      <rect x="0" y="260" width="1000" height="160" fill="#5a4128"/>
+      <circle cx="500" cy="200" r="150" fill="#6f5238" stroke="#fbf5ea" stroke-width="10"/>
+      <g><circle cx="440" cy="160" r="20" fill="#9d9d9d"/><circle cx="560" cy="250" r="14" fill="#8d8d8d"/><text x="430" y="115" font-size="24" font-weight="800" fill="#fbf5ea">rock bits</text></g>
+      <g><path d="M540 140 q16 -20 32 0 q-16 20 -32 0" fill="#7a5230"/><path d="M470 260 q14 -18 28 0 q-14 18 -28 0" fill="#7a5230"/><text x="530" y="115" font-size="24" font-weight="800" fill="#fbf5ea">humus</text></g>
+      <g><path d="M420 220 q8 12 0 18 a9 9 0 1 1 0 -18" fill="#5aa3bf"/><text x="370" y="260" font-size="24" font-weight="800" fill="#cfe6ee">water</text></g>
+      <g><circle cx="520" cy="200 " r="8" fill="#fbf5ea"/><circle cx="490" cy="185" r="6" fill="#fbf5ea"/><text x="545" y="205" font-size="24" font-weight="800" fill="#fbf5ea">air</text></g>
+    </svg>
+    <!-- beat 2: made slowly -->
+    <svg class="beatart" id="ba2" viewBox="0 0 1000 420">
+      <rect x="0" y="300" width="1000" height="120" fill="#5a4128"/>
+      <g><rect x="90" y="120" width="150" height="120" rx="18" fill="#9d9d9d"/><circle cx="130" cy="290" r="14" fill="#9d9d9d"/><circle cx="180" cy="296" r="9" fill="#8d8d8d"/><circle cx="220" cy="290" r="6" fill="#8d8d8d"/><text x="95" y="100" font-size="26" font-weight="800" fill="#3b2a1e">rock crumbles…</text></g>
+      <g><path d="M640 140 q22 -28 44 0 q-22 28 -44 0" fill="#c9873b"/><path d="M700 190 q18 -24 36 0 q-18 24 -36 0" fill="#a86a2e"/><path d="M660 250 q14 -18 28 0 q-14 18 -28 0" fill="#7a5230"/><text x="600" y="100" font-size="26" font-weight="800" fill="#3b2a1e">leaves rot…</text></g>
+      <text x="360" y="380" font-size="30" font-weight="900" fill="#fbf5ea">…over many, many years</text>
+    </svg>
+    <!-- beat 3: layers -->
+    <svg class="beatart" id="ba3" viewBox="0 0 1000 420">
+      <g><rect x="300" y="90" width="400" height="80" fill="#5a4128"/><text x="720" y="140" font-size="28" font-weight="800" fill="#3b2a1e">TOPSOIL — dark, richest</text>
+      <rect x="300" y="170" width="400" height="90" fill="#8a6a4a"/><text x="720" y="220" font-size="28" font-weight="800" fill="#3b2a1e">subsoil</text>
+      <rect x="300" y="260" width="400" height="100" fill="#9d9d9d"/><text x="720" y="315" font-size="28" font-weight="800" fill="#3b2a1e">solid rock</text>
+      <g stroke="#3f7d4e" stroke-width="6" fill="none"><path d="M380 90 v-24 M420 90 v-30 M460 90 v-22 M520 90 v-28 M580 90 v-24"/></g></g>
+    </svg>
+    <!-- beat 4: feeds and holds -->
+    <svg class="beatart" id="ba4" viewBox="0 0 1000 420">
+      <rect x="0" y="230" width="1000" height="190" fill="#5a4128"/>
+      <g><rect x="488" y="110" width="16" height="120" rx="7" fill="#3f7d4e"/><ellipse cx="450" cy="110" rx="40" ry="24" fill="#4a8d55"/><ellipse cx="540" cy="100" rx="42" ry="26" fill="#4a8d55"/><ellipse cx="496" cy="70" rx="38" ry="24" fill="#3f7d4e"/></g>
+      <g stroke="#e8dcc4" stroke-width="8" fill="none" stroke-linecap="round"><path d="M496 230 q-40 40 -80 60"/><path d="M496 230 q40 44 84 56"/><path d="M496 230 q-6 60 0 90"/></g>
+      <g fill="#e0a93b"><circle cx="420" cy="300" r="8"/><circle cx="560" cy="296" r="8"/><circle cx="500" cy="330" r="8"/></g>
+      <text x="60" y="300" font-size="26" font-weight="800" fill="#fbf5ea">roots GRIP…</text>
+      <text x="640" y="330" font-size="26" font-weight="800" fill="#e0a93b">…and DRINK nutrients</text>
+    </svg>
+    <!-- beat 5: soil helpers -->
+    <svg class="beatart" id="ba5" viewBox="0 0 1000 420">
+      <rect x="0" y="200" width="1000" height="220" fill="#5a4128"/>
+      <g stroke="#6f5238" stroke-width="26" fill="none" stroke-linecap="round"><path d="M120 420 Q200 320 320 340 T560 300"/><path d="M600 420 Q680 340 820 360"/></g>
+      <g class="wormwig"><path d="M300 330 q20 -22 40 0 q20 22 40 0" stroke="#d98a7a" stroke-width="16" fill="none" stroke-linecap="round"/><circle cx="384" cy="326" r="9" fill="#d98a7a"/></g>
+      <g><ellipse cx="700" cy="352" rx="34" ry="20" fill="#5c554b"/><circle cx="668" cy="344" r="12" fill="#6b6458"/><path d="M660 352 l-10 6" stroke="#e8dcc4" stroke-width="4"/></g>
+      <g><ellipse cx="520" cy="240 " rx="22" ry="12" fill="#8d8d8d"/><g stroke="#7a746a" stroke-width="3"><line x1="504" y1="250" x2="500" y2="256"/><line x1="516" y1="252" x2="514" y2="258"/><line x1="530" y1="252" x2="532" y2="258"/></g></g>
+      <g fill="#fbf5ea"><circle cx="360" cy="300" r="6"/><circle cx="420" cy="320" r="5"/><circle cx="480" cy="290" r="6"/></g>
+      <text x="60" y="120" font-size="28" font-weight="800" fill="#3b2a1e">Worm tunnels let AIR in and MIX the soil</text>
+    </svg>
+    <div class="stamp" id="stampMix">A MIX, MADE SLOWLY</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Mix the soil <button class="say" id="sayPrac" data-voice="mix_intro">🔊</button></h2>
+  <p class="lead" id="pLead"></p>
+  <div class="pracvis" id="pracvis">
+    <svg id="mixgot" viewBox="0 0 360 150" width="360" aria-label="soil mixing bowl">
+      <path d="M30 40 L330 40 L300 130 Q180 150 60 130 Z" fill="#c9b18f"/>
+      <ellipse cx="180" cy="40" rx="150" ry="20" fill="#8a6a4a"/>
+      <g class="in" id="in_rock"><circle cx="120" cy="70" r="14" fill="#9d9d9d"/><circle cx="145" cy="86" r="9" fill="#8d8d8d"/></g>
+      <g class="in" id="in_leaves"><path d="M210 64 q14 -18 28 0 q-14 18 -28 0" fill="#7a5230"/><path d="M240 84 q10 -14 20 0 q-10 14 -20 0" fill="#a86a2e"/></g>
+      <g class="in" id="in_water"><path d="M180 78 q10 14 0 22 a11 11 0 1 1 0 -22" fill="#5aa3bf"/></g>
+      <g class="in" id="in_air"><circle cx="270" cy="70" r="8" fill="#fbf5ea"/><circle cx="255" cy="88" r="6" fill="#fbf5ea"/></g>
+    </svg>
+    <svg id="colgot" viewBox="0 0 260 200" width="260" style="display:none" aria-label="soil layer column">
+      <rect x="30" y="10" width="200" height="180" fill="#f3e9d6" rx="10"/>
+      <g class="layer" id="lay_top"><rect x="30" y="10" width="200" height="55" fill="#5a4128"/><text x="60" y="45" font-size="22" font-weight="800" fill="#fbf5ea">topsoil</text></g>
+      <g class="layer" id="lay_sub"><rect x="30" y="65" width="200" height="60" fill="#8a6a4a"/><text x="60" y="102" font-size="22" font-weight="800" fill="#fbf5ea">subsoil</text></g>
+      <g class="layer" id="lay_rock"><rect x="30" y="125" width="200" height="65" fill="#9d9d9d"/><text x="60" y="165" font-size="22" font-weight="800" fill="#3b2a1e">solid rock</text></g>
+    </svg>
+  </div>
+  <div class="deck">
+    <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+    <div class="tapbtns" id="tapbtns"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the soil recipe again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.soil.01',version:1,quiz:'quiz.science.35.soil.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.03; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), stampMix=document.getElementById('stampMix');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  const BEATS=[
+    {art:'ba1',media:'teach_mix',id:'t_mix',cap:'Soil is a MIX: rock bits + humus (rotted dead leaves) + water + air. Look close and you can find all four.',
+     say:'Soil is a mix of four ingredients. Tiny rock bits. Humus — dead leaves and plants that rotted into dark crumbs. Water. And air. Look close and you can find all four.'},
+    {art:'ba2',media:'teach_slow',id:'t_slow',cap:'Nature makes soil SLOWLY. Rock crumbles into bits; leaves rot into humus. It takes many, many years.',
+     say:'Nature makes soil slowly. Rain, ice and roots crumble big rock into tiny bits. Fallen leaves rot into humus. One handful of soil can take hundreds of years to make.'},
+    {art:'ba3',media:'teach_layers',id:'t_layers',cap:'Soil sits in LAYERS. Topsoil on top — dark and richest. Subsoil below. Solid rock at the bottom.',
+     say:'Underground, soil sits in layers. Topsoil on top — dark, soft, and the richest in humus. Lighter subsoil below. And solid rock at the very bottom. Plants do most of their feeding in the topsoil.'},
+    {art:'ba4',media:'teach_plants',id:'t_plants',cap:'Soil HOLDS and FEEDS plants. Roots grip the soil so wind can’t tip the plant — and drink water and nutrients from it.',
+     say:'Soil does two jobs for plants. It holds them: roots grip the soil so wind cannot tip them over. And it feeds them: roots drink water and nutrients — plant food — right out of the soil.'},
+    {art:'ba5',media:'teach_life',id:'t_life',cap:'Soil is a busy home: worms, moles, roly-polys. Worm tunnels let air in and mix the soil — the diggers make soil BETTER.',
+     say:'And soil is a busy home. Worms, moles and roly-polys live in it — and they make it better! Worm tunnels let air and water in and mix the layers. The diggers are the soil’s helpers.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.say).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+    stampMix.classList.remove('show'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    BEATS.forEach((b,i)=>{
+      later(()=>{
+        document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+        document.getElementById(b.art).classList.add('on');
+        cap.textContent=b.cap; say(b.say,b.id); showBeat(b.media);
+        if(i===BEATS.length-1){ later(()=>{ stampMix.classList.add('show'); document.getElementById('teachNext').disabled=false; },2200); }
+      }, i*8200+100);
+    });
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (three phases) ---------- */
+  const MIX=[
+    {n:'Tiny rock bits',p:'🪨',k:'card_rock',a:0,vis:'in_rock',why:'Crumbled rock is the gritty part of the mix. In it goes!'},
+    {n:'Dead leaves (humus)',p:'🍂',k:'card_leaves',a:0,mis:'onething',why:'Rotted leaves become humus — the dark food-rich part of soil.'},
+    {n:'Water',p:'💧',k:'card_water',a:0,mis:'onething',why:'Soil holds tiny drops of water between its crumbs.'},
+    {n:'Air',p:'🫧',k:'card_airmix',a:0,mis:'onething',why:'Tiny air pockets hide between the crumbs — roots and worms breathe it.'},
+    {n:'Plastic bottle',p:'🧴',k:'card_plastic',a:1,mis:'notsoil',why:'Plastic never rots into food for the soil. It does not belong in the mix.'}
+  ];
+  const LAYERS=[
+    {n:'Which layer goes on TOP?',p:'⬆️',k:'card_column',a:0,w:'lay_top',opts:['Topsoil','Subsoil','Solid rock'],vis:'lay_top',mis:'order',why:'Topsoil on top — dark and richest, where plants feed.'},
+    {n:'Which layer comes NEXT, under the topsoil?',p:'↕️',k:'card_column',a:1,w:'lay_sub',opts:['Topsoil','Subsoil','Solid rock'],vis:'lay_sub',mis:'order',why:'Subsoil next — lighter, with fewer food crumbs.'},
+    {n:'And at the very BOTTOM?',p:'⬇️',k:'card_column',a:2,w:'lay_rock',opts:['Topsoil','Subsoil','Solid rock'],vis:'lay_rock',mis:'order',why:'Solid rock at the bottom — the soil’s crumbly future!'}
+  ];
+  const WHO=[
+    {n:'A worm digs tunnels through the garden bed',p:'🪱',k:'card_worm',a:0,mis:'wormswreck',why:'Worm tunnels let air and water in and mix the soil. Worms are helpers!'},
+    {n:'Dead leaves rot on the ground all winter',p:'🍂',k:'card_rot',a:0,mis:'leavestrash',why:'Rotting leaves become humus — new plant food for the soil.'},
+    {n:'A mole digs its burrow under the field',p:'🕳️',k:'card_mole',a:0,mis:'wormswreck',why:'The mole’s digging mixes and loosens the soil, like a tiny plow.'},
+    {n:'A roly-poly nibbles dead leaves to bits',p:'🐞',k:'card_roly',a:0,mis:'wormswreck',why:'Chewed-up leaves rot faster — the roly-poly speeds up the humus.'},
+    {n:'Someone buries a plastic bottle in the garden',p:'🧴',k:'card_bury',a:1,mis:'notsoil',why:'Plastic never rots into food. It just sits there in the way.'},
+    {n:'Rain washes all the dark topsoil off a bare hill',p:'🌧️',k:'card_wash',a:1,mis:'quickfix',why:'The richest layer is lost — and nature needs many, many years to remake it.'}
+  ];
+  const PHASES=[
+    {title:'Mix the soil',voice:'mix_intro',lead:'Does it belong in the soil mix? Tap a button.',
+     sayIntro:'Let’s mix soil from scratch! For each card, tap: into the mix, or not soil.',
+     btns:['Into the mix','Not soil'],items:MIX,vis:'mixgot',retry:false,
+     doneVoice:'mix_done',doneSay:'Rock bits, humus, water, air — your soil mix is complete! Now stack the layers.'},
+    {title:'Stack the layers',voice:'layer_intro',lead:'Build the underground column from the top down.',
+     sayIntro:'Now stack the underground layers, from the top down.',
+     btns:null,items:LAYERS,vis:'colgot',retry:true,
+     doneVoice:'layer_done',doneSay:'Topsoil, subsoil, solid rock — stacked! Last job: who helps the soil?'},
+    {title:'Helper or trouble?',voice:'who_intro',lead:'Is this GOOD for the soil, or BAD for it? Tap a button.',
+     sayIntro:'Is this good for the soil, or bad for it? Tap a button.',
+     btns:['Good for the soil','Bad for the soil'],items:WHO,vis:null,retry:false,
+     doneVoice:'who_done',doneSay:'You know your soil! Now show what you know.'}
+  ];
+  let phase=0,queue=[],done=0,tries=0,misses={},pass1correct=0,seen=0,busy=false;
+  const item=document.getElementById('item'),fb=document.getElementById('fb'),tap=document.getElementById('tapbtns');
+  function startPractice(){ phase=0; tries=0;misses={};pass1correct=0;
+    document.querySelectorAll('#mixgot .in').forEach(g=>g.classList.remove('show'));
+    document.querySelectorAll('#colgot .layer').forEach(g=>g.classList.remove('show'));
+    startPhase(); }
+  function setButtons(list){ tap.innerHTML=''; list.forEach((t,i)=>{ const b=document.createElement('button'); b.className='btn ghost'; b.textContent=t; b.onclick=()=>answer(i); tap.appendChild(b); }); }
+  function startPhase(){
+    const P=PHASES[phase];
+    queue=P.items.slice(); done=0; seen=0; busy=false;
+    document.getElementById('pTitle').childNodes[0].textContent=P.title+' ';
+    document.getElementById('sayPrac').dataset.voice=P.voice;
+    document.getElementById('sayPrac').onclick=()=>say(P.sayIntro,P.voice);
+    document.getElementById('pLead').innerHTML=P.lead;
+    document.getElementById('mixgot').style.display = P.vis==='mixgot'?'':'none';
+    document.getElementById('colgot').style.display = P.vis==='colgot'?'':'none';
+    document.getElementById('pracvis').style.display = P.vis?'':'none';
+    if(P.btns) setButtons(P.btns);
+    fb.textContent=''; say(P.sayIntro,P.voice); showItem();
+  }
+  function showItem(){
+    const P=PHASES[phase];
+    if(!queue.length){
+      if(phase<PHASES.length-1){ say(P.doneSay,P.doneVoice); setTimeout(()=>{phase++; startPhase();},1600); return; }
+      item.style.visibility='hidden'; tap.style.visibility='hidden';
+      document.getElementById('counter').textContent='All done!';
+      document.getElementById('pracNext').disabled=false; say(P.doneSay,P.doneVoice); return;
+    }
+    item.style.visibility='visible'; tap.style.visibility='visible'; busy=false;
+    const it=queue[0];
+    if(it.opts) setButtons(it.opts);
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p;
+    document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${P.items.length}`;
+    say(it.n);
+  }
+  function answer(i){
+    const P=PHASES[phase];
+    if(busy||!queue.length||item.style.visibility==='hidden') return;
+    busy=true;
+    const it=queue.shift(); tries++; seen++;
+    const ok=i===it.a;
+    if(ok){ done++; if(seen<=P.items.length) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+(it.w||it.k));
+      if(it.vis){ const g=document.getElementById(it.vis); if(g) g.classList.add('show'); }
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint = it.mis==='onething' ? 'Soil is not one thing — it is a recipe with four ingredients. Is this one of them?'
+        : it.mis==='notsoil' ? 'Ask: can it ROT into food for the soil? Plastic never can.'
+        : it.mis==='order' ? 'Remember: the dark, richest layer sits on top; the hard rock waits at the bottom.'
+        : it.mis==='wormswreck' ? 'The diggers look messy — but their tunnels bring air and mix the soil.'
+        : it.mis==='leavestrash' ? 'Dead leaves are not trash to the soil — they are tomorrow’s humus.'
+        : it.mis==='quickfix' ? 'Soil is made slowly. What washes away is not replaced next week.'
+        : 'Think about the four ingredients and who helps them.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+(it.mis||'other'));
+      if(P.retry) queue.unshift(it); else queue.push(it);
+    }
+    setTimeout(showItem, ok?1500:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🥣',k:'card_mixq',q:'What is soil made of?',
+     o:['Just one thing — dirt','A mix: rock bits, humus, water and air','Only dead leaves'],a:1},
+     // 0 = soil-is-one-thing; 2 = only-one-ingredient
+    {id:2,pic:'⏳',k:'card_slowq',q:'How long does nature take to make new soil?',
+     o:['About one rainy week','A very long time — rock crumbles and leaves rot slowly'],a:1},
+     // 0 = soil-made-quickly
+    {id:3,pic:'🌱',k:'card_column',q:'Which layer is the richest for plants?',
+     o:['The dark topsoil on top','The solid rock at the bottom — it is the strongest','The lighter subsoil'],a:0},
+     // 1 = strongest-must-be-best; 2 = layer confusion
+    {id:4,pic:'🪱',k:'card_worm',q:'You find worms all over the garden bed. What should you do?',
+     o:['Pull them out — worms wreck the soil','Leave them — their tunnels bring air in and mix the soil'],a:1},
+     // 0 = worms-wreck-soil
+    {id:5,pic:'🌿',k:'card_plantq',q:'What does soil do for a plant?',
+     o:['Only holds it up straight','Holds it up AND feeds it water and nutrients','Nothing — plants only need sunshine'],a:1}
+     // 0 = support-only; 2 = plants-need-nothing-from-soil
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is: "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know what’s under your feet! 🪱' : 'Good try! Let’s watch the soil recipe once more.';
+    document.getElementById('guessTxt').textContent = guess==='mix' ? 'At the start you guessed soil is a mix — you were right! Rock bits, humus, water and air.'
+      : guess==='one' ? 'At the start you guessed soil is just one thing. Now you know: it’s a slow-made mix of four!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the soil recipe again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,answer,peek:()=>queue[0]?{n:queue[0].n,a:queue[0].a,opts:(queue[0].opts||PHASES[phase].btns).length,phase}:null,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go dig a real cup of soil with a grown-up. 🥄'; say('Lesson done! Now go dig a real cup of soil with a grown-up, and hunt for all four ingredients.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

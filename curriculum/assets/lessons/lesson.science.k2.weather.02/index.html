@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One meadow, four seasons — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;text-align:center}
+.pick .bigmoji{font-size:80px;line-height:1.1}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media .bigmoji{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:340px;background:linear-gradient(var(--sky) 0 66%,#a9c98a 66% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:background 1s}
+.scene.winter{background:linear-gradient(#dbe7ee 0 66%,#eef3f5 66% 100%)}
+.scene.fall{background:linear-gradient(#d9e3e0 0 66%,#c9b070 66% 100%)}
+#treeWrap{position:absolute;left:38%;bottom:6%;width:22%}
+#treeWrap svg{width:100%;height:auto;display:block}
+.canopy{transition:fill 1s,opacity 1s}
+.scene .canopy{fill:#8fbf6a}
+.scene.summer .canopy{fill:#3f7d43}
+.scene.fall .canopy{fill:#d98a3b}
+.scene.winter .canopy{opacity:0}
+#blossoms{opacity:0;transition:opacity 1s}
+.scene.spring #blossoms{opacity:1}
+#foxWrap{position:absolute;left:10%;bottom:7%;width:20%}
+#foxWrap svg{width:100%;height:auto;display:block}
+#foxThick{opacity:0;transition:opacity 1s}
+.scene.fall #foxThick,.scene.winter #foxThick{opacity:1}
+#kits{opacity:0;transition:opacity 1s}
+.scene.spring #kits{opacity:1}
+#rain,#snow,#leaves{position:absolute;inset:0;opacity:0;transition:opacity .8s}
+#rain.show,#snow.show,#leaves.show{opacity:1}
+#rain line{stroke:#5aa3bf;stroke-width:4;stroke-linecap:round;animation:fall 1s linear infinite}
+#snow circle{fill:#fff;animation:fall 3s linear infinite}
+#leaves path{fill:#d98a3b;animation:fall 2.4s linear infinite}
+@keyframes fall{from{transform:translateY(-12%)}to{transform:translateY(16%)}}
+#wearChip{position:absolute;right:3%;bottom:8%;background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:10px 16px;font-size:24px;font-weight:800}
+#stripChip{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);padding:10px 16px;font-size:30px;font-weight:800;text-align:center;opacity:0;transition:opacity .8s;letter-spacing:4px}
+#stripChip.show{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media #treeWrap,.scene.media #foxWrap,.scene.media #rain,.scene.media #snow,.scene.media #leaves,.scene.media #wearChip,.scene.media #stripChip{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.pwrap{display:flex;flex-direction:column;gap:14px;flex:1}
+.pscene{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:170px;gap:8px}
+.pscene .bigmoji{font-size:96px;line-height:1.1}
+.pscene img{width:min(40vw,260px);border-radius:16px;display:block}
+.wstrip{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.wday{width:76px;background:var(--cream);border:4px solid var(--cream2);border-radius:14px;padding:6px 0;text-align:center}
+.wday .d{font-size:18px;font-weight:800;color:var(--ink2)}
+.wday .w{font-size:40px;line-height:1.2}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.partbtn{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.partbtn.right{border-color:var(--green);background:#eaf5ec}
+.partbtn.wrong{border-color:var(--red);background:#fbe9e7}
+.partbtn[disabled]{cursor:default}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:4px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px}
+  .wday{width:60px} .wday .w{font-size:30px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>One meadow, four seasons <button class="say" data-say="It rained all day today, and it's cold. Your friend says: it must be winter! Can ONE day tell you the season? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">It rained all day and it's cold. Your friend says: <b>"It must be winter!"</b> Can ONE day tell you the season?</p>
+  <div class="choice2">
+    <div class="pick" data-guess="one">
+      <div class="bigmoji">🌧️❄️</div><img data-img="hook_one" alt="" hidden>
+      <span>Yes — one day tells you</span>
+    </div>
+    <div class="pick" data-guess="many">
+      <div class="bigmoji">📆🔍</div><img data-img="hook_many" alt="" hidden>
+      <span>No — you need many days</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The same meadow, all year <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div id="treeWrap"><svg viewBox="0 0 140 170">
+      <rect x="62" y="86" width="16" height="80" rx="6" fill="#7a5a35"/>
+      <path d="M70 96 l-26 -30 M70 104 l30 -34 M70 88 l-12 -40 M70 90 l16 -42" stroke="#7a5a35" stroke-width="7" stroke-linecap="round"/>
+      <circle class="canopy" cx="70" cy="52" r="42"/>
+      <circle class="canopy" cx="40" cy="68" r="26"/>
+      <circle class="canopy" cx="102" cy="68" r="26"/>
+      <g id="blossoms"><circle cx="52" cy="42" r="6" fill="#f4c7d4"/><circle cx="84" cy="34" r="6" fill="#f4c7d4"/><circle cx="98" cy="58" r="6" fill="#f4c7d4"/><circle cx="38" cy="58" r="6" fill="#f4c7d4"/></g>
+    </svg></div>
+    <div id="foxWrap"><svg viewBox="0 0 220 130">
+      <g id="foxThick"><ellipse cx="105" cy="88" rx="66" ry="32" fill="none" stroke="#e8a06a" stroke-width="10" stroke-dasharray="4 10" stroke-linecap="round"/></g>
+      <path d="M158 84 q40 -4 50 -32 q8 22 -9 40 q-17 18 -42 10z" fill="#d4763b"/>
+      <ellipse cx="105" cy="88" rx="54" ry="24" fill="#d4763b"/>
+      <rect x="68" y="100" width="11" height="26" rx="5" fill="#b35f2c"/><rect x="128" y="100" width="11" height="26" rx="5" fill="#b35f2c"/>
+      <ellipse cx="52" cy="66" rx="24" ry="19" fill="#dd8248"/>
+      <path d="M36 50 l-6 -22 l17 14z" fill="#d4763b"/><path d="M60 48 l8 -22 l9 18z" fill="#d4763b"/>
+      <path d="M34 70 q-10 3 -9 9 q8 5 17 -1z" fill="#fff"/>
+      <circle cx="30" cy="74" r="3" fill="#2b2b2b"/><circle cx="46" cy="63" r="3" fill="#2b2b2b"/>
+      <g id="kits"><g transform="translate(150,86) scale(.4)"><ellipse cx="105" cy="88" rx="54" ry="24" fill="#dd8248"/><ellipse cx="52" cy="66" rx="24" ry="19" fill="#e8935c"/><path d="M36 50 l-6 -22 l17 14z" fill="#dd8248"/><path d="M60 48 l8 -22 l9 18z" fill="#dd8248"/><circle cx="46" cy="63" r="3" fill="#2b2b2b"/></g></g>
+    </svg></div>
+    <svg id="rain" viewBox="0 0 1000 400" preserveAspectRatio="none"><g><line x1="150" y1="40" x2="140" y2="90"/><line x1="350" y1="20" x2="340" y2="70"/><line x1="560" y1="50" x2="550" y2="100"/><line x1="760" y1="30" x2="750" y2="80"/><line x1="900" y1="60" x2="890" y2="110"/><line x1="250" y1="120" x2="240" y2="170"/><line x1="650" y1="130" x2="640" y2="180"/></g></svg>
+    <svg id="snow" viewBox="0 0 1000 400" preserveAspectRatio="none"><g><circle cx="140" cy="60" r="7"/><circle cx="330" cy="30" r="6"/><circle cx="540" cy="70" r="7"/><circle cx="740" cy="40" r="6"/><circle cx="900" cy="80" r="7"/><circle cx="240" cy="150" r="6"/><circle cx="640" cy="160" r="7"/></g></svg>
+    <svg id="leaves" viewBox="0 0 1000 400" preserveAspectRatio="none"><g><path d="M420 90 q10 -14 20 0 q-10 14 -20 0z"/><path d="M520 60 q10 -14 20 0 q-10 14 -20 0z"/><path d="M470 150 q10 -14 20 0 q-10 14 -20 0z"/><path d="M560 130 q10 -14 20 0 q-10 14 -20 0z"/></g></svg>
+    <div id="wearChip">You: 🧥</div>
+    <div id="stripChip"></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌸</span>Spring</div>
+    <div class="badge" id="b1"><span class="em">☀️</span>Summer</div>
+    <div class="badge" id="b2"><span class="em">🍂</span>Fall</div>
+    <div class="badge" id="b3"><span class="em">❄️</span>Winter</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Season detective <button class="say" data-say="Look at the clue. Then tap the best answer." data-voice="prac_intro">🔊</button></h2>
+  <div class="pwrap">
+    <p class="lead" id="ptext" style="margin:0"></p>
+    <div class="pscene" id="pscene"></div>
+    <div class="parts" id="pbtns"></div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the seasons again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.weather.02',version:1,quiz:'quiz.science.k2.weather.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_spring'],['b1','badge_summer'],['b2','badge_fall'],['b3','badge_winter']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'),wear=document.getElementById('wearChip'),strip=document.getElementById('stripChip');
+  const rain=document.getElementById('rain'),snow=document.getElementById('snow'),leaves=document.getElementById('leaves');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function season(s){ sceneEl.classList.remove('spring','summer','fall','winter'); if(s) sceneEl.classList.add(s); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    season('spring'); rain.classList.remove('show'); snow.classList.remove('show'); leaves.classList.remove('show');
+    wear.textContent='You: 🧥'; strip.className=''; strip.textContent='';
+    badges.forEach(b=>b.className='badge'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "SPRING. It warms up, rain falls, buds open on the tree. The fox has kits. You wear a rain jacket.",
+    "SUMMER. Hot and bright. The tree is full of green leaves. The fox wears her thin summer coat. You wear a sun hat.",
+    "FALL. It cools down. Leaves turn orange and drop. The fox's coat grows thicker. You put a jacket on.",
+    "WINTER. Cold. The tree is bare, snow falls. The fox wears her thickest coat. You bundle up in a big warm coat.",
+    "But listen — inside a season, the weather still changes day by day. A cold rainy day can come in summer. It is STILL summer!",
+    "How do we know the season for sure? We RECORD the weather, day after day, and the pattern shows us."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: spring
+    cap.textContent='SPRING: buds, rain, fox kits.'; say(teachScript[0],'t_spring'); showBeat('teach_spring'); season('spring'); rain.classList.add('show'); wear.textContent='You: 🧥☔';
+    later(()=>{ badges[0].classList.add('on'); rain.classList.remove('show'); },3600);
+    // beat 2: summer
+    later(()=>{ cap.textContent='SUMMER: green leaves, thin coat, sun hat.'; say(teachScript[1],'t_summer'); showBeat('teach_summer'); season('summer'); wear.textContent='You: 👒'; },4800);
+    later(()=>{ badges[1].classList.add('on'); },8000);
+    // beat 3: fall
+    later(()=>{ cap.textContent='FALL: leaves drop, coats grow thicker.'; say(teachScript[2],'t_fall'); showBeat('teach_fall'); season('fall'); leaves.classList.add('show'); wear.textContent='You: 🧥'; },9600);
+    later(()=>{ badges[2].classList.add('on'); leaves.classList.remove('show'); },12800);
+    // beat 4: winter
+    later(()=>{ cap.textContent='WINTER: bare tree, snow, thickest coat.'; say(teachScript[3],'t_winter'); showBeat('teach_winter'); season('winter'); snow.classList.add('show'); wear.textContent='You: 🧣🧤'; },14400);
+    later(()=>{ badges[3].classList.add('on'); },17600);
+    // beat 5: weather inside a season
+    later(()=>{ snow.classList.remove('show'); cap.textContent='A cold rainy day in SUMMER is still summer!'; say(teachScript[4],'t_inside'); showBeat('teach_inside'); season('summer'); rain.classList.add('show'); wear.textContent='You: 👒→🧥'; },19600);
+    // beat 6: record the pattern
+    later(()=>{ rain.classList.remove('show'); cap.textContent='Record the weather — the PATTERN shows the season.'; say(teachScript[5],'t_record'); showBeat('teach_record'); strip.textContent='☀️☀️🌧️☀️☁️☀️🌧️'; strip.className='show'; },25200);
+    later(()=>{ document.getElementById('teachNext').disabled=false; },28400);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const WEEK=[['Mon','☀️'],['Tue','☀️'],['Wed','🌧️'],['Thu','☀️'],['Fri','☁️'],['Sat','☀️'],['Sun','🌧️']];
+  function stripHTML(){ return '<div class="wstrip">'+WEEK.map(([d,w])=>'<div class="wday"><div class="d">'+d+'</div><div class="w">'+w+'</div></div>').join('')+'</div>'; }
+  const PITEMS=[
+    {id:'a1',pic:'🌳❄️',k:'card_bare',q:'The tree is bare and snow is falling. Which season?',
+      o:[{t:'Winter',k:'ok'},{t:'Summer',k:'season-swap'},{t:'Spring',k:'season-swap'}],a:0,
+      why:'Bare tree plus snow — that’s winter.'},
+    {id:'a2',pic:'🦊',k:'card_fox_thick',q:'The fox is growing a thick, warm coat. What is coming?',
+      o:[{t:'Winter — animals get ready for cold',k:'ok'},{t:'Nothing — animals never notice seasons',k:'feel-nothing'},{t:'Summer',k:'season-swap'}],a:0,
+      why:'Animals feel the seasons — thick coats get ready for winter cold.'},
+    {id:'a3',pic:'🌸',k:'card_buds',q:'Buds open and baby animals are born. Which season?',
+      o:[{t:'Spring',k:'ok'},{t:'Fall',k:'season-swap'},{t:'Winter',k:'season-swap'}],a:0,
+      why:'Spring — everything wakes up and starts growing.'},
+    {id:'a4',pic:'☀️🌳',k:'card_summer_tree',q:'It’s SUMMER. Is the tree bare?',
+      o:[{t:'No — bare trees are a winter clue',k:'ok'},{t:'Yes — trees are bare all year',k:'tree-static'}],a:0,
+      why:'In summer the tree is full of green leaves. Bare comes in winter.'},
+    {id:'a5',pic:'🌧️👒',k:'card_summer_rain',q:'A cold rainy day comes in the middle of summer. What season is it?',
+      o:[{t:'Still summer — one day is not a season',k:'ok'},{t:'Winter now — cold means winter',k:'one-day'},{t:'No season at all',k:'one-day'}],a:0,
+      why:'Daily weather changes INSIDE a season. One cold day doesn’t change the season.'},
+    {id:'b1',strip:true,q:'Here is our weather strip for the week. How many SUNNY days?',
+      o:[{t:'4',k:'ok'},{t:'2',k:'count'},{t:'7',k:'count'}],a:0,
+      why:'Count the suns: Monday, Tuesday, Thursday, Saturday — four sunny days.'},
+    {id:'b2',strip:true,q:'Look again. Were there more sunny days or rainy days?',
+      o:[{t:'More sunny days',k:'ok'},{t:'More rainy days',k:'count'},{t:'Can’t tell — weather is random',k:'random'}],a:0,
+      why:'The strip shows it: 4 sunny, 2 rainy. Records let us compare!'},
+    {id:'b3',strip:true,q:'Why do we keep a weather strip at all?',
+      o:[{t:'To see the pattern over many days',k:'ok'},{t:'No reason — weather is random',k:'random'},{t:'It makes tomorrow sunny',k:'magic'}],a:0,
+      why:'Day by day looks jumbly — but the record shows the season’s pattern.'}
+  ];
+  const OPTFB={
+    'season-swap':'Check the clue again — what do the tree, the animals, and your clothes say?',
+    'feel-nothing':'Animals DO feel the seasons — fur thickens, food is stored, some sleep the winter away.',
+    'tree-static':'Trees change with the seasons: buds, green leaves, falling leaves, bare.',
+    'one-day':'One day is not a season! Daily weather wiggles — the season is the big pattern.',
+    'count':'Count on the strip, day by day. That’s what records are for.',
+    'random':'It only looks random day by day. Record it, and the pattern appears.',
+    'magic':'Records don’t change the weather — they help us SEE its pattern.'
+  };
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,plock=false;
+  const ptext=document.getElementById('ptext'),pscene=document.getElementById('pscene'),pbtns=document.getElementById('pbtns'),fb=document.getElementById('fb');
+  function startPractice(){ queue=PITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;plock=false; fb.textContent=''; fb.className='fb'; showP(); }
+  function showP(){
+    plock=false;
+    if(!queue.length){ ptext.textContent='You read every clue!'; pscene.innerHTML='<div class="bigmoji">🌸☀️🍂❄️</div>'; pbtns.innerHTML='';
+      document.getElementById('counter').textContent='All done! 🎉'; document.getElementById('pracNext').disabled=false;
+      say('You read every clue! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    ptext.textContent=it.q;
+    if(it.strip) pscene.innerHTML=stripHTML();
+    else if(img(it.k)) pscene.innerHTML='<img src="'+img(it.k)+'" alt="">';
+    else pscene.innerHTML='<div class="bigmoji">'+it.pic+'</div>';
+    pbtns.innerHTML='';
+    it.o.forEach((op,i)=>{ const b=document.createElement('button'); b.className='partbtn'; b.textContent=op.t; b.onclick=()=>answer(i,b); pbtns.appendChild(b); });
+    document.getElementById('counter').textContent=done+' of '+PITEMS.length+' answered';
+    say(it.q);
+  }
+  function answer(choice,btn){
+    if(plock||!queue.length) return; plock=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>PITEMS.length) pass1=false;
+    const ok=choice===it.a; const misKey=it.o[choice].k;
+    document.querySelectorAll('#pbtns .partbtn').forEach((b,j)=>{b.disabled=true; if(j===it.a) b.classList.add('right'); else if(j===choice&&!ok) b.classList.add('wrong');});
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.id);
+    } else {
+      misses[misKey]=(misses[misKey]||0)+1;
+      const hint=OPTFB[misKey]||'Look at the clue again.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+misKey.replace(/-/g,'_'));
+      queue.push(it);
+    }
+    setTimeout(showP, ok?1500:2200);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌸🔥',k:'card_hot_spring',q:'One HOT day comes in spring. Is it summer now?',o:['No — one day is not a season','Yes — hot means summer','Spring can never have hot days'],a:0,mis:['','one-day-season','weather-rigid']},
+    {id:2,pic:'🦊❄️',k:'card_fox_thick',q:'What does the fox do for winter?',o:['Grows a thick warm coat','Nothing — animals don’t feel winter','Puts on a scarf from the store'],a:0,mis:['','animals-feel-nothing','animals-like-people']},
+    {id:3,pic:'🌳',k:'card_bare',q:'The tree is bare. Which season is it most likely?',o:['Winter','Summer','Trees are bare in every season'],a:0,mis:['','season-swap','tree-static']},
+    {id:4,pic:'📋',k:'card_strip',q:'Why do we record the weather every day?',o:['To find the pattern of the season','No reason — weather is random','Writing it down changes the weather'],a:0,mis:['','records-pointless','record-magic']},
+    {id:5,pic:'🍂🧥',k:'card_fall_kid',q:'It’s fall and getting cooler. What do people do?',o:['Put on warmer clothes','Keep summer clothes — seasons don’t change us','Stop going outside forever'],a:0,mis:['','seasons-dont-affect-people','overreaction']}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can read the seasons! 🍂' : 'Good try! Let\'s watch the meadow once more.';
+    document.getElementById('guessTxt').textContent = guess==='many' ? 'At the start you said you need MANY days — right! One day is not a season.' : guess==='one' ? 'At the start you said one day tells the season. Now you know: one cold day can come in ANY season — the pattern tells!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the seasons again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! From today, tag your weather journal with the season. 🍂'; say('Lesson done! From today, write the season next to the weather in your journal.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

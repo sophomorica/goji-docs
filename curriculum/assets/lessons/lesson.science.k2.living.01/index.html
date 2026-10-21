@@ -428,6 +428,8 @@ p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
     document.getElementById('againTeach').textContent = passed? '↺ Watch the signs again' : '↺ Watch again, then try once more';
   }
   document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
   document.getElementById('finish').onclick=()=>{
     post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
     document.getElementById('gateTxt').textContent='Lesson done! Now go find out what a real wolf eats. 🐺'; say('Lesson done! Now go find out what a real wolf eats.','done');

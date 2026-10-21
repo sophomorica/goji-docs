@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Before and after — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick .big{font-size:90px;line-height:1.1}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media .big{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 66%,#e9d9a8 66% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg{position:absolute}
+#cTree{left:3%;bottom:8%;width:24%;opacity:0;transition:opacity .8s}
+#cTree.show{opacity:1}
+#cLeaf{left:16%;top:22%;width:6%;opacity:0;transition:opacity .5s}
+#cLeaf.show{opacity:1}
+#cLeaf.fall{animation:leaffall 2.6s ease-in forwards}
+@keyframes leaffall{0%{transform:translate(0,0) rotate(0)}40%{transform:translate(30px,90px) rotate(80deg)}100%{transform:translate(-10px,230px) rotate(160deg)}}
+#cCone{left:38%;bottom:10%;width:11%;opacity:0;transition:opacity .5s}
+#cCone.show{opacity:1}
+#cCone .scoop{transform-origin:60px 60px;transition:transform 2.4s ease}
+#cCone.melt .scoop{transform:scale(.35) translateY(70px)}
+#cPuddle{left:34%;bottom:7%;width:19%;opacity:0;transform:scale(.2);transform-origin:center bottom;transition:opacity 2s,transform 2.4s}
+#cPuddle.show{opacity:.9;transform:scale(1)}
+#cSeedRow{left:8%;bottom:8%;width:56%;opacity:0;transition:opacity .8s}
+#cSeedRow.show{opacity:1}
+#cSeedRow .ph{opacity:.25;transition:opacity .8s}
+#cSeedRow .ph.lit{opacity:1}
+#cPup{left:70%;bottom:9%;width:22%;opacity:0;transition:opacity .8s}
+#cPup.show{opacity:1}
+#cPup #pupSmall{transition:opacity .8s}
+#cPup.grown #pupSmall{opacity:0}
+#cPup #pupBig{opacity:0;transition:opacity .8s}
+#cPup.grown #pupBig{opacity:1}
+#cCastle{left:14%;bottom:8%;width:22%;opacity:0;transition:opacity .8s}
+#cCastle.show{opacity:1}
+#cCastle #castleUp{transition:opacity 1.6s}
+#cCastle.worn #castleUp{opacity:0}
+#cCastle #castleFlat{opacity:0;transition:opacity 1.6s}
+#cCastle.worn #castleFlat{opacity:1}
+#cWave{left:0;bottom:0;width:100%;opacity:0;transition:opacity .8s}
+#cWave.show{opacity:1}
+#cWave.roll path.w{stroke-dasharray:20 16;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-36}}
+#cRoad{left:52%;bottom:6%;width:44%;opacity:0;transition:opacity 1.2s}
+#cRoad.show{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.pairbox{display:flex;align-items:center;justify-content:center;gap:18px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;min-height:190px}
+.pcard{text-align:center;font-weight:800;font-size:24px;min-width:150px}
+.pcard .pic{font-size:84px;line-height:1.15}
+.pcard .pic img{width:130px;border-radius:14px;display:block;margin:0 auto}
+.arrow{font-size:54px;color:var(--ink2)}
+.qmark{width:130px;height:130px;border:6px dashed var(--sky2);border-radius:18px;display:grid;place-items:center;font-size:64px;color:var(--sky2);font-weight:900}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:14px}
+.opt{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 12px;cursor:pointer;box-shadow:var(--shadow);min-height:84px}
+.opt .pic{font-size:56px;line-height:1.1;display:block}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.opt.speedF{border-color:#e8b183}
+.opt.speedS{border-color:#9fc7d6}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  #cCone.melt .scoop{transform:scale(.35) translateY(70px)}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px}
+  .pairbox{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Before and after <button class="say" data-say="An ice cream in the sun. A big oak tree. Which one is changing right now? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">An ice cream in the sun. A big oak tree. <b>Which one is changing right now?</b></p>
+  <div class="choice2">
+    <div class="pick" data-guess="ice">
+      <img data-img="hook_ice" alt="" hidden>
+      <div class="big">🍦</div>
+      <span>Just the ice cream</span>
+    </div>
+    <div class="pick" data-guess="both">
+      <img data-img="hook_both" alt="" hidden>
+      <div class="big">🍦🌳</div>
+      <span>Both of them!</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Everything changes — fast or slow <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="cWave" viewBox="0 0 1000 120" preserveAspectRatio="none"><path d="M0 70 Q250 40 500 75 T1000 65 L1000 120 L0 120Z" fill="#5aa3bf"/><path class="w" d="M0 75 Q250 50 500 80 T1000 72" stroke="#fff" stroke-width="6" fill="none" opacity=".8"/></svg>
+    <svg id="cTree" viewBox="0 0 220 200"><rect x="98" y="100" width="22" height="86" fill="#7a5a3a"/><circle cx="109" cy="72" r="56" fill="#4f7d46"/><circle cx="66" cy="94" r="36" fill="#5c8a52"/><circle cx="152" cy="94" r="36" fill="#5c8a52"/></svg>
+    <svg id="cLeaf" viewBox="0 0 60 60"><path d="M30 6 q22 14 6 44 q-4 6 -8 4 q-16 -26 2 -48z" fill="#c9762e"/><line x1="28" y1="54" x2="30" y2="30" stroke="#8a5220" stroke-width="3"/></svg>
+    <svg id="cCone" viewBox="0 0 120 200"><g class="scoop"><circle cx="60" cy="52" r="38" fill="#f2c4cf"/><circle cx="42" cy="40" r="10" fill="#f8dde4"/></g><path d="M28 84 L60 190 L92 84 Z" fill="#d9a05b"/><path d="M36 100 l48 0 M42 120 l36 0 M48 140 l24 0" stroke="#b07c3c" stroke-width="4"/></svg>
+    <svg id="cPuddle" viewBox="0 0 200 50"><ellipse cx="100" cy="30" rx="92" ry="16" fill="#f2c4cf"/></svg>
+    <svg id="cSeedRow" viewBox="0 0 560 200">
+      <g class="ph" id="ph0"><ellipse cx="60" cy="170" rx="26" ry="18" fill="#8a5a34"/><circle cx="60" cy="164" r="12" fill="#6e4526"/></g>
+      <g class="ph" id="ph1"><rect x="180" y="130" width="8" height="46" fill="#5c8a52"/><path d="M184 132 q-20 -16 -8 -34 q18 8 8 34z" fill="#6fa763"/><path d="M184 140 q20 -12 10 -30 q-18 6 -10 30z" fill="#6fa763"/></g>
+      <g class="ph" id="ph2"><rect x="330" y="90" width="14" height="86" fill="#7a5a3a"/><circle cx="337" cy="74" r="34" fill="#5c8a52"/></g>
+      <g class="ph" id="ph3"><rect x="470" y="60" width="18" height="116" fill="#7a5a3a"/><circle cx="479" cy="48" r="44" fill="#4f7d46"/></g>
+      <g stroke="#6b5646" stroke-width="5" fill="none" opacity=".6"><path d="M98 150 q30 -24 60 -8"/><path d="M226 120 q34 -26 72 -12"/><path d="M382 96 q34 -24 64 -14"/></g>
+    </svg>
+    <svg id="cPup" viewBox="0 0 240 170">
+      <g id="pupSmall" transform="translate(10,70) scale(.55)"><use href="#dogshape"/></g>
+      <g id="pupBig" transform="translate(40,10)"><use href="#dogshape"/></g>
+    </svg>
+    <svg id="cCastle" viewBox="0 0 220 160">
+      <g id="castleUp"><rect x="60" y="60" width="100" height="80" fill="#dbb87a"/><rect x="40" y="80" width="40" height="60" fill="#cfa964"/><rect x="140" y="80" width="40" height="60" fill="#cfa964"/><rect x="92" y="30" width="36" height="40" fill="#dbb87a"/><path d="M92 30 l0 -14 l12 7 z" fill="#b5382f"/><rect x="60" y="52" width="12" height="10" fill="#dbb87a"/><rect x="84" y="52" width="12" height="10" fill="#dbb87a"/><rect x="108" y="52" width="12" height="10" fill="#dbb87a"/><rect x="132" y="52" width="12" height="10" fill="#dbb87a"/></g>
+      <g id="castleFlat"><ellipse cx="110" cy="136" rx="95" ry="18" fill="#dbb87a"/><ellipse cx="80" cy="128" rx="30" ry="8" fill="#cfa964"/></g>
+    </svg>
+    <svg id="cRoad" viewBox="0 0 420 120"><path d="M10 110 L200 20 L240 20 L120 110 Z" fill="#8d8d8d"/><path d="M60 104 L208 30" stroke="#f3e9d6" stroke-width="6" stroke-dasharray="18 14" fill="none"/><g transform="translate(300,54)"><rect x="0" y="20" width="70" height="26" rx="8" fill="#e0a93b"/><rect x="10" y="4" width="28" height="20" rx="6" fill="#e0a93b"/><circle cx="16" cy="50" r="10" fill="#3b2a1e"/><circle cx="54" cy="50" r="10" fill="#3b2a1e"/><path d="M70 34 l26 -6 l0 14 z" fill="#8e2a23"/></g></svg>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">⚡</span>Fast changes</div>
+    <div class="badge" id="b1"><span class="em">🐢</span>Slow changes</div>
+    <div class="badge" id="b2"><span class="em">🌊</span>Nonliving gets changed</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Match, then sort! <button class="say" data-say="First find each thing's after picture. Then tell me: was that change fast, or slow?" data-voice="prac_intro">🔊</button></h2>
+  <p class="lead" id="pPrompt"></p>
+  <div class="pairbox" id="pairbox">
+    <div class="pcard"><div class="pic" id="beforePic"></div><div id="beforeName"></div></div>
+    <div class="arrow">→</div>
+    <div class="pcard" id="afterSlot"><div class="qmark" id="afterQ">?</div><div class="pic" id="afterPic" style="display:none"></div><div id="afterName"></div></div>
+  </div>
+  <div class="opts" id="popts"></div>
+  <div class="fb" id="fb"></div>
+  <div class="counter" id="counter"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the changes again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="dogshape">
+      <ellipse cx="90" cy="90" rx="58" ry="34" fill="#b08a68"/>
+      <path d="M145 84 q26 -8 24 -32" stroke="#b08a68" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <rect x="48" y="112" width="14" height="34" rx="6" fill="#96755a"/>
+      <rect x="76" y="116" width="14" height="30" rx="6" fill="#96755a"/>
+      <rect x="106" y="116" width="14" height="30" rx="6" fill="#96755a"/>
+      <rect x="128" y="112" width="14" height="34" rx="6" fill="#96755a"/>
+      <circle cx="36" cy="66" r="24" fill="#c39b76"/>
+      <path d="M18 50 q-8 -18 6 -24 q10 8 8 24z" fill="#96755a"/>
+      <path d="M52 48 q4 -20 -8 -24 q-10 8 -6 24z" fill="#96755a"/>
+      <circle cx="30" cy="62" r="4" fill="#2b2b2b"/>
+      <circle cx="20" cy="76" r="5" fill="#3b2a1e"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.change.01',version:1,quiz:'quiz.science.k2.change.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_fast'],['b1','badge_slow'],['b2','badge_nonliving']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const el=id=>document.getElementById(id);
+  const cTree=el('cTree'),cLeaf=el('cLeaf'),cCone=el('cCone'),cPuddle=el('cPuddle'),cSeedRow=el('cSeedRow'),
+        cPup=el('cPup'),cCastle=el('cCastle'),cWave=el('cWave'),cRoad=el('cRoad'),cap=el('cap');
+  const badges=[0,1,2].map(i=>el('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    [cTree,cLeaf,cCone,cPuddle,cSeedRow,cPup,cCastle,cWave,cRoad].forEach(x=>{x.classList.remove('show');});
+    cLeaf.classList.remove('fall'); cCone.classList.remove('melt'); cPup.classList.remove('grown');
+    cCastle.classList.remove('worn'); cWave.classList.remove('roll');
+    cSeedRow.querySelectorAll('.ph').forEach(p=>p.classList.remove('lit'));
+    cap.textContent=''; badges.forEach(b=>b.className='badge');
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    el('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "Some changes are fast. A leaf falls. Ice cream melts. You can watch them happen!",
+    "Some changes are slow. A seed becomes a tree. A puppy becomes a dog. Too slow to watch — but they never stop changing.",
+    "Living things change by growing. Nonliving things get changed — waves wear the sandcastle down, and people build a road."
+  ];
+  el('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: fast changes
+    cap.textContent='Some changes are FAST — you can watch them!'; say(teachScript[0],'t_fast'); showBeat('teach_fast');
+    cTree.classList.add('show'); cLeaf.classList.add('show'); cCone.classList.add('show');
+    later(()=>{ cLeaf.classList.add('fall'); },800);
+    later(()=>{ cCone.classList.add('melt'); cPuddle.classList.add('show'); },1600);
+    later(()=>{ badges[0].classList.add('on'); },4200);
+    // beat 2: slow changes
+    later(()=>{ cap.textContent='Some changes are SLOW — too slow to watch, but they never stop.'; say(teachScript[1],'t_slow'); showBeat('teach_slow');
+      [cTree,cLeaf,cCone,cPuddle].forEach(x=>x.classList.remove('show')); cSeedRow.classList.add('show'); el('ph0').classList.add('lit'); },5600);
+    later(()=>{ el('ph1').classList.add('lit'); },7200);
+    later(()=>{ el('ph2').classList.add('lit'); },8400);
+    later(()=>{ el('ph3').classList.add('lit'); },9600);
+    later(()=>{ cPup.classList.add('show'); },10600);
+    later(()=>{ cPup.classList.add('grown'); badges[1].classList.add('on'); },12000);
+    // beat 3: living grows, nonliving gets changed
+    later(()=>{ cap.textContent='Living things GROW. Nonliving things get CHANGED.'; say(teachScript[2],'t_nonliv'); showBeat('teach_nonliving');
+      cSeedRow.classList.remove('show'); cPup.classList.remove('show'); cCastle.classList.add('show'); cWave.classList.add('show','roll'); },13600);
+    later(()=>{ cCastle.classList.add('worn'); },15600);
+    later(()=>{ cRoad.classList.add('show'); cap.textContent='Waves wore the castle down. People built the road.'; badges[2].classList.add('on'); },17400);
+    later(()=>{ cap.textContent='Everything changes — fast or slow!'; el('teachNext').disabled=false; },19400);
+  }
+  el('replay').onclick=playTeach;
+  el('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (match then fast/slow) ---------- */
+  const PAIRS={
+    seed:{bn:'Seed',bp:'🌰',bk:'card_seed',an:'Tall tree',ap:'🌳',ak:'card_tree',sp:'slow',why:'A seed grows into a tree — a little every day, for years.'},
+    pup:{bn:'Puppy',bp:'🐶',bk:'card_puppy',an:'Grown dog',ap:'🐕',ak:'card_dog',sp:'slow',why:'A puppy grows into a dog — too slow to watch, but always happening.'},
+    ice:{bn:'Ice cube',bp:'🧊',bk:'card_ice',an:'Puddle',ap:'💧',ak:'card_puddle',sp:'fast',why:'Ice melts into a puddle — you can watch it happen!'},
+    castle:{bn:'Sandcastle',bp:'🏰',bk:'card_castle',an:'Flat sand',ap:'🏖️',ak:'card_flatsand',sp:'fast',why:'The waves washed it flat — nonliving things get changed too!'},
+    crayon:{bn:'New crayon',bp:'🖍️',bk:'card_crayon_new',an:'Short, worn crayon',ap:'✏️',ak:'card_crayon_worn',sp:'slow',why:'Drawing wears it down a tiny bit at a time.'},
+    leaf:{bn:'Leaf on the branch',bp:'🍃',bk:'card_leaf_branch',an:'Leaf on the ground',ap:'🍂',ak:'card_leaf_ground',sp:'fast',why:'It lets go and falls — fast!'}
+  };
+  const PRAC=[
+    {t:'match',p:'seed',o:['pup','seed_a','ice'],a:1},
+    {t:'speed',p:'seed'},
+    {t:'match',p:'pup',o:['pup_a','leaf','castle'],a:0},
+    {t:'speed',p:'pup'},
+    {t:'match',p:'ice',o:['seed','castle','ice_a'],a:2},
+    {t:'speed',p:'ice'},
+    {t:'match',p:'castle',o:['castle_a','pup','seed'],a:0},
+    {t:'speed',p:'castle'},
+    {t:'match',p:'crayon',o:['ice','crayon_a','leaf'],a:1},
+    {t:'speed',p:'crayon'},
+    {t:'match',p:'leaf',o:['pup','seed','leaf_a'],a:2},
+    {t:'speed',p:'leaf'}
+  ];
+  const NP=PRAC.length;
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,answering=false;
+  const fb=el('fb'), pPrompt=el('pPrompt');
+  function cardFace(key){ // 'seed' = before face of pair; 'seed_a' = after face
+    const after=key.endsWith('_a'); const p=PAIRS[after?key.slice(0,-2):key];
+    return {name:after?p.an:p.bn, pic:after?p.ap:p.bp, k:after?p.ak:p.bk};
+  }
+  function setPic(elId,face){ const n=el(elId); if(img(face.k)) n.innerHTML='<img src="'+img(face.k)+'" alt="">'; else n.textContent=face.pic; }
+  function startPrac(){ queue=PRAC.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; fb.textContent=''; el('pracNext').disabled=true; showPrac(); }
+  function showPrac(){
+    answering=false;
+    if(!queue.length){
+      el('counter').textContent='All matched and sorted! ⭐'; pPrompt.innerHTML='<b>Everything changes — and you know how fast!</b>';
+      el('popts').innerHTML=''; el('pracNext').disabled=false; say('All matched and sorted! Now show what you know.','prac_done'); return;
+    }
+    const it=queue[0]; const p=PAIRS[it.p];
+    el('counter').textContent=done+' of '+NP+' done';
+    setPic('beforePic',cardFace(it.p)); el('beforeName').textContent=p.bn;
+    const o=el('popts'); o.innerHTML='';
+    if(it.t==='match'){
+      el('afterQ').style.display=''; el('afterPic').style.display='none'; el('afterName').textContent='';
+      pPrompt.innerHTML='<b>What does the '+p.bn.toLowerCase()+' become?</b> Tap the AFTER picture.';
+      it.o.forEach((key,i)=>{ const f=cardFace(key); const b=document.createElement('button'); b.className='opt';
+        b.innerHTML='<span class="pic">'+(img(f.k)?'<img src="'+img(f.k)+'" alt="" style="width:80px;border-radius:10px">':f.pic)+'</span>'+f.name;
+        b.onclick=()=>answer(i,b); o.appendChild(b); });
+      say('What does the '+p.bn+' become? Tap the after picture.','pr_match');
+    } else {
+      el('afterQ').style.display='none'; el('afterPic').style.display=''; setPic('afterPic',cardFace(it.p+'_a')); el('afterName').textContent=p.an;
+      pPrompt.innerHTML='<b>'+p.bn+' → '+p.an.toLowerCase()+'.</b> Was that change FAST or SLOW?';
+      [['FAST ⚡','fast','speedF'],['SLOW 🐢','speedSlowLbl','speedS']].forEach((row,i)=>{
+        const b=document.createElement('button'); b.className='opt '+row[2]; b.textContent=row[0];
+        b.onclick=()=>answer(i===0?'fast':'slow',b); o.appendChild(b); });
+      say(p.bn+' becomes '+p.an+'. Was that change fast, or slow?','pr_speed');
+    }
+  }
+  function answer(choice,btn){
+    if(answering || !queue.length) return; answering=true;
+    const it=queue.shift(); const p=PAIRS[it.p]; tries++; seen++;
+    if(seen>NP) pass1=false;
+    let ok;
+    if(it.t==='match'){ ok=choice===it.a;
+      document.querySelectorAll('#popts .opt').forEach((b,j)=>{ b.disabled=true; if(j===it.a) b.classList.add('right'); else if(j===choice&&!ok) b.classList.add('wrong'); });
+    } else { ok=choice===p.sp;
+      document.querySelectorAll('#popts .opt').forEach((b)=>{ b.disabled=true; const isF=b.textContent.indexOf('FAST')>-1;
+        if((isF&&p.sp==='fast')||(!isF&&p.sp==='slow')) b.classList.add('right'); else if(((isF?'fast':'slow')===choice)&&!ok) b.classList.add('wrong'); });
+    }
+    if(ok){
+      done++; if(pass1) pass1correct++;
+      if(it.t==='match'){ el('afterQ').style.display='none'; el('afterPic').style.display=''; setPic('afterPic',cardFace(it.p+'_a')); el('afterName').textContent=p.an;
+        fb.className='fb good'; fb.textContent='✓ Yes! '+p.bn+' becomes '+p.an.toLowerCase()+'.'; say('Yes! That is what it becomes.','ok_match');
+      } else {
+        fb.className='fb good'; fb.textContent='✓ '+p.why; say('Yes! '+p.why, p.sp==='fast'?'ok_fast':'ok_slow');
+      }
+    } else {
+      if(it.t==='match'){ misses.pairing=(misses.pairing||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. Think what the '+p.bn.toLowerCase()+' turns INTO after a while.'; say('Not quite. Think what it turns into after a while.','fb_match');
+      } else if(p.sp==='slow'){ misses.slow_invisible=(misses.slow_invisible||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. You can\'t see it move — but it IS changing, a little every day. That\'s SLOW.'; say('Not quite. You can\'t watch it move, but it is changing — a little every day. That is a slow change.','fb_slowinvis');
+      } else { misses.fast_slow=(misses.fast_slow||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. You could stand there and WATCH this one happen — that\'s FAST.'; say('Not quite. You could stand and watch this one happen. That is a fast change.','fb_fast');
+      }
+      queue.push(it);
+    }
+    setTimeout(showPrac, ok?1600:2000);
+  }
+  el('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌰',k:'card_seed',q:'A seed becomes a tall tree. Is the seed changing?',o:['Yes — slowly, even when we can\'t see it move','No — it isn\'t moving, so it isn\'t changing'],a:0},
+    {id:2,pic:'🍦',k:'card_icecream',q:'Which change is FAST?',o:['Ice cream melting in the sun','A puppy growing into a dog'],a:0},
+    {id:3,pic:'🏰',k:'card_castle',q:'Waves wash the sandcastle flat. Can a nonliving sandcastle change?',o:['Yes — the waves change it','No — only living things change'],a:0},
+    {id:4,pic:'🐶',k:'card_puppy',q:'How does a puppy become a dog?',o:['It grows a little every day','It changes all at once, in one night'],a:0},
+    {id:5,pic:'🌳',k:'card_tree',q:'Which change is SLOW?',o:['A seed growing into a tree','A leaf falling from the branch'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; el('quiz').style.display=''; el('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; el('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=el('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    el('qtext').textContent=q.q; el('qfb').textContent='';
+    el('qNext').disabled=true; el('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=el('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=el('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    el('qNext').disabled=false;
+  }
+  el('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    el('quiz').style.display='none'; el('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); el('ring').style.setProperty('--pct',pct+'%'); el('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    el('gateTxt').textContent= passed? 'You can spot changes — fast AND slow! 🌱' : 'Good try! Let\'s watch the changes once more.';
+    el('guessTxt').textContent = guess==='both' ? 'At the start you guessed BOTH were changing — you were right! The tree changes too, just slowly.' : guess==='ice' ? 'At the start you picked just the ice cream. Now you know: the tree is changing too — slowly!' : '';
+    say(el('gateTxt').textContent+' '+el('guessTxt').textContent, passed?'pass':'retry');
+    el('finish').style.display = passed? '' : 'none';
+    el('againTeach').textContent = passed? '↺ Watch the changes again' : '↺ Watch again, then try once more';
+  }
+  el('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  el('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    el('gateTxt').textContent='Lesson done! Pick one thing to watch change this month — a plant, or the moon. 🌙'; say('Lesson done! Pick one thing to watch change this month. A plant, or the moon. Draw it in your journal every few days.','done');
+    el('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

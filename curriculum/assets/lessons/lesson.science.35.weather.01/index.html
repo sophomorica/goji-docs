@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading the sky — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:24px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px;flex:none}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:170px;min-height:70px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:12px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:24px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(32vw,260px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(32vw,260px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(#cfe6ee 0 62%,#c9b98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.slide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s;pointer-events:none}
+.slide.on{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:25px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7);background:linear-gradient(rgba(251,245,234,.92),rgba(251,245,234,0))}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .slide{display:none}
+.spin{animation:spin 2.2s linear infinite;transform-origin:center;transform-box:fill-box}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wob{animation:wob 3s ease-in-out infinite alternate;transform-origin:bottom center;transform-box:fill-box}
+@keyframes wob{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+/* ---- practice ---- */
+.matchwrap{display:flex;flex-direction:column;align-items:center;gap:14px;flex:1}
+.mcard{width:min(420px,88vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;border:5px solid var(--gold)}
+.mcard .pic{font-size:70px;line-height:1.1}
+.mcard svg{width:120px;height:120px}
+.mcard img{width:100%;max-width:220px;border-radius:14px;display:block;margin:0 auto}
+.mcard .nm{font-size:25px;font-weight:800;margin-top:6px}
+.jobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;width:100%;max-width:900px}
+.opt{font:inherit;font-size:22px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.rec{width:min(560px,92vw);margin:0 auto;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+.rec table{width:100%;border-collapse:collapse;font-size:21px;font-weight:700}
+.rec th,.rec td{padding:8px 6px;text-align:center;border-bottom:3px solid var(--cream2)}
+.rec th{color:var(--ink2);font-size:18px}
+.rec .dn{color:var(--red)} .rec .up{color:var(--green)}
+.sortwrap{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:16px;flex:1;min-height:280px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:12px;gap:8px;min-height:230px;transition:.2s;background:rgba(255,255,255,.5);cursor:pointer}
+.bin h3{margin:0;font-size:24px;text-align:center}
+.bin.w h3{color:var(--sky2)} .bin.c h3{color:var(--green)}
+.bin.w h3{color:#4a7f95}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-direction:column;gap:6px}
+.bin .got em{font-style:normal;font-size:17px;font-weight:700;background:var(--cream2);border-radius:10px;padding:6px 8px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.item{width:min(300px,60vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:22px;font-weight:800;border:5px solid var(--gold)}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.fb{min-height:58px;font-size:22px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:20px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:27px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.opts .opt{font-size:23px;padding:20px 16px;min-height:86px}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(40vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.gate{text-align:center;font-size:26px;font-weight:800}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .sortwrap{grid-template-columns:1fr} .bin{min-height:120px}
+  .scene{min-height:240px} .caption{font-size:20px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Reading the sky <button class="say" data-say="The sky over Dorothy's Kansas farm turns green-grey and still. Uncle Henry checks the tools on the barn wall and says: storm's coming. How does he know? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The sky over Dorothy's Kansas farm turns green-grey and still. Uncle Henry checks the tools on the barn wall: <b>"Storm's coming."</b> How does he know?</p>
+  <div class="choice2">
+    <div class="pick" data-guess="luck">
+      <img data-img="hook_luck" alt="" hidden><svg viewBox="0 0 200 130" aria-label="question marks"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><text x="100" y="85" font-size="64" font-weight="800" text-anchor="middle" fill="#8d8d8d">?  ?</text></svg>
+      <span>It's a lucky guess</span>
+    </div>
+    <div class="pick" data-guess="evidence">
+      <img data-img="hook_tools" alt="" hidden><svg viewBox="0 0 200 130" aria-label="weather tools on a wall"><rect width="200" height="130" rx="16" fill="#c9b98a"/><rect x="30" y="24" width="18" height="80" rx="9" fill="#fff"/><rect x="36" y="44" width="6" height="52" rx="3" fill="#b5382f"/><circle cx="100" cy="60" r="30" fill="#fff"/><path d="M100 60 L116 42" stroke="#3b2a1e" stroke-width="5" stroke-linecap="round"/><rect x="150" y="30" width="22" height="74" rx="6" fill="#e6f2f7" stroke="#5aa3bf" stroke-width="4"/><rect x="150" y="70" width="22" height="34" fill="#5aa3bf"/></svg>
+      <span>The tools and records give evidence</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Check the barn wall →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Tools, records, storms — and climate <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+
+    <!-- beat 1: the four tools -->
+    <svg class="slide" id="sl0" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(90,110)">
+        <rect x="22" y="0" width="36" height="170" rx="18" fill="#fff"/><rect x="34" y="40" width="12" height="118" rx="6" fill="#b5382f"/><circle cx="40" cy="168" r="20" fill="#b5382f"/>
+        <text x="40" y="230" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">thermometer</text>
+        <text x="40" y="258" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">temperature °F</text>
+      </g>
+      <g transform="translate(320,120)">
+        <circle cx="60" cy="80" r="66" fill="#fff"/><circle cx="60" cy="80" r="56" fill="none" stroke="#d9ccb4" stroke-width="4"/>
+        <path d="M60 80 L92 46" stroke="#b5382f" stroke-width="7" stroke-linecap="round"/><circle cx="60" cy="80" r="7" fill="#3b2a1e"/>
+        <text x="60" y="220" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">barometer</text>
+        <text x="60" y="248" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">air pressure</text>
+      </g>
+      <g transform="translate(560,110)">
+        <g class="spin"><path d="M60 60 h48 a12 12 0 1 1 -2 14z" fill="#8d8d8d"/><path d="M60 60 h-48 a12 12 0 1 0 2 14z" fill="#8d8d8d" transform="rotate(120 60 74)"/><path d="M60 60 h-48 a12 12 0 1 0 2 14z" fill="#8d8d8d" transform="rotate(240 60 74)"/><circle cx="60" cy="70" r="10" fill="#3b2a1e"/></g>
+        <rect x="55" y="80" width="10" height="100" fill="#6b5646"/>
+        <text x="60" y="230" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">anemometer</text>
+        <text x="60" y="258" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">wind speed</text>
+      </g>
+      <g transform="translate(790,110)">
+        <rect x="30" y="10" width="60" height="160" rx="8" fill="#e6f2f7" stroke="#5aa3bf" stroke-width="5"/>
+        <rect x="30" y="96" width="60" height="74" fill="#5aa3bf"/>
+        <path d="M40 40 h40 M40 70 h40 M40 100 h40 M40 130 h40" stroke="#4a7f95" stroke-width="3"/>
+        <text x="60" y="230" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">rain gauge</text>
+        <text x="60" y="258" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">rain amount</text>
+      </g>
+    </svg>
+
+    <!-- beat 2: records reveal patterns -->
+    <svg class="slide" id="sl1" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <rect x="140" y="70" width="720" height="280" rx="18" fill="#fff" opacity=".95"/>
+      <text x="500" y="115" font-size="26" font-weight="800" fill="#3b2a1e" text-anchor="middle">air pressure, five days in a row</text>
+      <g stroke="#d9ccb4" stroke-width="3"><path d="M200 300 h620 M200 240 h620 M200 180 h620"/></g>
+      <polyline points="240,160 380,175 520,205 660,250 800,295" fill="none" stroke="#b5382f" stroke-width="9" stroke-linecap="round"/>
+      <g fill="#b5382f"><circle cx="240" cy="160" r="11"/><circle cx="380" cy="175" r="11"/><circle cx="520" cy="205" r="11"/><circle cx="660" cy="250" r="11"/><circle cx="800" cy="295" r="11"/></g>
+      <text x="240" y="340" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">Mon</text>
+      <text x="380" y="340" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">Tue</text>
+      <text x="520" y="340" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">Wed</text>
+      <text x="660" y="340" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">Thu</text>
+      <text x="800" y="340" font-size="20" font-weight="700" fill="#6b5646" text-anchor="middle">Fri</text>
+      <text x="855" y="300" font-size="30" font-weight="900" fill="#b5382f">↓</text>
+    </svg>
+
+    <!-- beat 3: forecast = evidence -->
+    <svg class="slide" id="sl2" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <text x="270" y="200" font-size="30" font-weight="800" fill="#3b2a1e" text-anchor="middle">falling pressure</text>
+      <text x="270" y="240" font-size="30" font-weight="800" fill="#3b2a1e" text-anchor="middle">+ years of records</text>
+      <path d="M450 210 L560 210" stroke="#3b2a1e" stroke-width="10" stroke-linecap="round" marker-end="url(#arr)"/>
+      <g transform="translate(600,120)">
+        <rect width="300" height="180" rx="18" fill="#fff"/>
+        <path d="M40 70 q20 -34 58 -22 q10 -26 44 -20 q34 -8 44 22 q30 8 18 38 q-8 26 -40 22 h-100 q-30 0 -24 -40z" fill="#8d8d8d"/>
+        <path d="M80 130 l-12 26 M120 130 l-12 26 M160 130 l-12 26" stroke="#5aa3bf" stroke-width="7" stroke-linecap="round"/>
+        <text x="150" y="172" font-size="22" font-weight="800" fill="#3b2a1e" text-anchor="middle">"storm LIKELY tomorrow"</text>
+      </g>
+      <text x="500" y="360" font-size="26" font-weight="800" fill="#3b2a1e" text-anchor="middle">a forecast is evidence at work — not magic, and not a promise</text>
+    </svg>
+
+    <!-- beat 4: extreme weather (plain tornado, no face) -->
+    <svg class="slide" id="sl3" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <rect x="0" y="0" width="1000" height="260" fill="#9aa5a3"/>
+      <rect x="0" y="260" width="1000" height="160" fill="#c9b98a"/>
+      <g class="wob">
+        <path d="M420 60 q90 -30 180 0 q-30 40 -70 55 q20 30 -12 55 q6 26 -28 40 q4 22 -20 34 q-8 16 -20 22 l-8 14 q-30 -10 -22 -34 q-26 -10 -20 -34 q-30 -14 -22 -42 q-34 -22 -10 -55 q-36 -18 52 -55z" fill="#6e7a78"/>
+        <ellipse cx="510" cy="62" rx="120" ry="26" fill="#5d6866"/>
+      </g>
+      <path d="M700 90 l-24 46 h20 l-30 56" stroke="#e0a93b" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <g transform="translate(120,290)"><path d="M0 40 l40 -34 l40 34z" fill="#7a5a3a"/><rect x="12" y="14" width="56" height="26" rx="4" fill="#5c4327"/><text x="40" y="80" font-size="20" font-weight="800" fill="#3b2a1e" text-anchor="middle">storm cellar</text></g>
+      <path d="M820 300 l24 60 M860 296 l10 64 M900 300 l-8 60" stroke="#8d8d8d" stroke-width="5" stroke-linecap="round"/>
+      <text x="862" y="392" font-size="20" font-weight="800" fill="#3b2a1e" text-anchor="middle">drought: grass dries, ponds shrink</text>
+    </svg>
+
+    <!-- beat 5: weather vs climate -->
+    <svg class="slide" id="sl4" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(110,90)">
+        <rect width="300" height="230" rx="18" fill="#fff"/>
+        <rect width="300" height="54" rx="18" fill="#b5382f"/>
+        <text x="150" y="38" font-size="24" font-weight="800" fill="#fff" text-anchor="middle">TODAY</text>
+        <text x="150" y="140" font-size="64" text-anchor="middle">🌧️</text>
+        <text x="150" y="205" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">WEATHER</text>
+      </g>
+      <g transform="translate(560,70)">
+        <rect x="24" y="24" width="300" height="230" rx="18" fill="#e8dfc9"/>
+        <rect x="12" y="12" width="300" height="230" rx="18" fill="#f1ead6"/>
+        <rect width="300" height="230" rx="18" fill="#fff"/>
+        <rect width="300" height="54" rx="18" fill="#3f7d4e"/>
+        <text x="150" y="38" font-size="24" font-weight="800" fill="#fff" text-anchor="middle">MANY YEARS</text>
+        <text x="150" y="140" font-size="52" text-anchor="middle">☀️☀️🌾</text>
+        <text x="150" y="205" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">CLIMATE</text>
+      </g>
+      <text x="500" y="380" font-size="25" font-weight="800" fill="#3b2a1e" text-anchor="middle">Kansas prairie climate: summers usually hot and dry — even if today it rains</text>
+    </svg>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <!-- phase A: tool -> measurement -->
+  <div id="phaseA" style="display:flex;flex-direction:column;flex:1">
+    <h2>Match the tool to its job <button class="say" data-say="Uncle Henry's barn wall. Tap what each tool measures." data-voice="tools_intro">🔊</button></h2>
+    <div class="matchwrap">
+      <div class="mcard"><div class="pic" id="mPic"></div><div class="nm" id="mName"></div></div>
+      <div class="jobs" id="jobs"></div>
+      <div class="counter" id="counterA"></div>
+    </div>
+    <div class="fb" id="fbA"></div>
+  </div>
+
+  <!-- phase B: read the record -->
+  <div id="phaseB" style="display:none;flex-direction:column;flex:1">
+    <h2>Read the record — pick tomorrow's forecast <button class="say" data-say="Here are five days of measurements from the farm. What is the best forecast for tomorrow? Use the pattern as evidence." data-voice="rec_intro">🔊</button></h2>
+    <div class="rec" id="recTable"></div>
+    <p class="lead" style="text-align:center;margin-top:10px">What is the <b>best forecast</b> for tomorrow?</p>
+    <div class="jobs" id="recOpts" style="max-width:900px;margin:0 auto"></div>
+    <div class="counter" id="counterB"></div>
+    <div class="fb" id="fbB"></div>
+  </div>
+
+  <!-- phase C: weather or climate -->
+  <div id="phaseC" style="display:none;flex-direction:column;flex:1">
+    <h2>Weather — or climate? <button class="say" data-say="Drag each sentence to Weather, one day's sky, or Climate, the pattern over many years. Or tap a bin." data-voice="wc_intro">🔊</button></h2>
+    <div class="sortwrap">
+      <div class="bin w" data-bin="w"><h3>🌧️ WEATHER<br><small>one day's sky</small></h3><div class="got" id="gotW"></div></div>
+      <div class="deck">
+        <div class="item" id="item"><div id="itemName"></div></div>
+        <div class="counter" id="counterC"></div>
+      </div>
+      <div class="bin c" data-bin="c"><h3>🌾 CLIMATE<br><small>many years' pattern</small></h3><div class="got" id="gotC"></div></div>
+    </div>
+    <div class="fb" id="fbC"></div>
+  </div>
+
+  <!-- phase D: storm safety -->
+  <div id="phaseD" style="display:none;flex-direction:column;flex:1">
+    <h2>Storm smarts <button class="say" data-say="The sky turns dangerous. Tap the safe choice, like Dorothy should have." data-voice="safe_intro">🔊</button></h2>
+    <div class="matchwrap">
+      <div class="mcard"><div class="pic" id="dPic"></div><div class="nm" id="dName"></div></div>
+      <div class="jobs" id="dOpts"></div>
+      <div class="counter" id="counterD"></div>
+    </div>
+    <div class="fb" id="fbD"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the tools again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#3b2a1e"/></marker>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.weather.01',version:1,quiz:'quiz.science.35.weather.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  const slides=[0,1,2,3,4].map(i=>document.getElementById('sl'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  const teachScript=[
+    'Four tools watch the sky. The thermometer measures temperature, in degrees Fahrenheit. The barometer measures air pressure. The anemometer measures wind speed. The rain gauge catches and measures rain.',
+    'One reading tells you little. But write the readings down every day, and patterns appear. Look — the pressure has fallen five days in a row. Falling pressure hints a storm is coming.',
+    'That is what a forecast is: the pattern in the records, pointed at tomorrow. Evidence at work — not magic, and not a promise.',
+    'Sometimes the sky turns fierce: thunderstorms, hurricanes, droughts — and the tornado that carried Dorothy away. Extreme weather reshapes ecosystems: grass flattened, trees down, ponds dry. When the siren sounds, people go DOWN — into the storm cellar.',
+    'And here is the big idea: WEATHER is one day\'s sky. CLIMATE is the pattern over many, many years. Kansas prairie summers are usually hot and dry — that is climate — even if today it rains.'
+  ];
+  const teachIds=['t_tools','t_records','t_forecast','t_extreme','t_climate'];
+  const teachMedia=['teach_tools','teach_records','teach_forecast','teach_extreme','teach_climate'];
+  const teachCaps=[
+    'Four tools: thermometer (°F) · barometer (air pressure) · anemometer (wind speed) · rain gauge.',
+    'Records over days reveal PATTERNS: falling pressure hints a storm.',
+    'A forecast = the pattern pointed at tomorrow. Evidence — not magic, not a promise.',
+    'Extreme weather reshapes ecosystems. Siren? Go DOWN to the cellar.',
+    'WEATHER = one day\'s sky. CLIMATE = the pattern over many years.'
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function showSlide(i){ slides.forEach((s,j)=>s.classList.toggle('on',i===j)); cap.textContent=teachCaps[i]; say(teachScript[i],teachIds[i]); showBeat(teachMedia[i]); }
+  function playTeach(){
+    timers.forEach(clearTimeout); timers=[]; document.getElementById('teachNext').disabled=true;
+    showSlide(0);
+    later(()=>showSlide(1),11000);
+    later(()=>showSlide(2),20000);
+    later(()=>showSlide(3),27000);
+    later(()=>showSlide(4),40000);
+    later(()=>{ document.getElementById('teachNext').disabled=false; },50000);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  let tries=0,misses={},pass1correct=0,firstTry=true;
+  const fbA=document.getElementById('fbA'),fbB=document.getElementById('fbB'),fbC=document.getElementById('fbC'),fbD=document.getElementById('fbD');
+  /* phase A: tools */
+  const TOOLS=[
+    {n:'Thermometer',p:'🌡️',k:'card_thermo',jobs:['Air pressure','Temperature (°F)','Wind speed'],a:1,why:'Temperature, in degrees Fahrenheit.'},
+    {n:'Barometer',p:'🧭',k:'card_baro',jobs:['Air pressure','Rain amount','Temperature'],a:0,why:'Air pressure — and falling pressure hints storms.'},
+    {n:'Anemometer',p:'🌀',k:'card_anemo',jobs:['Rain amount','Temperature','Wind speed'],a:2,why:'Its spinning cups catch the wind — wind speed.'},
+    {n:'Rain gauge',p:'🌧️',k:'card_gauge',jobs:['How much rain fell','Air pressure','Wind speed'],a:0,why:'It catches rain so you can measure how much fell.'}
+  ];
+  let ti=0;
+  function startPractice(){
+    tries=0;misses={};pass1correct=0;ti=0;
+    ['phaseA','phaseB','phaseC','phaseD'].forEach((p,i)=>document.getElementById(p).style.display=i===0?'flex':'none');
+    fbA.textContent='';fbB.textContent='';fbC.textContent='';fbD.textContent='';
+    document.getElementById('pracNext').disabled=true;
+    showTool();
+  }
+  function showTool(){
+    if(ti>=TOOLS.length){
+      say('Tools mastered! Now read a real record.','tools_done');
+      setTimeout(()=>{ document.getElementById('phaseA').style.display='none'; document.getElementById('phaseB').style.display='flex'; startRec(); },1200);
+      return;
+    }
+    const it=TOOLS[ti]; firstTry=true;
+    const mp=document.getElementById('mPic'); if(img(it.k)) mp.innerHTML='<img src="'+img(it.k)+'" alt="">'; else mp.textContent=it.p;
+    document.getElementById('mName').textContent=it.n;
+    document.getElementById('counterA').textContent=ti+' of '+TOOLS.length+' matched';
+    const j=document.getElementById('jobs'); j.innerHTML=''; fbA.textContent='';
+    it.jobs.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>toolPick(i,b); j.appendChild(b); });
+    say(it.n+'. What does it measure?');
+  }
+  function toolPick(i,btn){
+    const it=TOOLS[ti]; tries++;
+    if(i===it.a){ if(firstTry) pass1correct++;
+      fbA.className='fb good'; fbA.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      ti++; setTimeout(showTool,1400);
+    } else { firstTry=false; misses['tool']=(misses['tool']||0)+1;
+      fbA.className='fb bad'; fbA.textContent='Not quite. Look at what the tool is built to catch or feel.'; say('Not quite. Look at what the tool is built to catch or feel.','fb_tool');
+      btn.disabled=true; btn.classList.add('wrong');
+    }
+  }
+  /* phase B: records */
+  const RECS=[
+    {rows:[['Mon','30.2','75°F'],['Tue','30.0','76°F'],['Wed','29.8','78°F'],['Thu','29.6','79°F'],['Fri','29.4 ↓','80°F']],
+     opts:['A storm is likely — the pressure keeps falling','No one can know — forecasts are just guesses','Sunny for certain — forecasts are always right'],a:0,mis:['','guess','certain'],
+     why:'Five days of falling pressure — the record points to a storm.'},
+    {rows:[['Mon','30.1','82°F'],['Tue','30.2','83°F'],['Wed','30.2','84°F'],['Thu','30.3','83°F'],['Fri','30.3 →','84°F']],
+     opts:['A tornado for certain','Fair and warm is likely — pressure is high and steady','Impossible to say anything'],a:1,mis:['certain','','guess'],
+     why:'High, steady pressure — the record points to fair weather.'}
+  ];
+  let ri=0;
+  function startRec(){ ri=0; showRec(); }
+  function showRec(){
+    if(ri>=RECS.length){
+      say('You read the record like a forecaster! Next: weather, or climate?','rec_done');
+      setTimeout(()=>{ document.getElementById('phaseB').style.display='none'; document.getElementById('phaseC').style.display='flex'; startWC(); },1200);
+      return;
+    }
+    const r=RECS[ri]; firstTry=true;
+    document.getElementById('recTable').innerHTML='<table><tr><th>Day</th><th>Air pressure</th><th>Temperature</th></tr>'+r.rows.map(x=>'<tr><td>'+x[0]+'</td><td class="'+(x[1].includes('↓')?'dn':'')+'">'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table>';
+    document.getElementById('counterB').textContent='Record '+(ri+1)+' of '+RECS.length;
+    const o=document.getElementById('recOpts'); o.innerHTML=''; fbB.textContent='';
+    r.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>recPick(i,b); o.appendChild(b); });
+    say('Five days of measurements. What is the best forecast for tomorrow?');
+  }
+  function recPick(i,btn){
+    const r=RECS[ri]; tries++;
+    if(i===r.a){ if(firstTry) pass1correct++;
+      fbB.className='fb good'; fbB.textContent='✓ '+r.why; say('Yes! '+r.why,'why_rec'+(ri+1));
+      ri++; setTimeout(showRec,1600);
+    } else { firstTry=false; const mk=r.mis[i]||'guess'; misses[mk]=(misses[mk]||0)+1;
+      const hint = mk==='guess' ? 'A forecast is not a coin flip — the record IS evidence. What is the pressure doing?' : 'Careful — a forecast says LIKELY, never for certain.';
+      fbB.className='fb bad'; fbB.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+mk);
+      btn.disabled=true; btn.classList.add('wrong');
+    }
+  }
+  /* phase C: weather or climate */
+  const WC=[
+    {n:'"It is raining on the farm right now."',a:'w',key:'st_rain',why:'One day\'s sky — weather.'},
+    {n:'"Kansas summers are usually hot and dry."',a:'c',key:'st_kansas',why:'The pattern over many years — climate.'},
+    {n:'"A thunderstorm hit the farm on Tuesday."',a:'w',key:'st_tues',why:'One event on one day — weather.'},
+    {n:'"Our prairie gets little rain most years."',a:'c',key:'st_inches',why:'Many years measured — climate.'},
+    {n:'"This week in May was freezing cold."',a:'w',key:'st_coldweek',mis:'coldweek',why:'Even a whole cold week is still weather — the climate pattern takes many years to change.'}
+  ];
+  let queue=[],doneC=0;
+  const item=document.getElementById('item');
+  function startWC(){ queue=WC.slice(); doneC=0; document.getElementById('gotW').innerHTML='';document.getElementById('gotC').innerHTML=''; showWC(); }
+  function showWC(){
+    if(!queue.length){
+      item.style.visibility='hidden';
+      say('Sorted! Last one — storm smarts.','wc_done');
+      setTimeout(()=>{ document.getElementById('phaseC').style.display='none'; document.getElementById('phaseD').style.display='flex'; startSafe(); },1200);
+      return;
+    }
+    const it=queue[0]; item.style.visibility='visible';
+    document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counterC').textContent=doneC+' of '+WC.length+' sorted';
+    say(it.n+' Weather, or climate?');
+  }
+  function answerWC(bin){
+    if(document.getElementById('phaseC').style.display==='none'||!queue.length||item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++;
+    if(bin===it.a){ doneC++;
+      fbC.className='fb good'; fbC.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.key);
+      const em=document.createElement('em'); em.textContent=it.n; document.getElementById(bin==='w'?'gotW':'gotC').appendChild(em);
+    } else {
+      const mk=it.mis||'wc'; misses[mk]=(misses[mk]||0)+1;
+      const hint = mk==='coldweek' ? 'One cold week does NOT mean the climate changed — climate is the pattern over MANY years.' : 'Ask: is this one day\'s sky, or the pattern over many years?';
+      fbC.className='fb bad'; fbC.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+mk);
+      queue.push(it);
+    }
+    setTimeout(showWC, bin===it.a?1400:1900);
+  }
+  document.querySelectorAll('#phaseC .bin').forEach(b=>b.addEventListener('click',()=>{ if(!dragging) answerWC(b.dataset.bin); }));
+  let drag=null,dragging=false;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; dragging=true; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('#phaseC .bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('#phaseC .bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('#phaseC .bin').forEach(b=>b.classList.remove('over')); drag=null; setTimeout(()=>dragging=false,50); if(over) answerWC(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; dragging=false; });
+  /* phase D: storm safety */
+  const SAFE=[
+    {n:'The tornado siren sounds. The sky is green-grey.',p:'🌪️',k:'card_tornado',opts:['Go down — storm cellar or lowest inside room','Watch it from the window','Run outside for a closer look'],a:0,why:'Down and inside — just like Dorothy\'s storm cellar.'},
+    {n:'Thunder booms. Lightning flashes over the prairie.',p:'⛈️',k:'card_thunder',opts:['Shelter under the tallest tree','Go inside and stay away from tall trees','Keep flying your kite'],a:1,why:'Inside is safest — lightning looks for tall things.'}
+  ];
+  let si=0;
+  function startSafe(){ si=0; showSafe(); }
+  function showSafe(){
+    if(si>=SAFE.length){
+      document.getElementById('counterD').textContent='Storm-smart! ⛑️';
+      document.getElementById('pracNext').disabled=false;
+      say('Tools, records, sorting, safety — you are ready. Show what you know!','prac_done');
+      return;
+    }
+    const it=SAFE[si]; firstTry=true;
+    const dp=document.getElementById('dPic'); if(img(it.k)) dp.innerHTML='<img src="'+img(it.k)+'" alt="">'; else dp.textContent=it.p;
+    document.getElementById('dName').textContent=it.n;
+    document.getElementById('counterD').textContent=si+' of '+SAFE.length+' answered';
+    const o=document.getElementById('dOpts'); o.innerHTML=''; fbD.textContent='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>safePick(i,b); o.appendChild(b); });
+    say(it.n+' What is the safe choice?');
+  }
+  function safePick(i,btn){
+    const it=SAFE[si]; tries++;
+    if(i===it.a){ if(firstTry) pass1correct++;
+      fbD.className='fb good'; fbD.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      si++; setTimeout(showSafe,1500);
+    } else { firstTry=false; misses['safety']=(misses['safety']||0)+1;
+      fbD.className='fb bad'; fbD.textContent='Not safe! In a dangerous storm, get low and get inside.'; say('Not safe! In a dangerous storm, get low and get inside.','fb_safe');
+      btn.disabled=true; btn.classList.add('wrong');
+    }
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🧭',k:'card_baro',q:'Which tool measures air pressure?',o:['The barometer','The anemometer','The thermometer'],a:0},
+    {id:2,pic:'📉',k:'card_falling',q:'The record shows the pressure falling for two days. Tomorrow will most likely be…',o:['Stormy — falling pressure hints a storm','Impossible to say — forecasts are just guesses','Exactly like today, guaranteed'],a:0},
+    {id:3,pic:'🔍',k:'card_forecast',q:'What IS a forecast?',o:['A magic guess about the sky','A prediction built on measured records — evidence','A promise that is always right'],a:1},
+    {id:4,pic:'🌾',k:'card_prairie',q:'"Kansas prairie summers are usually hot and dry." That sentence describes…',o:['Weather — same thing as climate','A forecast for tomorrow','Climate — the pattern over many years'],a:2},
+    {id:5,pic:'🥶',k:'card_coldweek',q:'One freezing cold week arrives in May. What does it mean?',o:['The climate has changed','It is weather — day-to-day change; the climate pattern needs many years','Winter has restarted for the year'],a:1}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join('. Or, '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can read the sky like a forecaster! ⛅' : 'Good try! Let’s look at the tools and records once more.';
+    document.getElementById('guessTxt').textContent = guess==='evidence' ? 'At the start you guessed EVIDENCE — you were right. Uncle Henry read the barometer, not tea leaves!' : guess==='luck' ? 'At the start you guessed luck. Now you know: the tools and records gave Uncle Henry real evidence!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the tools again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,practice:{toolPick:i=>toolPick(i,document.querySelectorAll('#jobs .opt')[i]||document.createElement('button')),recPick:i=>recPick(i,document.querySelectorAll('#recOpts .opt')[i]||document.createElement('button')),answerWC:b=>answerWC(b),safePick:i=>safePick(i,document.querySelectorAll('#dOpts .opt')[i]||document.createElement('button'))},autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go find out how a real tornado forms. 🌪️'; say('Lesson done! Now go find out how a real tornado forms — and reread your own weather journal.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

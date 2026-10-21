@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.weather.03",
+  "title": "Junior forecaster",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "2",
+  "objectives": ["obj.science.k2.weather.03"],
+  "va_sol": ["2.6"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "anchor n/a — the child's own weather journal (K-1 habit) is the data; hand-off = paper pictograph with parent" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.weather.03", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.weather.03"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

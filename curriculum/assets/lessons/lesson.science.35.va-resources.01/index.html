@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Virginia — watersheds and riches — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --hill:#4f7d46; --hill2:#2f5c34; --bay:#3a7ca5;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:28px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 32px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;text-align:center;min-height:180px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:320px;background:linear-gradient(#bfe0ee 0%,#dcecd2 55%,#b6d3a2 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:26px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.tg{display:none}
+.tg.cur{display:block}
+.scene.media .tg{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+#dropL{animation:raceL 4s ease-in infinite}
+@keyframes raceL{0%{transform:translate(0,0);opacity:1}80%{transform:translate(-190px,150px);opacity:1}100%{transform:translate(-190px,150px);opacity:0}}
+#dropR{animation:raceR 4s ease-in infinite}
+@keyframes raceR{0%{transform:translate(0,0);opacity:1}80%{transform:translate(210px,160px);opacity:1}100%{transform:translate(210px,160px);opacity:0}}
+/* ---- practice ---- */
+.track{display:flex;gap:12px;justify-content:center;align-items:flex-end;flex-wrap:wrap;background:linear-gradient(#dcecd2,#b6d3a2);border-radius:var(--radius);
+  padding:14px 10px;box-shadow:var(--shadow);min-height:96px;margin-bottom:10px}
+.slot{width:220px;height:76px;border-radius:14px;border:3px dashed #86a06f;display:grid;place-items:center;color:#5d724b;font-weight:800;font-size:19px;position:relative;text-align:center}
+.slot.filled{border-style:solid;border-color:var(--gold);background:var(--bay);color:#fff;font-size:18px}
+.q{font-size:27px;font-weight:800;margin:6px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:23px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:21px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:27px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:20px}
+  .slot{width:160px;height:64px;font-size:16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Our Virginia <button class="say" data-say="Rain falls on a Blue Ridge mountaintop in Virginia. Where does that water end up? Tap your guess: it soaks in and stays right there — or it races downhill to a river, and maybe all the way to the Chesapeake Bay." data-voice="hook">🔊</button></h1>
+  <p class="lead">Rain falls on a Blue Ridge mountaintop. <b>Where does that water end up?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="stays">
+      <svg viewBox="0 0 200 130" aria-label="water staying on the mountain"><rect width="200" height="130" rx="16" fill="#dcecd2"/><path d="M30 110 L100 35 L170 110Z" fill="#4f7d46"/><circle cx="100" cy="55" r="9" fill="#3a7ca5"/></svg><img data-img="hook_stays" alt="" hidden>
+      <span>It soaks in and<br>STAYS right there</span>
+    </div>
+    <div class="pick" data-guess="races">
+      <svg viewBox="0 0 200 130" aria-label="water racing downhill to a river"><rect width="200" height="130" rx="16" fill="#dcecd2"/><path d="M20 110 L80 40 L130 110Z" fill="#4f7d46"/><path d="M82 45 Q120 70 165 95" stroke="#3a7ca5" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="2 12"/><path d="M150 100 q30 6 44 2 L200 130 L130 130Z" fill="#3a7ca5"/></svg><img data-img="hook_races" alt="" hidden>
+      <span>It RACES downhill —<br>maybe all the way to the Bay</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Follow the raindrop →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Watersheds and riches <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <!-- WATERSHED RIDGE -->
+      <g class="tg" data-tg="shed">
+        <path d="M0 360 L500 90 L1000 370 L1000 420 L0 420Z" fill="#4f7d46"/>
+        <path d="M430 130 L500 90 L570 130 L500 152Z" fill="#6b9c5d"/>
+        <g id="dropL"><circle cx="470" cy="120" r="10" fill="#3a7ca5"/></g>
+        <g id="dropR"><circle cx="530" cy="120" r="10" fill="#3a7ca5"/></g>
+        <path d="M120 330 q60 24 150 30 L270 420 L60 420Z" fill="#3a7ca5"/>
+        <path d="M740 340 q80 20 160 24 L900 420 L700 420Z" fill="#3a7ca5"/>
+        <text x="165" y="320" fill="#fff" font-size="23" font-weight="800" text-anchor="middle">this river</text>
+        <text x="820" y="326" fill="#fff" font-size="23" font-weight="800" text-anchor="middle">that river</text>
+        <text x="500" y="60" fill="#3b2a1e" font-size="26" font-weight="800" text-anchor="middle">The RIDGE decides: each side drains to its own river</text>
+        <text x="500" y="404" fill="#f2eddc" font-size="22" text-anchor="middle">A WATERSHED = all the land that drains to one water body</text>
+      </g>
+      <!-- THREE SYSTEMS -->
+      <g class="tg" data-tg="three">
+        <path d="M150 140 L820 110 L900 210 L830 260 L640 300 L420 320 L120 260 Z" fill="#6b9c5d" stroke="#4f7d46" stroke-width="5"/>
+        <text x="500" y="205" fill="#2f5c34" font-size="30" font-weight="900" text-anchor="middle">VIRGINIA</text>
+        <path d="M660 230 q90 -20 160 -10" stroke="#3a7ca5" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M818 224 l26 -10 l-8 26z" fill="#3a7ca5"/>
+        <text x="835" y="180" fill="#1b4e78" font-size="24" font-weight="800">Chesapeake Bay</text>
+        <text x="835" y="208" fill="#4a6b84" font-size="19">(most of Virginia!)</text>
+        <path d="M240 280 q-60 30 -110 34" stroke="#3a7ca5" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M136 320 l-28 2 l14 -22z" fill="#3a7ca5"/>
+        <text x="120" y="360" fill="#1b4e78" font-size="21" font-weight="800">southwest → Tennessee R. → Gulf of Mexico</text>
+        <path d="M540 320 q10 40 10 60" stroke="#3a7ca5" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M540 390 l10 -24 l12 20z" transform="rotate(180 550 380)" fill="#3a7ca5"/>
+        <text x="600" y="400" fill="#1b4e78" font-size="21" font-weight="800">south-central → North Carolina sounds</text>
+      </g>
+      <!-- FORESTS + SOIL -->
+      <g class="tg" data-tg="forest">
+        <path d="M0 300 Q250 190 500 280 T1000 260 L1000 420 L0 420Z" fill="#4f7d46"/>
+        <g fill="#2f5c34"><path d="M120 300 l30 -70 l30 70z"/><path d="M200 290 l26 -60 l26 60z"/><path d="M300 310 l32 -76 l32 76z"/><path d="M420 290 l26 -60 l26 60z"/><path d="M520 305 l30 -70 l30 70z"/><path d="M640 288 l26 -60 l26 60z"/><path d="M740 300 l30 -70 l30 70z"/><path d="M860 290 l26 -60 l26 60z"/></g>
+        <rect x="0" y="380" width="1000" height="40" fill="#6b4a2f"/>
+        <text x="500" y="120" fill="#2f5c34" font-size="28" font-weight="800" text-anchor="middle">FORESTS cover most of Virginia</text>
+        <text x="500" y="158" fill="#5d724b" font-size="23" text-anchor="middle">…standing in rich, deep SOIL — a resource too</text>
+      </g>
+      <!-- ROCKS + MINERALS -->
+      <g class="tg" data-tg="rocks">
+        <rect x="90" y="180" width="200" height="150" rx="16" fill="#2b2b30"/>
+        <text x="190" y="370" fill="#2b2b30" font-size="24" font-weight="800" text-anchor="middle">COAL — burns for energy</text>
+        <rect x="400" y="180" width="200" height="150" rx="16" fill="#a9a9b2"/><circle cx="450" cy="230" r="6" fill="#8b8b96"/><circle cx="520" cy="280" r="8" fill="#8b8b96"/><circle cx="560" cy="220" r="5" fill="#8b8b96"/>
+        <text x="500" y="370" fill="#55555e" font-size="24" font-weight="800" text-anchor="middle">GRANITE — hard building stone</text>
+        <rect x="710" y="180" width="200" height="150" rx="16" fill="#d9cfb8"/><path d="M730 230 h160 M730 270 h160" stroke="#c4b696" stroke-width="5"/>
+        <text x="810" y="370" fill="#8a7b58" font-size="24" font-weight="800" text-anchor="middle">LIMESTONE — for cement</text>
+        <text x="500" y="120" fill="#3b2a1e" font-size="28" font-weight="800" text-anchor="middle">Riches UNDER the ground: minerals, rocks, ores</text>
+      </g>
+      <!-- WILDLIFE -->
+      <g class="tg" data-tg="wildlife">
+        <rect x="60" y="150" width="380" height="220" rx="20" fill="#cfe6ee"/>
+        <path d="M120 300 q40 -40 80 0 q-40 30 -80 0z" fill="#c96f3a"/><path d="M196 296 l22 -12 l-2 24z" fill="#c96f3a"/>
+        <ellipse cx="300" cy="240" rx="46" ry="26" fill="#9aa7b5"/><ellipse cx="300" cy="234" rx="34" ry="16" fill="#c9d4e0"/>
+        <text x="250" y="350" fill="#1b4e78" font-size="23" font-weight="800" text-anchor="middle">the Bay: blue crabs &amp; oysters</text>
+        <rect x="540" y="150" width="400" height="220" rx="20" fill="#dcecd2"/>
+        <path d="M600 320 l0 -60 q0 -30 34 -30 q30 0 34 24 l26 -14 l-8 28 q10 30 -18 44 l0 8z" fill="#7a5b3a"/>
+        <ellipse cx="790" cy="290" rx="52" ry="34" fill="#3a3a3a"/><circle cx="838" cy="266" r="20" fill="#3a3a3a"/>
+        <path d="M900 250 q14 -22 24 0 q14 2 8 18 l-40 0z" fill="#c23b2e"/>
+        <text x="740" y="350" fill="#2f5c34" font-size="23" font-weight="800" text-anchor="middle">deer · black bear · cardinal</text>
+        <text x="500" y="120" fill="#3b2a1e" font-size="28" font-weight="800" text-anchor="middle">Living riches, in the water and the woods</text>
+      </g>
+      <!-- USE WISELY -->
+      <g class="tg" data-tg="wise">
+        <path d="M120 320 l34 -80 l34 80z" fill="#2f5c34"/><path d="M200 320 l28 -66 l28 66z" fill="#6b9c5d" opacity=".55"/>
+        <text x="190" y="360" fill="#2f5c34" font-size="22" font-weight="800" text-anchor="middle">cut a tree → PLANT a tree</text>
+        <rect x="430" y="230" width="180" height="14" rx="7" fill="#8d8d8d"/><rect x="500" y="244" width="40" height="26" rx="6" fill="#5b5b64"/>
+        <path d="M520 280 q30 40 90 46" stroke="#3a7ca5" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="3 10"/>
+        <text x="540" y="360" fill="#1b4e78" font-size="22" font-weight="800" text-anchor="middle">street drains lead to STREAMS</text>
+        <path d="M760 240 q60 -18 130 -8 l0 90 q-70 -12 -130 8z" fill="#3a7ca5"/>
+        <text x="828" y="360" fill="#1b4e78" font-size="22" font-weight="800" text-anchor="middle">…and streams lead to the BAY</text>
+        <text x="500" y="120" fill="#3b2a1e" font-size="28" font-weight="800" text-anchor="middle">Use it wisely: replant, and guard what washes in</text>
+      </g>
+    </svg>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">The raindrop race <button class="say" id="sayPrac">🔊</button></h2>
+  <p class="lead" id="pLead"></p>
+  <div class="track" id="track">
+    <div class="slot" data-slot="0">Chesapeake Bay?</div><div class="slot" data-slot="1">Gulf of Mexico?</div><div class="slot" data-slot="2">NC sounds?</div>
+  </div>
+  <div class="q"><span id="pPrompt"></span></div>
+  <div class="opts" id="pOpts"></div>
+  <div class="fb" id="pfb"></div>
+  <div class="counter" id="pCount"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the raindrop again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.va-resources.01',version:1,quiz:'quiz.science.35.va-resources.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  function setScene(name){ document.querySelectorAll('.tg').forEach(g=>g.classList.toggle('cur',g.dataset.tg===name)); }
+  const TEACH=[
+    {vid:'t_shed', media:'teach_shed', scene:'shed', dur:10000, cap:'A WATERSHED = all the land that drains to one water body. The ridge decides the race.',
+     txt:'Follow the raindrop! Rain never just stays put — it races downhill. A watershed is all the land whose water drains to one river, lake, or bay. Two raindrops can land a step apart on a ridge — and end up in different rivers, because each side of the ridge drains its own way.'},
+    {vid:'t_three', media:'teach_three', scene:'three', dur:10000, cap:'Virginia drains three ways: most → the Chesapeake Bay; southwest → Gulf of Mexico; south-central → NC sounds.',
+     txt:'Virginia\'s land drains three big ways. Most of the state — the James, the York, the Potomac rivers — drains east to the Chesapeake Bay. The far southwest drains into the Tennessee River, and its water travels all the way to the Gulf of Mexico! And a south-central strip drains to the North Carolina sounds.'},
+    {vid:'t_forest', media:'teach_forest', scene:'forest', dur:8000, cap:'FORESTS cover most of Virginia — rooted in rich soil.',
+     txt:'Now count Virginia\'s riches. First: trees! Forests cover most of our state — oak, pine, maple — giving lumber, clean air, and homes for wildlife. And under them, deep rich soil that grows our farms.'},
+    {vid:'t_rocks', media:'teach_rocks', scene:'rocks', dur:8000, cap:'Under the ground: COAL for energy, GRANITE for building, LIMESTONE for cement.',
+     txt:'Under the ground, more riches: minerals, rocks, and ores. Coal from the southwest mountains burns for energy. Granite — hard stone for building. Limestone — baked into cement. Virginia has been mining and quarrying these for hundreds of years.'},
+    {vid:'t_wildlife', media:'teach_wildlife', scene:'wildlife', dur:8000, cap:'Living riches: the Bay\'s blue crabs and oysters; deer, black bear, and the cardinal.',
+     txt:'And the living riches! The Chesapeake Bay grows famous blue crabs and oysters. The woods hold white-tailed deer and black bears. And the bright red cardinal — Virginia\'s own state bird — sings in every yard.'},
+    {vid:'t_wise', media:'teach_wise', scene:'wise', dur:9000, cap:'Use it wisely: cut a tree → plant a tree. Street drains lead to streams — and streams lead to the Bay.',
+     txt:'Riches are not endless. Use them wisely! Cut a tree? Plant a tree. And remember the raindrop: whatever we spill on streets and fields washes into street drains, and street drains lead to streams — and streams lead to the Bay, where the crabs and oysters live. Protecting the Bay starts on our own street.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(TEACH.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[]; cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media'); setScene('');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene(); let t=200;
+    TEACH.forEach(b=>{ later(()=>{ cap.textContent=b.cap; say(b.txt,b.vid); setScene(b.scene); showBeat(b.media); },t); t+=b.dur; });
+    later(()=>{ document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const DRAINS=[
+    {n:'James River → Chesapeake Bay',short:'→ Chesapeake Bay'},
+    {n:'Tennessee River → Gulf of Mexico',short:'→ Gulf of Mexico'},
+    {n:'Rivers → North Carolina sounds',short:'→ NC sounds'}
+  ];
+  const PHASE=[
+    {title:'The raindrop race', lead:'A raindrop lands somewhere in Virginia. Which way does it flow?', vid:'prac0',
+     txt:'The raindrop race! A raindrop lands somewhere in Virginia. Which way does it flow? Remember the three big drains.'},
+    {title:'Sort the riches', lead:'Mineral, forest, water, or wildlife — which kind of resource?', vid:'prac1',
+     txt:'Sort the riches! Mineral, forest, water, or wildlife — tap which kind of resource each one is.'},
+    {title:'Protect the Bay', lead:'Think like the raindrop: where does it all end up?', vid:'prac2',
+     txt:'Protect the Bay! Think like the raindrop: where does it all end up?'}
+  ];
+  const PRAC=[
+    {ph:0,q:'A raindrop lands in Richmond. Which way does it flow?',opts:['Into the James River → Chesapeake Bay','It stays in the street forever','Tennessee River → Gulf of Mexico'],a:0,mis:'stays',slot:0,
+     why:'Yes — down the James, east to the Chesapeake Bay, like most of Virginia\'s rain.',hint:'Water never stays put — and Richmond sits on the James. Which way does the James flow?'},
+    {ph:0,q:'A raindrop lands in Virginia\'s far SOUTHWEST corner (coal country). Where does it end up?',opts:['Tennessee River → Gulf of Mexico','Chesapeake Bay','It soaks away to nowhere'],a:0,mis:'wrongshed',slot:1,
+     why:'Yes — the southwest drains to the Tennessee River, and on to the Gulf of Mexico!',hint:'The ridge line cuts the southwest off from the Bay. Its rivers run the other way…'},
+    {ph:0,q:'A raindrop lands in south-central Virginia, near the North Carolina line. Where does it flow?',opts:['South, to the North Carolina sounds','North, to the Gulf of Mexico','It stays on the state line'],a:0,mis:'wrongshed',slot:2,
+     why:'Yes — that strip drains south into the North Carolina sounds.',hint:'Which neighbor is downhill from that strip? The Gulf is a whole mountain range away.'},
+    {ph:1,q:'COAL, dug in the southwest mountains — which kind of resource?',opts:['Mineral','Forest','Water'],a:0,mis:'cat',
+     why:'Yes — coal is a mineral resource, dug from under the ground and burned for energy.',hint:'It comes from UNDER the ground. Which group lives under the ground?'},
+    {ph:1,q:'The oaks and pines covering most of the state — which kind?',opts:['Forest','Mineral','Wildlife'],a:0,mis:'cat',
+     why:'Yes — Virginia\'s forests are its biggest blanket: lumber, air, and homes for animals.',hint:'Trees standing together by the million — what do we call that resource?'},
+    {ph:1,q:'The James River itself — which kind?',opts:['Water','Mineral','Forest'],a:0,mis:'cat',
+     why:'Yes — rivers are water resources: drinking, farming, boats, and power.',hint:'You can drink it, sail it, and water crops with it…'},
+    {ph:1,q:'Blue crabs and oysters in the Chesapeake Bay — which kind?',opts:['Wildlife','Mineral','Forest'],a:0,mis:'cat',
+     why:'Yes — living resources! The Bay\'s crabs and oysters have fed Virginians for centuries.',hint:'They are alive. Which group is the LIVING riches?'},
+    {ph:2,q:'Motor oil gets poured into a street drain. What happens?',opts:['It washes to a creek → river → the Bay','It stays in the street forever','It disappears'],a:0,mis:'stays',
+     why:'Yes — street drains lead to streams, and streams lead to the Bay. The crabs get whatever we pour.',hint:'Street drains are little rivers. Where do all rivers in eastern Virginia go?'},
+    {ph:2,q:'We cut trees for lumber. Will Virginia always have forests?',opts:['Only if we replant as we cut','Yes — trees are endless','No — forests are already gone'],a:0,mis:'endless',
+     why:'Yes — riches are not endless. Cut a tree, plant a tree, and the forest keeps giving.',hint:'A resource keeps giving only if we give back. What do we do after cutting?'}
+  ];
+  let pq=[],ptries=0,pdone=0,pmiss={},pfirstCorrect=0,pseen=0,plast=-1,pbusy=false;
+  const FBV={stays:'fb_stays',wrongshed:'fb_wrongshed',cat:'fb_cat',endless:'fb_endless'};
+  const pfb=document.getElementById('pfb');
+  function startPrac(){ pq=PRAC.slice(); ptries=0;pdone=0;pmiss={};pfirstCorrect=0;pseen=0;plast=-1;pbusy=false;
+    document.querySelectorAll('.slot').forEach((s,i)=>{s.classList.remove('filled');s.textContent=['Chesapeake Bay?','Gulf of Mexico?','NC sounds?'][i];});
+    pfb.textContent=''; document.getElementById('pracNext').disabled=true; showP(); }
+  function showP(){
+    pbusy=false;
+    if(!pq.length){ document.getElementById('pPrompt').textContent='All done — you know your Virginia!'; document.getElementById('pOpts').innerHTML='';
+      document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+      document.getElementById('pracNext').disabled=false; say('All done — you know your Virginia! Now show what you know.','prac_done'); return; }
+    const it=pq[0];
+    if(it.ph!==plast){ plast=it.ph; const ph=PHASE[it.ph];
+      document.getElementById('pTitle').childNodes[0].textContent=ph.title+' ';
+      document.getElementById('pLead').innerHTML=ph.lead;
+      document.getElementById('sayPrac').onclick=()=>say(ph.txt,ph.vid);
+      document.getElementById('track').style.display= it.ph===0? '' : 'none';
+      say(ph.txt,ph.vid);
+    }
+    document.getElementById('pPrompt').textContent=it.q;
+    document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+    const o=document.getElementById('pOpts'); o.innerHTML='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pAnswer(i,b); o.appendChild(b); });
+  }
+  function pAnswer(i,btn){
+    if(pbusy) return; pbusy=true;
+    const it=pq.shift(); ptries++; pseen++;
+    const ok=i===it.a;
+    document.querySelectorAll('#pOpts .opt').forEach((b,j)=>{ b.disabled=true; if(j===it.a&&ok) b.classList.add('right'); if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ pdone++; if(pseen<=PRAC.length) pfirstCorrect++;
+      pfb.className='fb good'; pfb.textContent='✓ '+it.why; say(it.why);
+      if(it.slot!==undefined){ const s=document.querySelector('.slot[data-slot="'+it.slot+'"]');
+        s.classList.add('filled'); s.textContent='💧 '+DRAINS[it.slot].short; }
+    } else {
+      pmiss[it.mis]=(pmiss[it.mis]||0)+1;
+      pfb.className='fb bad'; pfb.textContent='Not quite. '+it.hint; say('Not quite. '+it.hint,FBV[it.mis]);
+      if(it.ph===0) pq.unshift(it); else pq.push(it);
+    }
+    setTimeout(showP, ok?1500:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'⛰️',k:'card_shed',q:'What is a watershed?',
+     o:['All the land that drains to one river or bay','A building that sheds water off its roof','A kind of boat'],a:0},
+    {id:2,pic:'💧',k:'card_james',q:'Rain near Richmond flows into the James River. Where does the James carry it?',
+     o:['To the Chesapeake Bay','To the Gulf of Mexico','Nowhere — it stays in the river forever'],a:0},
+    {id:3,pic:'🌲',k:'card_forest',q:'Most of Virginia\'s land is covered by…',
+     o:['Forests','Cities and roads','Bare sand'],a:0},
+    {id:4,pic:'🪨',k:'card_coal',q:'Which of these is one of Virginia\'s MINERAL resources?',
+     o:['Coal','Oysters','Oak trees'],a:0},
+    {id:5,pic:'🦀',k:'card_bay',q:'Motor oil is poured into a street drain. What happens to it?',
+     o:['It washes into a creek and can reach the Bay','It stays in the street forever','It vanishes into nothing'],a:0}
+  ];
+  const WHY={1:'A watershed is land, not a building — every ridge decides which river gets the rain.',2:'Most of Virginia drains east to the Chesapeake Bay.',3:'Forests cover most of the state — Virginia\'s green blanket.',4:'Coal comes from under the ground — oysters are wildlife, oaks are forest.',5:'Street drains lead to streams, and streams lead to the Bay — where the crabs live.'};
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes! '+WHY[q.id]:'The answer is "'+q.o[q.a]+'". '+WHY[q.id];
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pfirstCorrect,tries:ptries,misses:pmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know your Virginia! 🌲' : 'Good try! Let\'s follow the raindrop once more.';
+    document.getElementById('guessTxt').textContent = guess==='races' ? 'At the start you guessed the rain RACES downhill — you were right! That race is what a watershed is.' : guess==='stays' ? 'At the start you guessed the rain STAYS put. Now you know: it races downhill, ridge to river — maybe all the way to the Bay.' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the raindrop again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Go read about the Chesapeake Bay — find one animal that lives there. 🦀'; say('Lesson done! Go read about the Chesapeake Bay, and find one animal that lives there.','done');
+    document.getElementById('finish').disabled=true;
+  };
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.change.02",
+  "title": "The land changes too",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "2",
+  "objectives": ["obj.science.k2.change.02"],
+  "va_sol": ["2.7"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off = weather-changed-it hunt outside with parent (rust, worn step, bent tree) → journal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.change.02", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.change.02"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

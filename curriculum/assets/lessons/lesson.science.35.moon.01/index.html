@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our closest neighbor — moon, seasons, tides — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --space:#1b2140; --space2:#2a3158;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:28px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 32px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;text-align:center;min-height:180px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:320px;background:radial-gradient(ellipse at 30% 30%,var(--space2),var(--space) 70%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:26px;font-weight:800;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.55)}
+.tg{display:none}
+.tg.cur{display:block}
+.scene.media .tg{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(27,33,64,.9),rgba(27,33,64,0));padding-bottom:34px}
+#moonOrb{animation:orbit 9s linear infinite;transform-origin:640px 210px}
+@keyframes orbit{to{transform:rotate(360deg)}}
+#tideSea{animation:tide 5s ease-in-out infinite alternate;transform-origin:500px 320px}
+@keyframes tide{from{transform:scaleY(1)}to{transform:scaleY(1.12)}}
+/* ---- practice ---- */
+.track{display:flex;gap:14px;justify-content:center;align-items:flex-end;flex-wrap:wrap;background:var(--space);border-radius:var(--radius);
+  padding:14px 10px;box-shadow:var(--shadow);min-height:96px;margin-bottom:10px}
+.slot{width:84px;height:84px;border-radius:50%;border:3px dashed #6f7ab0;display:grid;place-items:center;color:#aab3e0;font-weight:800;font-size:20px;position:relative}
+.slot .pl{position:absolute;inset:0;display:grid;place-items:center}
+.slot.filled{border-style:solid;border-color:var(--gold)}
+.slot .nm{position:absolute;bottom:-4px;left:50%;transform:translate(-50%,100%);font-size:13px;color:#dfe4ff;white-space:nowrap}
+.ppic{display:flex;justify-content:center;margin:2px 0}
+.ppic svg{width:120px;height:120px}
+.q{font-size:27px;font-weight:800;margin:6px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:23px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:21px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:27px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:20px}
+  .slot{width:64px;height:64px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Our closest neighbor <button class="say" data-say="Summer is hot. Winter is cold. Why? Tap your guess: does your half of Earth lean toward the sun in summer, or does the whole Earth move closer to the sun?" data-voice="hook">🔊</button></h1>
+  <p class="lead">Summer is hot. Winter is cold. <b>Why?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="tilt">
+      <svg viewBox="0 0 200 130" aria-label="Earth tilted, leaning toward the sun"><circle cx="40" cy="65" r="26" fill="#f2c14e"/><g transform="rotate(-20 140 65)"><circle cx="140" cy="65" r="34" fill="#3f6db5"/><path d="M120 45 q22 -8 34 4 q-8 16 -30 12 q-14 -4 -4 -16z" fill="#5c9c53"/><line x1="140" y1="20" x2="140" y2="110" stroke="#ffdf8a" stroke-width="4" stroke-dasharray="8 7"/></g></svg><img data-img="hook_tilt" alt="" hidden>
+      <span>My half of Earth<br>LEANS toward the sun</span>
+    </div>
+    <div class="pick" data-guess="closer">
+      <svg viewBox="0 0 200 130" aria-label="Earth moving closer to the sun"><circle cx="40" cy="65" r="26" fill="#f2c14e"/><circle cx="120" cy="65" r="22" fill="#3f6db5"/><path d="M95 65 l-30 0" stroke="#9fc7d6" stroke-width="6" stroke-linecap="round"/><path d="M68 65 l14 -9 l0 18z" fill="#9fc7d6"/></svg><img data-img="hook_closer" alt="" hidden>
+      <span>The whole Earth<br>moves CLOSER to the sun</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Moon, seasons, and tides <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g fill="#cdd6ff" opacity=".8"><circle cx="60" cy="50" r="2"/><circle cx="180" cy="120" r="2"/><circle cx="320" cy="40" r="2"/><circle cx="700" cy="60" r="2"/><circle cx="880" cy="140" r="2"/><circle cx="940" cy="50" r="2"/><circle cx="120" cy="330" r="2"/><circle cx="820" cy="330" r="2"/></g>
+      <!-- THE DANCE: moon around Earth, Earth around sun -->
+      <g class="tg" data-tg="dance">
+        <circle cx="130" cy="210" r="70" fill="#f2c14e"/><circle cx="130" cy="210" r="82" fill="#ffdf8a" opacity=".25"/>
+        <path d="M320 210 a320 210 0 0 1 640 0" fill="none" stroke="#9fc7d6" stroke-width="3" stroke-dasharray="10 9" opacity=".6"/>
+        <circle cx="640" cy="210" r="34" fill="#3f6db5"/><path d="M620 192 q22 -8 36 4 q-10 16 -32 12 q-14 -4 -4 -16z" fill="#5c9c53"/>
+        <circle cx="640" cy="210" r="86" fill="none" stroke="#cdd6ff" stroke-width="3" stroke-dasharray="8 8"/>
+        <g id="moonOrb"><circle cx="726" cy="210" r="13" fill="#cfc9bd"/></g>
+        <text x="640" y="340" fill="#dfe4ff" font-size="26" font-weight="800" text-anchor="middle">The moon circles EARTH…</text>
+        <text x="640" y="374" fill="#aab3e0" font-size="23" text-anchor="middle">…while Earth circles the sun</text>
+      </g>
+      <!-- MIRROR -->
+      <g class="tg" data-tg="mirror">
+        <g stroke="#ffdf8a" stroke-width="6" stroke-linecap="round"><line x1="40" y1="150" x2="330" y2="150"/><line x1="40" y1="210" x2="330" y2="210"/><line x1="40" y1="270" x2="330" y2="270"/></g>
+        <circle cx="500" cy="210" r="95" fill="#efe9dc"/>
+        <path d="M500 115 a95 95 0 0 1 0 190z" fill="#23284c"/>
+        <circle cx="470" cy="170" r="14" fill="#d8d2c4"/><circle cx="455" cy="245" r="19" fill="#d8d2c4"/><circle cx="495" cy="285" r="9" fill="#d8d2c4"/>
+        <text x="760" y="180" fill="#ffdf8a" font-size="30" font-weight="800">No light of its own.</text>
+        <text x="760" y="220" fill="#dfe4ff" font-size="25">The moon is a MIRROR</text>
+        <text x="760" y="254" fill="#dfe4ff" font-size="25">for sunlight.</text>
+      </g>
+      <!-- PHASES (lamp-and-ball view) -->
+      <g class="tg" data-tg="phases">
+        <g stroke="#ffdf8a" stroke-width="4" stroke-linecap="round" opacity=".8"><line x1="20" y1="140" x2="120" y2="140"/><line x1="20" y1="210" x2="120" y2="210"/><line x1="20" y1="280" x2="120" y2="280"/></g>
+        <circle cx="460" cy="210" r="34" fill="#3f6db5"/>
+        <!-- moon positions: left=new, top=first quarter, right=full, bottom=last quarter -->
+        <circle cx="330" cy="210" r="18" fill="#23284c" stroke="#6f7ab0" stroke-width="2"/>
+        <circle cx="460" cy="90" r="18" fill="#23284c"/><path d="M460 72 a18 18 0 0 0 0 36z" fill="#efe9dc"/>
+        <circle cx="590" cy="210" r="18" fill="#efe9dc"/>
+        <circle cx="460" cy="330" r="18" fill="#23284c"/><path d="M460 72 a18 18 0 0 1 0 36z" transform="translate(0,240)" fill="#efe9dc"/>
+        <text x="290" y="248" fill="#aab3e0" font-size="19" text-anchor="middle">new</text>
+        <text x="520" y="84" fill="#aab3e0" font-size="19">first quarter</text>
+        <text x="640" y="216" fill="#aab3e0" font-size="19">full</text>
+        <text x="520" y="352" fill="#aab3e0" font-size="19">last quarter</text>
+        <text x="810" y="170" fill="#ffdf8a" font-size="26" font-weight="800" text-anchor="middle">Same moon —</text>
+        <text x="810" y="204" fill="#dfe4ff" font-size="23" text-anchor="middle">we just see its lit half</text>
+        <text x="810" y="236" fill="#dfe4ff" font-size="23" text-anchor="middle">from different angles</text>
+      </g>
+      <!-- SEASONS: tilt not distance -->
+      <g class="tg" data-tg="seasons">
+        <circle cx="500" cy="210" r="56" fill="#f2c14e"/>
+        <g transform="rotate(-20 160 210)"><circle cx="160" cy="210" r="44" fill="#3f6db5"/><line x1="160" y1="150" x2="160" y2="270" stroke="#ffdf8a" stroke-width="5" stroke-dasharray="9 8"/><path d="M135 185 q28 -10 44 6 q-12 20 -40 14 q-18 -6 -4 -20z" fill="#5c9c53"/></g>
+        <text x="160" y="300" fill="#ffdf8a" font-size="22" font-weight="800" text-anchor="middle">top leans TOWARD sun</text>
+        <text x="160" y="330" fill="#dfe4ff" font-size="21" text-anchor="middle">= SUMMER up top</text>
+        <g transform="rotate(-20 840 210)"><circle cx="840" cy="210" r="44" fill="#3f6db5"/><line x1="840" y1="150" x2="840" y2="270" stroke="#ffdf8a" stroke-width="5" stroke-dasharray="9 8"/><path d="M815 185 q28 -10 44 6 q-12 20 -40 14 q-18 -6 -4 -20z" fill="#5c9c53"/></g>
+        <text x="840" y="300" fill="#9fd6d6" font-size="22" font-weight="800" text-anchor="middle">top leans AWAY</text>
+        <text x="840" y="330" fill="#dfe4ff" font-size="21" text-anchor="middle">= WINTER up top</text>
+        <text x="500" y="60" fill="#ffdf8a" font-size="28" font-weight="800" text-anchor="middle">Seasons come from the TILT — not distance!</text>
+      </g>
+      <!-- TIDES -->
+      <g class="tg" data-tg="tides">
+        <circle cx="850" cy="90" r="34" fill="#efe9dc"/><circle cx="838" cy="80" r="6" fill="#d8d2c4"/><circle cx="860" cy="100" r="8" fill="#d8d2c4"/>
+        <rect x="60" y="290" width="880" height="70" fill="#7a6a55"/>
+        <g id="tideSea"><path d="M60 320 Q300 290 560 300 Q780 306 940 260 L940 360 L60 360Z" fill="#3f6db5" opacity=".9"/></g>
+        <path d="M770 180 q40 40 60 60" stroke="#9fd6d6" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="12 10"/>
+        <text x="500" y="120 " fill="#ffdf8a" font-size="28" font-weight="800" text-anchor="middle">The moon's pull tugs the sea</text>
+        <text x="500" y="158" fill="#dfe4ff" font-size="24" text-anchor="middle">High tide, low tide — twice a day</text>
+      </g>
+      <!-- NEIGHBOR facts -->
+      <g class="tg" data-tg="neighbor">
+        <circle cx="300" cy="210" r="120" fill="#3f6db5"/><path d="M240 140 q60 -24 100 8 q-24 44 -84 34 q-40 -10 -16 -42z" fill="#5c9c53"/>
+        <circle cx="640" cy="210" r="33" fill="#efe9dc"/><circle cx="628" cy="198" r="6" fill="#d8d2c4"/><circle cx="650" cy="222" r="8" fill="#d8d2c4"/><circle cx="632" cy="224" r="4" fill="#d8d2c4"/>
+        <text x="640" y="280" fill="#aab3e0" font-size="21" text-anchor="middle">the moon — about ¼ Earth's width</text>
+        <text x="835" y="150" fill="#ffdf8a" font-size="24" font-weight="800">Closer than anything</text>
+        <text x="835" y="188" fill="#dfe4ff" font-size="22">No air · no wind · no rain</text>
+        <text x="835" y="222" fill="#dfe4ff" font-size="22">Old, cratered rock —</text>
+        <text x="835" y="256" fill="#dfe4ff" font-size="22">footprints last forever</text>
+      </g>
+    </svg>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Build the moon's month <button class="say" id="sayPrac">🔊</button></h2>
+  <p class="lead" id="pLead"></p>
+  <div class="track" id="track">
+    <div class="slot" data-slot="0">1</div><div class="slot" data-slot="1">2</div><div class="slot" data-slot="2">3</div><div class="slot" data-slot="3">4</div>
+  </div>
+  <div class="ppic" id="pPic"></div>
+  <div class="q"><span id="pPrompt"></span></div>
+  <div class="opts" id="pOpts"></div>
+  <div class="fb" id="pfb"></div>
+  <div class="counter" id="pCount"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the tilt again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.moon.01',version:1,quiz:'quiz.science.35.moon.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  function setScene(name){ document.querySelectorAll('.tg').forEach(g=>g.classList.toggle('cur',g.dataset.tg===name)); }
+  const TEACH=[
+    {vid:'t_dance', media:'teach_dance', scene:'dance', dur:9000, cap:'The moon revolves around EARTH — while Earth revolves around the sun.',
+     txt:'Two dances at once! The moon revolves around Earth — one lap takes about a month. And all the while, Earth carries the moon along on its year-long trip around the sun.'},
+    {vid:'t_mirror', media:'teach_mirror', scene:'mirror', dur:8000, cap:'The moon makes NO light of its own. It is a mirror for sunlight.',
+     txt:'Here is a secret: the moon makes no light of its own. None! Moonlight is sunlight, bouncing off gray rock — the moon is a giant mirror in the sky.'},
+    {vid:'t_phases', media:'teach_phases', scene:'phases', dur:11000, cap:'Four major phases: NEW → FIRST QUARTER → FULL → LAST QUARTER. Same moon, different angle.',
+     txt:'The sun always lights one half of the moon. As the moon circles Earth, we see that lit half from different angles. Between the moon and the sun? We see the dark side — new moon. Off to the side? Half lit — first quarter. Opposite the sun? The whole lit face — full moon. Then last quarter, and around again. It is like walking around a lamp-lit ball.'},
+    {vid:'t_seasons', media:'teach_seasons', scene:'seasons', dur:11000, cap:'Seasons come from Earth\'s TILT — not from distance!',
+     txt:'Now the big one. Why summer? Not because Earth gets closer to the sun! Earth is tilted, like a leaning top. When your half of Earth leans TOWARD the sun, sunlight hits it strong and long — summer. When your half leans AWAY — winter. In fact, Earth is slightly farther from the sun during our summer. The tilt does it all.'},
+    {vid:'t_tides', media:'teach_tides', scene:'tides', dur:8000, cap:'The moon\'s pull tugs the sea — high tide, low tide, twice a day.',
+     txt:'The moon even moves our oceans. Its gravity gently tugs the sea toward it, making the water rise and fall at the shore — high tide, low tide, about twice every day.'},
+    {vid:'t_neighbor', media:'teach_neighbor', scene:'neighbor', dur:9000, cap:'Our neighbor: closer, smaller, airless, cratered — footprints last forever.',
+     txt:'And the moon itself? It is the closest thing to us in space — much closer than the sun. About one quarter Earth\'s width. No air, no wind, no rain — just old cratered rock. An astronaut\'s footprint up there can last millions of years.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(TEACH.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[]; cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media'); setScene('');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene(); let t=200;
+    TEACH.forEach(b=>{ later(()=>{ cap.textContent=b.cap; say(b.txt,b.vid); setScene(b.scene); showBeat(b.media); },t); t+=b.dur; });
+    later(()=>{ document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  function moonSVG(kind,r){
+    r=r||26; const d=2*r+8, c=r+4;
+    const lit='#efe9dc', dark='#23284c';
+    let inner='';
+    if(kind==='new') inner='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="'+dark+'" stroke="#6f7ab0" stroke-width="2"/>';
+    if(kind==='full') inner='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="'+lit+'"/>';
+    if(kind==='firstq') inner='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="'+dark+'"/><path d="M'+c+' '+(c-r)+' a'+r+' '+r+' 0 0 1 0 '+(2*r)+'z" fill="'+lit+'"/>';
+    if(kind==='lastq') inner='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="'+dark+'"/><path d="M'+c+' '+(c-r)+' a'+r+' '+r+' 0 0 0 0 '+(2*r)+'z" fill="'+lit+'"/>';
+    return '<svg width="'+d+'" height="'+d+'" viewBox="0 0 '+d+' '+d+'">'+inner+'</svg>';
+  }
+  const PHASES=[
+    {n:'New moon',k:'new',why:'New moon — the moon sits between us and the sun, so we see its dark side.'},
+    {n:'First quarter',k:'firstq',why:'First quarter — the moon has done a quarter of its lap; we see half the lit side.'},
+    {n:'Full moon',k:'full',why:'Full moon — the moon is opposite the sun, and we see the whole lit face.'},
+    {n:'Last quarter',k:'lastq',why:'Last quarter — three quarters around; we see the other half lit.'}
+  ];
+  const PHASE=[
+    {title:'Build the moon\'s month', lead:'Tap the phase that comes next, starting from the new moon.', vid:'prac0',
+     txt:'Build the moon\'s month! Tap the phase that comes next, starting from the new moon: new, first quarter, full, last quarter.'},
+    {title:'Why is it summer?', lead:'Tilt, or distance? The big showdown.', vid:'prac1',
+     txt:'Why is it summer? Tilt, or distance? Think hard — this one fools a lot of grown-ups.'},
+    {title:'Moonlight, phases, and tides', lead:'Look at the picture when there is one, and think about where the light comes from.', vid:'prac2',
+     txt:'Now moonlight, phases, and tides. Look at the picture when there is one, and think about where the light comes from.'}
+  ];
+  function phaseItem(i){
+    const wrong=[(i+1)%4,(i+2)%4];
+    const opts=[PHASES[i].n,PHASES[wrong[0]].n,PHASES[wrong[1]].n].map((t,j)=>({t,ok:j===0}));
+    for(let j=opts.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[opts[j],opts[k]]=[opts[k],opts[j]];}
+    return {ph:0,q:'Phase '+(i+1)+' of the cycle is…',opts:opts.map(o=>o.t),a:opts.findIndex(o=>o.ok),
+      why:PHASES[i].why,mis:'phord',hint:'The order is: new, first quarter, full, last quarter — growing, then shrinking.',slot:i,retry:true};
+  }
+  const PRAC=[
+    phaseItem(0),phaseItem(1),phaseItem(2),phaseItem(3),
+    {ph:1,q:'It is July in Virginia — hot summer. Why?',opts:['Our half of Earth tilts toward the sun','Earth has moved closer to the sun'],a:0,mis:'dist',
+     why:'Yes! The tilt points our half at the sun — strong, long sunlight.',hint:'Distance barely changes. What does Earth do with its leaning axis?'},
+    {ph:1,q:'When Virginia has summer, Australia has WINTER. How can that be?',opts:['One half leans toward the sun, the other leans away','Earth is closer to the sun for one country than the other'],a:0,mis:'dist',
+     why:'Yes! One planet, one tilt: the leaning-toward half gets summer, the leaning-away half gets winter.',hint:'If closeness caused summer, the WHOLE planet would be hot at once…'},
+    {ph:1,q:'True fact: during OUR summer, Earth is actually slightly…',opts:['Farther from the sun — distance is not the cause','Closer to the sun — that is why it is hot'],a:0,mis:'dist',
+     why:'Yes! Slightly farther — proof that the tilt, not distance, makes the seasons.',hint:'This is the trick question. If summer were about being close, this fact would be impossible.'},
+    {ph:2,q:'Where does moonlight come from?',opts:['Sunlight bouncing off the moon','The moon glows all by itself'],a:0,mis:'glow',
+     why:'Yes — the moon is a mirror. Its light is bounced sunlight.',hint:'The moon is cold gray rock. Can rock shine on its own?'},
+    {ph:2,q:'What makes the moon\'s phases change?',opts:['We see its lit half from different angles','Earth\'s shadow covers part of the moon','The moon actually changes shape'],a:0,mis:'shadow',
+     why:'Yes — the moon circles us, so our view of its lit half keeps changing.',hint:'Earth\'s shadow only touches the moon at a rare eclipse. Phases happen every night — think about the angle.'},
+    {ph:2,pic:'full',q:'You see this moon tonight. Which phase?',opts:['Full moon','New moon','First quarter'],a:0,mis:'phread',
+     why:'Yes — the whole lit face shows: full moon.',hint:'How much of the moon is lit? All of it, half, or none?'},
+    {ph:2,pic:'firstq',q:'Half lit, on its growing side. Which phase?',opts:['First quarter','Full moon','New moon'],a:0,mis:'phread',
+     why:'Yes — half the lit side showing while it grows: first quarter.',hint:'Half lit means a quarter of the lap — is it growing or shrinking?'},
+    {ph:2,pic:'new',q:'You can barely see the moon at all tonight. Which phase?',opts:['New moon','Full moon','Last quarter'],a:0,mis:'phread',
+     why:'Yes — dark side toward us: new moon.',hint:'No lit part showing means the moon sits between us and the sun.'},
+    {ph:2,q:'At the beach, the sea slowly rises, then falls, twice a day. What is pulling it?',opts:['The moon\'s gravity','The wind','Boats and ships'],a:0,mis:'tide',
+     why:'Yes — the moon\'s pull tugs the ocean. That is the tide.',hint:'Wind makes waves on top. What tugs the WHOLE sea up and down on schedule?'},
+    {ph:2,q:'Does the moon look the same every night?',opts:['No — its phase changes a little every night','Yes — same moon, same look'],a:0,mis:'same',
+     why:'Yes — each night the angle shifts a little, so the phase slowly changes through the month.',hint:'Watch it for two weeks — that is exactly what your moon log will show!'}
+  ];
+  let pq=[],ptries=0,pdone=0,pmiss={},pfirstCorrect=0,pseen=0,plast=-1,pbusy=false;
+  const FBV={phord:'fb_phord',dist:'fb_dist',glow:'fb_glow',shadow:'fb_shadow',phread:'fb_phread',tide:'fb_tide',same:'fb_same'};
+  const pfb=document.getElementById('pfb');
+  function startPrac(){ pq=PRAC.slice(); ptries=0;pdone=0;pmiss={};pfirstCorrect=0;pseen=0;plast=-1;pbusy=false;
+    document.querySelectorAll('.slot').forEach((s,i)=>{s.classList.remove('filled');s.innerHTML=String(i+1);});
+    pfb.textContent=''; document.getElementById('pracNext').disabled=true; showP(); }
+  function showP(){
+    pbusy=false;
+    if(!pq.length){ document.getElementById('pPrompt').textContent='All done — great work, moon-watcher!'; document.getElementById('pOpts').innerHTML=''; document.getElementById('pPic').innerHTML='';
+      document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+      document.getElementById('pracNext').disabled=false; say('All done, moon watcher! Now show what you know.','prac_done'); return; }
+    const it=pq[0];
+    if(it.ph!==plast){ plast=it.ph; const ph=PHASE[it.ph];
+      document.getElementById('pTitle').childNodes[0].textContent=ph.title+' ';
+      document.getElementById('pLead').innerHTML=ph.lead;
+      document.getElementById('sayPrac').onclick=()=>say(ph.txt,ph.vid);
+      document.getElementById('track').style.display= it.ph===0? '' : 'none';
+      say(ph.txt,ph.vid);
+    }
+    document.getElementById('pPic').innerHTML= it.pic? moonSVG(it.pic,44) : '';
+    document.getElementById('pPrompt').textContent=it.q;
+    document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+    const o=document.getElementById('pOpts'); o.innerHTML='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pAnswer(i,b); o.appendChild(b); });
+  }
+  function pAnswer(i,btn){
+    if(pbusy) return; pbusy=true;
+    const it=pq.shift(); ptries++; pseen++;
+    const ok=i===it.a;
+    document.querySelectorAll('#pOpts .opt').forEach((b,j)=>{ b.disabled=true; if(j===it.a&&ok) b.classList.add('right'); if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ pdone++; if(pseen<=PRAC.length) pfirstCorrect++;
+      pfb.className='fb good'; pfb.textContent='✓ '+it.why; say(it.why);
+      if(it.slot!==undefined){ const s=document.querySelector('.slot[data-slot="'+it.slot+'"]'); const p=PHASES[it.slot];
+        s.classList.add('filled'); s.innerHTML='<span class="pl">'+moonSVG(p.k,26)+'</span><span class="nm">'+p.n+'</span>'; }
+    } else {
+      pmiss[it.mis]=(pmiss[it.mis]||0)+1;
+      pfb.className='fb bad'; pfb.textContent='Not quite. '+it.hint; say('Not quite. '+it.hint,FBV[it.mis]);
+      if(it.retry) pq.unshift(it); else pq.push(it);
+    }
+    setTimeout(showP, ok?1500:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'☀️',k:'card_tilt',q:'Why is it summer where you live?',
+     o:['Your half of Earth tilts toward the sun','Earth moves closer to the sun in summer','The sun grows bigger in summer'],a:0},
+    {id:2,pic:'🌕',k:'card_moonlight',q:'Why does the moon shine at night?',
+     o:['It reflects sunlight, like a mirror','It makes its own light, like a lamp'],a:0},
+    {id:3,pic:'🌗',k:'card_phases',q:'What makes the moon\'s phases?',
+     o:['We see different amounts of its lit half as it circles Earth','Earth\'s shadow covers part of the moon','The moon really changes shape'],a:0},
+    {id:4,pic:'🌑',k:'card_new',q:'The new moon starts to grow. Which phase comes NEXT?',
+     o:['First quarter','Full moon','Last quarter'],a:0},
+    {id:5,pic:'🌊',k:'card_tides',q:'What makes the sea rise and fall twice a day?',
+     o:['The moon\'s pull','The wind','The sun heating the water'],a:0}
+  ];
+  const WHY={1:'The tilt does it — Earth is even slightly farther from the sun in our summer.',2:'Moonlight is bounced sunlight — the moon makes none of its own.',3:'Phases are about the angle we see, not a shadow — eclipses are the rare shadow days.',4:'New, first quarter, full, last quarter — growing, then shrinking.',5:'The moon\'s gravity tugs the ocean up and down the shore.'};
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes! '+WHY[q.id]:'The answer is "'+q.o[q.a]+'". '+WHY[q.id];
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pfirstCorrect,tries:ptries,misses:pmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know our closest neighbor! 🌙' : 'Good try! Let\'s watch the tilt and the phases once more.';
+    document.getElementById('guessTxt').textContent = guess==='tilt' ? 'At the start you guessed the TILT makes summer — you were right! Earth is even a bit farther from the sun in our summer.' : guess==='closer' ? 'At the start you guessed Earth moves CLOSER in summer. Now you know the surprise: it is actually slightly farther — the TILT makes the seasons.' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the tilt again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Tonight, look up: draw the moon\'s shape in your log. 🌙'; say('Lesson done! Tonight, look up, and draw the moon\'s shape in your log.','done');
+    document.getElementById('finish').disabled=true;
+  };
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+})();
+</script>
+</body>
+</html>

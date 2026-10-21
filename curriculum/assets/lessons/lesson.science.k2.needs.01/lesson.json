@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.needs.01",
+  "title": "What does the lion need?",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.needs.01"],
+  "va_sol": ["K.7"],
+  "duration_min": 12,
+  "anchor": { "book": "aesop-fables", "note": "lion week (The Lion and the Mouse); retakes swap the fable animal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.needs.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.needs.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

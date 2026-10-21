@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.35.va-resources.01",
+  "title": "Our Virginia — watersheds and riches",
+  "subject": "science",
+  "band": "35",
+  "grade_hint": "4",
+  "objectives": ["obj.science.35.va-resources.01"],
+  "va_sol": ["4.8"],
+  "duration_min": 15,
+  "anchor": { "book": null, "note": "n/a — pairs with Grade 4 Virginia Studies on the history side; hand-off = Kiwix 'Chesapeake Bay' → notebooks" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.35.va-resources.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.35.va-resources.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

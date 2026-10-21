@@ -1,0 +1,111 @@
+{
+  "lesson": "lesson.reading.k2.phonics.03",
+  "style": "../../../tools/lesson_assets/style.json",
+  "voice": [
+    {
+      "id": "hook",
+      "text": "Rain and ran. What are a and i doing? Tap your guess."
+    },
+    {
+      "id": "prac_done",
+      "text": "You found the teams!"
+    },
+    {
+      "id": "yes",
+      "text": "Yes!"
+    },
+    {
+      "id": "hint",
+      "text": "Try again."
+    },
+    {
+      "id": "pass",
+      "text": "You can spot teams and bossy r!"
+    },
+    {
+      "id": "retry",
+      "text": "Find the two letters that share one voice."
+    },
+    {
+      "id": "hook_team",
+      "text": "Yes. A team. First vowel talks."
+    },
+    {
+      "id": "hook_two",
+      "text": "Not two voices. One team."
+    },
+    {
+      "id": "t1",
+      "text": "When two vowels go walking, the first one talks."
+    },
+    {
+      "id": "t2",
+      "text": "Rain, sheep, goat, oak, beak."
+    },
+    {
+      "id": "t3",
+      "text": "Bossy r grabs the vowel. ar, or, er."
+    },
+    {
+      "id": "p1",
+      "text": "Tap the team in rain."
+    },
+    {
+      "id": "p2",
+      "text": "Tap the team in sheep."
+    },
+    {
+      "id": "p3",
+      "text": "Tap the team in goat."
+    },
+    {
+      "id": "p4",
+      "text": "Tap the team in oak."
+    },
+    {
+      "id": "p5",
+      "text": "Tap bossy r in farm."
+    },
+    {
+      "id": "p6",
+      "text": "Tap bossy r in corn."
+    },
+    {
+      "id": "p7",
+      "text": "Tap the team in beak."
+    },
+    {
+      "id": "p8",
+      "text": "Tap bossy r in her."
+    },
+    {
+      "id": "q1",
+      "text": "ai in rain says\u2026 /\u0103/, or /\u0101/, or /\u012b/"
+    },
+    {
+      "id": "q2",
+      "text": "The Aesop oak has which team? ee, or oa, or oi"
+    },
+    {
+      "id": "q3",
+      "text": "sheep (wolf in sheep's clothing) has\u2026 short e, or the ee team, or magic e"
+    },
+    {
+      "id": "q4",
+      "text": "r in farm is\u2026 just /r/ after /\u0103/, or bossy \u2014 it grabs a, or silent"
+    },
+    {
+      "id": "q5",
+      "text": "ran vs rain \u2014 what changed? A vowel team was added, or A blend melted, or Magic e"
+    }
+  ],
+  "images": [
+    {
+      "id": "hook",
+      "prompt": "storybook scene for Vowel teams & bossy r, Aesop meadow, no letters",
+      "kind": "scene"
+    }
+  ],
+  "clips": [],
+  "notes": "House voice is luna (Grok TTS, British woman, 0.92). Packages run with speechSynthesis until media/ is generated."
+}
