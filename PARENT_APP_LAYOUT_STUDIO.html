@@ -1266,9 +1266,11 @@
   document.getElementById('wback').addEventListener('click', function(){
     if(windex>0){ windex-=1; walkShow(windex); }
   });
-  document.getElementById('wnext').addEventListener('click', function(){
-    if(windex<WALK.length-1){ windex+=1; walkShow(windex); }
-    else walkClose();
+  document.getElementById('wnext').addEventListener('click', function(e){
+    if(windex<WALK.length-1){ windex+=1; walkShow(windex); return; }
+    // A double-click's second click would close the lesson this click just opened.
+    if(e.detail>1) return;
+    walkClose();
   });
   walk.addEventListener('click', function(e){ if(e.target===walk) walkClose(); });
   document.addEventListener('keydown',function(e){
