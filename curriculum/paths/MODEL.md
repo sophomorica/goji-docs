@@ -53,7 +53,7 @@ A node is one school-day row. The role is the pedagogy. The task kind is an exis
 | `move_on` | `completed` or `passed`. Teach and practice use `completed`. Check uses `passed`. There is no implicit default of done. |
 | `gate` | For `passed` only. `min_score` and `out_of`, or the objective's existing drill rule. Null while `content_ref` is null. |
 
-`task_kind: "lesson"` from [LESSON_PACKAGES.md](../LESSON_PACKAGES.md) is a proposal, not a kind this model requires. A teach node may later point at a lesson id. Until that player exists, the node stays a slot with `content_ref` null.
+`task_kind: "lesson"` is the kind in [LESSON_PACKAGES.md](../LESSON_PACKAGES.md). The player shipped on 2026-08-24. This model leaves that kind optional. The `K.MG.2` nodes keep `content_ref` null until phase 7 sets it.
 
 ### Assignment
 

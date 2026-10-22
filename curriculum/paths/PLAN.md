@@ -16,7 +16,7 @@ The framework build is the records, the assignment expansion, the child order, t
 - Framework phases do not wait on the Learner #7 sit-through. Do not invent that sit-through's steps in these phases.
 - Do not submit the parent app to a store. Implementation changes are separate from this plan, and each one waits for its own review.
 - Do not add a CASE server, an xAPI record store, a SmartScore, an ALEKS-style selector, Kolibri Studio, or an Oppia exploration editor.
-- Do not add a `plan_tasks` kind for this project. Map nodes onto kinds the school day already accepts. The lesson player in [LESSON_PACKAGES.md](../LESSON_PACKAGES.md) stays its own proposal.
+- Do not add a `plan_tasks` kind for this project. Map nodes onto kinds the school day already accepts. [LESSON_PACKAGES.md](../LESSON_PACKAGES.md) records that the lesson player shipped on 2026-08-24. Phase 7 still owns lesson content for this fixture.
 - Do not regenerate `catalog_v1.json` for the whole catalog as part of the framework. Touch it only when an `obj.*` row actually changes, which this build does not do.
 
 ## Phase 1. Land the fixture records
