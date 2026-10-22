@@ -12,13 +12,13 @@ Five records. A skill is a catalog row. A path is the ordered template for one s
 
 ### Skill
 
-A skill is what the parent assigns. If an objective id exists, the skill id is that `obj.*` id. Objectives already carry a statement, a success criterion, prerequisites, a practice tool, a quiz, a Virginia code, and a status. See `subjects/math/OBJECTIVES.md` and `assets/templates/objective.md`.
+A skill is what the parent assigns. The row key is chosen once and does not change. A gap uses the Virginia code already in `skills/`. Kindergarten `K.MG.2` is in that state. `skills/math-k.md` marks it as a gap. The framework does not invent an `obj.*` row and does not write the skill statement again. When a curriculum lead later authors an objective, `obj_id` is filled and `id` stays `K.MG.2`. `path.K.MG.2` stays the path id.
 
-If no objective exists yet, the skill id is the Virginia code already in `skills/`. Kindergarten `K.MG.2` is in that state. `skills/math-k.md` marks it as a gap. The framework does not invent an `obj.*` row and does not write the skill statement again.
+Objectives already carry a statement, a success criterion, prerequisites, a practice tool, a quiz, a Virginia code, and a status. See `subjects/math/OBJECTIVES.md` and `assets/templates/objective.md`.
 
 | Field | Meaning |
 | --- | --- |
-| `id` | `obj.*` when one exists. Otherwise the Virginia code, such as `K.MG.2`. |
+| `id` | Stable row key. The fixture uses the Virginia code `K.MG.2`. Filling `obj_id` does not rename this field. |
 | `pillar` | `reading`, `writing`, or `math`. |
 | `va_sol` | Zero or more Virginia codes. Empty only for a non-standards objective that already says so. |
 | `prereq_ids` | Skill ids that precede this one. Copied from the objective prerequisite column when that column exists. |
@@ -53,7 +53,7 @@ A node is one school-day row. The role is the pedagogy. The task kind is an exis
 | `move_on` | `completed` or `passed`. Teach and practice use `completed`. Check uses `passed`. There is no implicit default of done. |
 | `gate` | For `passed` only. `min_score` and `out_of`, or the objective's existing drill rule. Null while `content_ref` is null. |
 
-`task_kind: "lesson"` is the kind in [LESSON_PACKAGES.md](../LESSON_PACKAGES.md). The player shipped on 2026-08-24. This model leaves that kind optional. The `K.MG.2` nodes keep `content_ref` null until phase 7 sets it.
+`task_kind` is copied from `SYNC_API.md` at implementation time. [LESSON_PACKAGES.md](../LESSON_PACKAGES.md) describes a lesson as `kind: content` with `subject_type: lesson`. That pair is not a `plan_tasks` kind. [TOOLS.md](../TOOLS.md) section 6A still says the player is spec'd, not built. This model does not write `lesson` into `plan_tasks.kind`. The `K.MG.2` nodes keep `content_ref` null until a later change can point at an id the device already opens.
 
 ### Assignment
 
@@ -61,7 +61,7 @@ An assignment is the parent's confirm action. It binds a skill, a path version, 
 
 | Field | Meaning |
 | --- | --- |
-| `id` | New id per confirm. |
+| `id` | Stable for one child, one skill, and one local day. A repeat confirm updates this row. |
 | `child_id` | The child the wizard already scopes. |
 | `skill_id` | The skill the parent picked. |
 | `path_id` | Copied from the skill. |
@@ -75,7 +75,7 @@ A path with any null `content_ref` does not create a plan and does not call star
 
 ### Progress
 
-Progress is a function of `activity_events` and task completion, grouped by skill id. The public words match [PARENT_STANDING.md](../PARENT_STANDING.md).
+Progress is a function of `activity_events` and task completion, grouped by skill id. The three states below are the rules in [PARENT_STANDING.md](../PARENT_STANDING.md). The heat map in [PARENT_STANDING_UX.md](../../PARENT_STANDING_UX.md) also shows Developing and Struggling. This model does not rename those words.
 
 | State | Rule |
 | --- | --- |
@@ -83,7 +83,9 @@ Progress is a function of `activity_events` and task completion, grouped by skil
 | `in_progress` | Any node completed, or any qualifying event, and the objective's mastery rule is not met. |
 | `mastered` | The objective's existing success criterion is met. Where that criterion says two sessions on different days, one check is not enough. |
 
-There is no fourth public word and no point total. A failed check leaves the skill `in_progress` and reopens `on_check_fail`. A later failed check can move `mastered` back to `in_progress`. Node-level done flags stay inside the day. The standing card reads the skill state only.
+A skill with `obj_id` null has no catalog entry. [PARENT_STANDING.md](../PARENT_STANDING.md) says the card then reads "not yet mapped." That skill is not mastered from a path check.
+
+A failed check reopens `on_check_fail`. If the skill was not mastered, it stays `in_progress`. One failed check does not undo a two-session mastery gate. Mastery moves only when the objective's own criterion says the gate is no longer met. There is no point total. Node-level done flags stay inside the day. The standing card reads the skill state only.
 
 ## Fixture
 
@@ -151,7 +153,7 @@ The only Goji School pack in this model is `K.MG.2`. It is a catalog fixture. It
 1. The parent opens the child and the Standing tab. Pillar tiles are the ones in [PARENT_STANDING.md](../PARENT_STANDING.md).
 2. The parent picks one skill in one pillar. The fixture demo picks `K.MG.2`.
 3. The app shows that skill's path as the node list, in order, with the role of each node. It does not draft lesson text.
-4. If any `content_ref` is null, confirm stores the assignment with `plan_id` null. The screen says the pieces are not on the device yet. Start stays disabled.
+4. If any `content_ref` is null, confirm stores the assignment with `plan_id` null. The screen says the pieces are not on the device yet. That null plan does not disable Start for a school day the child already has. Confirm uses the existing Assign practice control in [PARENT_STANDING_UX.md](../../PARENT_STANDING_UX.md).
 5. If every `content_ref` is set, confirm expands the nodes into `plan_tasks` on that child's plan, using the existing wizard and the existing kinds. The parent then uses the existing Start school day action.
 
 The parent does not reorder nodes, add a fourth role, or turn one skill into a custom course.
@@ -168,13 +170,13 @@ The parent does not reorder nodes, add a fourth role, or turn one skill into a c
 
 A curriculum pack is a set of skill, path, and node records, plus the files those `content_ref` values name once content exists. The K.MG.2 pack at version 1 has the JSON above and no media files.
 
-The device already downloads an image and checks SHA-256 with Ed25519 over the 32-byte digest. Install does not run yet. Both facts are in [TODO.md](../../TODO.md) and [GOJI_COMPUTER_AUDIT_2026-08-19.md](../../GOJI_COMPUTER_AUDIT_2026-08-19.md). The pack uses that verifier. It does not add a second signature scheme.
+The device image has its own SHA-256 and Ed25519 check. Install of that image is the open OTA item in [TODO.md](../../TODO.md). Path records do not use that updater. They travel as catalog bytes. The parent app can bundle the fixture JSON until catalog sync is written in `SYNC_API.md`.
 
 | Rule | Behavior |
 | --- | --- |
 | Identity | `pack_id` plus `version`. |
 | Verify | The digest of the pack bytes matches the signed digest, or the device rejects the pack. |
-| Apply | Not in this model. The existing OTA apply item stays the owner of install. |
+| Apply | Not in this model. The image OTA item stays the owner of image install. This pack does not call it. |
 | Demo load | Until apply exists, the parent app can read the same JSON as a bundled asset. The bytes are the bytes a later pack will hash. |
 | Replace | A higher version replaces catalog rows by id. An assignment stores `path_version` and keeps walking that version. |
 | Idempotent | Verifying the same pack twice leaves one copy of each id. A bad signature leaves the previous copy in place. |

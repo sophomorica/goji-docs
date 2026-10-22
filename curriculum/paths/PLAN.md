@@ -16,7 +16,7 @@ The framework build is the records, the assignment expansion, the child order, t
 - Framework phases do not wait on the Learner #7 sit-through. Do not invent that sit-through's steps in these phases.
 - Do not submit the parent app to a store. Implementation changes are separate from this plan, and each one waits for its own review.
 - Do not add a CASE server, an xAPI record store, a SmartScore, an ALEKS-style selector, Kolibri Studio, or an Oppia exploration editor.
-- Do not add a `plan_tasks` kind for this project. Map nodes onto kinds the school day already accepts. [LESSON_PACKAGES.md](../LESSON_PACKAGES.md) records that the lesson player shipped on 2026-08-24. Phase 7 still owns lesson content for this fixture.
+- Do not add a `plan_tasks` kind for this project. Map nodes onto kinds `SYNC_API.md` already accepts. Math stays `app_time`. A lesson in [LESSON_PACKAGES.md](../LESSON_PACKAGES.md) is `kind: content` with `subject_type: lesson`, and [TOOLS.md](../TOOLS.md) section 6A still says that player is spec'd, not built. Phase 7 may set `content_ref` only to an id the current school day can open.
 - Do not regenerate `catalog_v1.json` for the whole catalog as part of the framework. Touch it only when an `obj.*` row actually changes, which this build does not do.
 
 ## Phase 1. Land the fixture records
@@ -37,9 +37,9 @@ Then store an assignment and, only for a fully referenced path, the expanded `pl
 
 ## Phase 3. Parent assigns a skill
 
-On the child Standing tab, picking a skill shows the path nodes in order. Confirm follows phase 2. Start stays the existing button, and it stays disabled while `plan_id` is null. The empty state tells the parent the pieces are not on the device yet. Reuse the wizard's child scope. Do not add a new tab.
+On the child Standing tab, picking a skill shows the path nodes in order. Confirm uses the existing Assign practice control and follows phase 2. Start stays the existing school-day button. A null `plan_id` on this assignment does not disable Start for a plan the child already has. The empty state tells the parent the pieces are not on the device yet. Reuse the wizard's child scope. Do not add a new tab.
 
-**Done means.** A parent-app test selects `K.MG.2`, sees three roles in order, confirms, and asserts Start is disabled and no plan was created. A second test uses the fully referenced test path, confirms, and asserts the existing Start path can run. No lesson sentences appear in the test output.
+**Done means.** A parent-app test selects `K.MG.2`, sees three roles in order, confirms, and asserts no plan was created and an existing plan can still start. A second test uses the fully referenced test path, confirms, and asserts the existing Start path can run. No lesson sentences appear in the test output.
 
 ## Phase 4. Child walks a referenced path
 
@@ -53,26 +53,26 @@ The `K.MG.2` fixture has no device rows, because phase 2 never created a plan. D
 
 Compute `not_started`, `in_progress`, and `mastered` from events the device already uploads, using the rules in [MODEL.md](./MODEL.md). The Standing card reads that result. Do not add a wire event type unless `SYNC_API.md` already lacks a field the objective's success criterion needs. If a field is missing, stop and extend the contract. Do not invent a parallel progress table.
 
-**Done means.** A unit test feeds a literal event list and expects each of the three states, including a mastered skill that returns to `in_progress` after a later failed check. The standing UI test shows those words and no point total.
+**Done means.** A unit test feeds a literal event list and expects each of the three states. A failed check while `in_progress` stays `in_progress` and reopens teach. A mastered skill stays mastered unless the objective's own criterion says the gate is no longer met. A null `obj_id` reads "not yet mapped." The standing UI test shows those words and no point total.
 
 ## Phase 6. Verify a pack, and do not install it
 
-Define the pack bytes as the fixture JSON plus a manifest of file digests. Run them through the existing SHA-256 and Ed25519 check. A bad signature leaves any previous pack untouched. Applying the files onto the device stays the open OTA install item in [TODO.md](../../TODO.md).
+Hash the fixture JSON in this repo. A bad digest fails the checker. Do not send the fixture through the image updater in [TODO.md](../../TODO.md). Catalog sync, when it exists, is a `SYNC_API.md` change and is out of this phase.
 
-Until that install exists, the parent app may bundle the same fixture JSON for the demo. The bundled bytes and the hashed bytes are the same file.
+Until catalog sync exists, the parent app may bundle the same fixture JSON for the demo. The bundled bytes and the hashed bytes are the same file.
 
-**Done means.** A verifier test accepts the fixture digest with a test key and rejects a flipped byte. No installer code runs. No media file is in the pack.
+**Done means.** A checker accepts the fixture digest and rejects a flipped byte. No image installer runs. No media file is in the pack.
 
 ## Phase 7. Add content later
 
 This phase is not part of the framework build. A demo of the framework does not need it.
 
-A curriculum lead authors the objective, the lesson, the practice, and the check for `K.MG.2` in `curriculum/`, under the rules in [PRACTICES.md](../PRACTICES.md). After those ids exist, a follow-up sets `content_ref` and `task_kind` on the three nodes and bumps `path.version`. `skills/math-k.md` changes from gap only in that follow-up, and only if the coverage is real.
+A curriculum lead authors the objective, the lesson, the practice, and the check for `K.MG.2` in `curriculum/`, under the rules in [PRACTICES.md](../PRACTICES.md). After those ids exist, a follow-up sets `content_ref` on the three nodes only when the id is one the current school day can open, and bumps `path.version`. A `lesson.*` ref waits until the device can open it. `skills/math-k.md` changes from gap only in that follow-up, and only if the coverage is real.
 
 **Done means.** The coverage row cites real ids, the checker from phase 1 now allows those refs, and a child can complete the path on a device build that contains the content. That proof is out of scope until the content exists.
 
 ## Order
 
-Phase 1 is this repo. Phase 2 is the cloud contract, then the database. Phases 3 and 5 are the parent app. Phase 4 is the computer. Phase 6 touches the computer's existing verifier and the app's bundled asset. Phase 7 is curriculum work and comes last.
+Phase 1 is this repo. Phase 2 is the cloud contract, then the database. Phases 3 and 5 are the parent app. Phase 4 is the computer. Phase 6 hashes the fixture in this repo. It does not touch the image updater. Phase 7 is curriculum work and comes last.
 
-Phase 3 can demo against phase 1 and phase 2 with Start disabled. Do not skip to phase 7 to make the demo look finished.
+Phase 3 can demo against phase 1 and phase 2 with no new plan. Do not skip to phase 7 to make the demo look finished.
