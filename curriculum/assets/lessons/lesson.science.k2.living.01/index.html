@@ -422,6 +422,7 @@ p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
     if(!queue.length){
       if(phase==='guided'){
         clearBins();
+        seen=0; pass1correct=0; pass1=true; sortTotal=ITEMS.length;
         beginPhase(ITEMS,'independent','Now on your own. Drag each card to <b>Living</b> or <b>Not living</b>.',false);
         return;
       }
@@ -510,7 +511,9 @@ p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
     document.getElementById('gateTxt').textContent= passed? 'You can tell living from not living.' : 'Good try. Watch the four signs once more.';
     document.getElementById('guessTxt').textContent = guess==='wolf' ? 'At the start you guessed the WOLF was alive — you were right!' : guess==='river' ? 'At the start you guessed the RIVER. Now you know: moving is not enough!' : '';
     say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
-    document.getElementById('finish').style.display = passed? '' : 'none';
+    const finish=document.getElementById('finish');
+    finish.disabled=false;
+    finish.style.display = passed? '' : 'none';
     document.getElementById('againTeach').textContent = passed? '↺ Watch the signs again' : '↺ Watch again, then try once more';
   }
   document.getElementById('againTeach').onclick=()=>go(1);
