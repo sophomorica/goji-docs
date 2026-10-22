@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The land changes too — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 62%,#c9b98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene .beat{position:absolute;inset:0}
+.scene .beat svg{width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.flow path.w{stroke-dasharray:18 14;animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-32}}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .beat{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice: sort ---- */
+.sortwrap{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:18px;flex:1;min-height:360px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:14px;gap:10px;min-height:300px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:28px}
+.bin.live h3{color:var(--red)} .bin.dead h3{color:var(--green)}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bin .got span{font-size:40px}
+.bin .got img{width:56px;height:56px;object-fit:cover;border-radius:14px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.item{width:min(260px,40vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:26px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:80px;line-height:1.1}
+.item img{width:100%;max-width:170px;border-radius:14px;display:block;margin:0 auto}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.tapbtns{display:flex;gap:12px}
+.tapbtns .btn{min-width:150px;font-size:22px;padding:14px 20px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- practice Q / check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt,.popt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right,.popt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong,.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled],.popt[disabled]{cursor:default}
+.bigpic{font-size:100px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+#scn{display:none;flex-direction:column;flex:1}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .sortwrap{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .bin{min-height:130px} .scene{min-height:240px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>The land changes too <button class="say" data-say="Look at this giant canyon. The walls are taller than a hundred houses. Who carved it? A digger machine, or a river? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">This giant canyon is deeper than 100 houses. <b>Who carved it?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="digger">
+      <img data-img="hook_digger" alt="" hidden><svg viewBox="0 0 200 130" aria-label="digger machine"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><rect x="40" y="70" width="70" height="34" rx="8" fill="#e0a93b"/><rect x="58" y="46" width="34" height="28" rx="6" fill="#e0a93b"/><rect x="64" y="52" width="20" height="14" rx="3" fill="#cfe6ee"/><path d="M108 78 L150 52 L164 78 L146 84 Z" fill="#c9a12f"/><path d="M164 78 q14 4 10 20 l-18 -4z" fill="#8d8d8d"/><circle cx="58" cy="110" r="12" fill="#3b2a1e"/><circle cx="94" cy="110" r="12" fill="#3b2a1e"/><rect x="40" y="96" width="70" height="8" fill="#5c554b"/></svg>
+      <span>A digger machine</span>
+    </div>
+    <div class="pick" data-guess="river">
+      <img data-img="hook_river" alt="" hidden><svg viewBox="0 0 200 130" aria-label="river in a canyon"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><path d="M0 30 L60 30 L86 120 L114 120 L140 30 L200 30 L200 130 L0 130Z" fill="#c1683a"/><path d="M0 30 L60 30 L86 120 L70 130 L0 130Z" fill="#a5552e"/><path d="M86 120 Q100 112 114 120 L114 130 L86 130Z" fill="#5aa3bf"/></svg>
+      <span>A river</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Fast changers, slow sculptors <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div class="beat" id="beatArt"></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🍂</span>Living things answer</div>
+    <div class="badge" id="b1"><span class="em">🐢</span>Slow sculptors</div>
+    <div class="badge" id="b2"><span class="em">⚡</span>Fast changers</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Fast or slow? <button class="say" id="sayPrac" data-say="Sort each change! Was it fast, quick enough to watch? Or slow, too slow to watch, but still happening? Drag the card, or tap a button." data-voice="sort_intro">🔊</button></h2>
+  <p class="lead" id="pLead">Was the change <b>fast</b> (you could watch it) or <b>slow</b> (too slow to watch)?</p>
+  <div id="srt">
+  <div class="sortwrap">
+    <div class="bin live" data-bin="live"><h3>⚡ Fast</h3><div class="got" id="gotLive"></div></div>
+    <div class="deck">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="tapbtns"><button class="btn ghost" data-tap="live">Fast</button><button class="btn ghost" data-tap="dead">Slow</button></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="bin dead" data-bin="dead"><h3>🐢 Slow</h3><div class="got" id="gotDead"></div></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  </div>
+  <div id="scn">
+    <div class="bigpic" id="ppic"></div>
+    <div class="q"><span id="ptext"></span><button class="say" id="sayP">🔊</button></div>
+    <div class="opts" id="popts"></div>
+    <div class="fb" id="pfb"></div>
+    <div class="counter" id="pcount"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the sculptors again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.change.02',version:1,quiz:'quiz.science.k2.change.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_living'],['b1','badge_slow'],['b2','badge_fast']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), beatArt=document.getElementById('beatArt');
+  const badges=[0,1,2].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const SEASONS='<rect width="500" height="330" fill="#cfe6ee"/><rect x="500" width="500" height="330" fill="#dfeef4"/><g><path d="M170 260 v-110" stroke="#8a7355" stroke-width="16"/><circle cx="170" cy="120" r="58" fill="#3f7d4e"/></g><g><path d="M760 260 v-110" stroke="#8a7355" stroke-width="16"/><g stroke="#8a7355" stroke-width="8" fill="none"><path d="M760 150 q-30 -30 -56 -34 M760 150 q30 -30 56 -34 M760 160 q-40 -6 -60 12 M760 160 q40 -6 60 12"/></g><g fill="#c1683a"><ellipse cx="700" cy="270" rx="12" ry="6"/><ellipse cx="740" cy="282" rx="12" ry="6"/><ellipse cx="800" cy="274" rx="12" ry="6"/></g></g><g fill="#3b2a1e"><path d="M420 60 q14 -16 28 0 q14 -16 28 0" stroke="#3b2a1e" stroke-width="6" fill="none"/><path d="M480 90 q14 -16 28 0 q14 -16 28 0" stroke="#3b2a1e" stroke-width="6" fill="none"/></g><rect y="260" width="1000" height="70" fill="#c9b98a"/>',
+        CANYON='<rect width="1000" height="330" fill="#cfe6ee"/><path d="M0 80 L330 80 L430 300 L570 300 L670 80 L1000 80 L1000 330 L0 330Z" fill="#c1683a"/><path d="M0 80 L330 80 L430 300 L340 330 L0 330Z" fill="#a5552e"/><path d="M670 80 L1000 80 L1000 330 L660 330 Z" fill="#b35c32" opacity=".6"/><g class="flow"><path d="M430 300 Q500 288 570 300 L570 330 L430 330Z" fill="#5aa3bf"/><path class="w" d="M436 310 Q500 298 564 310" stroke="#fff" stroke-width="4" fill="none" opacity=".8"/></g>',
+        BEACH='<rect width="1000" height="330" fill="#cfe6ee"/><rect y="210" width="1000" height="120" fill="#e7cf9b"/><g class="flow"><path d="M0 150 Q250 120 500 155 T1000 145 L1000 240 Q700 214 400 240 T0 250Z" fill="#5aa3bf"/><path class="w" d="M0 190 Q250 165 500 198 T1000 188" stroke="#fff" stroke-width="6" fill="none" opacity=".8"/></g><g fill="#8d8d8d"><circle cx="180" cy="286" r="16"/><circle cx="240" cy="296" r="10"/><circle cx="300" cy="288" r="6"/><circle cx="352" cy="294" r="3.5"/><circle cx="390" cy="290" r="2"/></g><path d="M560 300 q30 -50 90 -40 q40 8 60 40z" fill="#dbc084"/><g stroke="#9fc7d6" stroke-width="5" fill="none"><path class="w" d="M600 120 q50 8 100 0"/><path class="w" d="M640 90 q45 8 90 2"/></g>',
+        STORMY='<rect width="1000" height="330" fill="#b9cdd6"/><ellipse cx="250" cy="60" rx="140" ry="44" fill="#6f8791"/><ellipse cx="400" cy="80" rx="110" ry="38" fill="#59707a"/><path d="M300 118 l-22 46 h24 l-18 44" stroke="#e0a93b" stroke-width="8" fill="none" stroke-linecap="round"/><rect y="250" width="1000" height="80" fill="#8f9c6a"/><path d="M700 250 v-120" stroke="#8a7355" stroke-width="18"/><g stroke="#8a7355" stroke-width="9" fill="none"><path d="M700 150 q-36 -30 -66 -32 M700 140 q36 -34 70 -34"/></g><path d="M700 190 q60 24 120 64" stroke="#6a5a3e" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M60 290 q120 -22 240 0 q120 20 240 -4" stroke="#7a6a4a" stroke-width="10" fill="none" opacity=".7"/>',
+        RECAP='<rect width="1000" height="330" fill="#cfe6ee"/><rect y="240" width="1000" height="90" fill="#c9b98a"/><g transform="translate(80,40) scale(.66)"><path d="M0 80 L200 80 L270 280 L370 280 L440 80 L640 80 L640 330 L0 330Z" fill="#c1683a"/><path d="M270 280 Q320 270 370 280 L370 330 L270 330Z" fill="#5aa3bf"/></g><g transform="translate(600,60)"><path d="M40 220 v-120" stroke="#8a7355" stroke-width="16"/><g stroke="#8a7355" stroke-width="8" fill="none"><path d="M40 100 q-30 -26 -56 -28 M40 92 q30 -30 60 -30"/></g><path d="M120 150 q50 20 100 60" stroke="#6a5a3e" stroke-width="12" fill="none" stroke-linecap="round"/></g>';
+  const BEATS=[
+    {media:'teach_seasons',cap:'Seasons change — living things ANSWER.',
+     svg:SEASONS,
+     voice:'t_seasons',txt:'When the seasons change, living things answer. Geese fly south. Trees drop their leaves. People pull on warm coats. Weather tells living things what to do next.',
+     fn(){ badges[0].classList.add('on'); }},
+    {media:'teach_canyon',cap:'Water is a SLOW sculptor.',
+     svg:CANYON,
+     voice:'t_canyon',txt:'And the land? The land changes too. This river carved this whole canyon — little by little, a tiny bit of rock each year, for a very, very long time. Too slow to watch. But it never stopped.',
+     fn(){ badges[1].classList.add('on'); }},
+    {media:'teach_beach',cap:'Waves and wind are slow sculptors too.',
+     svg:BEACH,
+     voice:'t_beach',txt:'At the beach, waves rub big rocks into pebbles, and pebbles into sand — that soft sand was hard rock once! And the wind piles the sand into dunes and slowly walks them along the shore.',
+     fn(){ }},
+    {media:'teach_storm',cap:'Some changes are FAST.',
+     svg:STORMY,
+     voice:'t_storm',txt:'Some changes are fast — you can watch them happen! A storm snaps a branch in one crack. A flood picks up soil and drops it somewhere new in one afternoon.',
+     fn(){ badges[2].classList.add('on'); }},
+    {media:'teach_recap',cap:'Fast or slow — wind and water never rest.',
+     svg:RECAP,
+     voice:'t_recap',txt:'Fast, or slow — wind and water are always at work. Even right now, too slow to see, the river is carving, the waves are grinding, the wind is pushing the dune. The land changes too.',
+     fn(){ }}
+  ];
+  const teachScript=BEATS.map(b=>b.txt);
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function resetScene(){ timers.forEach(clearTimeout); timers=[]; badges.forEach(b=>b.className='badge'); cap.textContent=''; beatArt.innerHTML=''; layer.innerHTML=''; sceneEl.classList.remove('media'); document.getElementById('teachNext').disabled=true; }
+  function playTeach(){
+    resetScene();
+    let t=0;
+    BEATS.forEach((b,i)=>{
+      later(()=>{ cap.textContent=b.cap; say(b.txt,b.voice); beatArt.innerHTML='<svg viewBox="0 0 1000 330" preserveAspectRatio="xMidYMid meet">'+b.svg+'</svg>'; showBeat(b.media); b.fn(); },t);
+      t+= (i===0?8400 : i===1?8800 : i===2?8600 : 7400);
+    });
+    later(()=>{ cap.textContent='Living things answer the seasons. Wind and water sculpt the land — fast and slow.'; document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice — A) fast/slow sort ---------- */
+  const ITEMS=[
+    {n:'River carves a canyon',p:'🏞️',k:'card_canyon',a:'dead',mis:'slowdeny',why:'Years and years of carving — too slow to watch, but it never stopped.'},
+    {n:'Storm knocks a branch down',p:'🌩️',k:'card_branch',a:'live',mis:'speed',why:'One crack of the storm — you could watch it fall.'},
+    {n:'Wave takes the sandcastle',p:'🏖️',k:'card_castle',a:'live',mis:'speed',why:'One wave, and whoosh — fast enough to watch.'},
+    {n:'Swing gets rusty',p:'⛓️',k:'card_rust',a:'dead',mis:'slowdeny',why:'Rain rusts the swing a tiny bit at a time, week after week.'},
+    {n:'Wind walks the sand dune',p:'🌬️',k:'card_dune',a:'dead',mis:'slowdeny',why:'The wind moves the dune a few grains at a time — too slow to watch.'},
+    {n:'Flood moves the garden soil',p:'🌊',k:'card_flood',a:'live',mis:'speed',why:'One big flood can move soil in a single afternoon.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0;
+  const item=document.getElementById('item'),fb=document.getElementById('fb');
+  function startPractice(){ document.getElementById('srt').style.display=''; document.getElementById('scn').style.display='none';
+    document.getElementById('pTitle').firstChild.textContent='Fast or slow? ';
+    queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; document.getElementById('gotLive').innerHTML='';document.getElementById('gotDead').innerHTML=''; fb.textContent=''; document.getElementById('pracNext').disabled=true; item.style.visibility='visible'; showItem(); }
+  function showItem(){
+    if(!queue.length){ item.style.visibility='hidden'; document.getElementById('counter').textContent='All sorted! 🎉'; say('All sorted! Now — detective time. Who did it, wind or water?','sort_done'); setTimeout(startScenario, reduced?400:1600); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p; document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} sorted`;
+    say(it.n+'. Fast, or slow?');
+  }
+  function answer(bin){
+    if(!queue.length || item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=bin===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n; document.getElementById(bin==='live'?'gotLive':'gotDead').appendChild(s);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint = it.a==='dead' ? 'Could you stand and watch it happen? No — this takes years. It is still happening, just too slow to see.' : 'You could watch this one happen — that makes it fast.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint, it.a==='dead'?'fb_slowdeny':'fb_speed');
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:1900);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+
+  /* ---------- stage 2: practice — B) who did it? + animals respond ---------- */
+  const SCN=[
+    {pic:'🏞️',k:'card_canyon',voice:'pw1',q:'The canyon got deeper and deeper. Who did it?',
+     o:['Water — the river carved it, little by little','Wind blew the canyon open','Someone dug it with machines'],a:0,
+     mis:['','mixup','dug'],why:'The river is the sculptor — a little rock every year, for ages.'},
+    {pic:'🏜️',k:'card_dunes',voice:'pw2',q:'The sand piled up into wavy dunes. Who did it?',
+     o:['Wind — it pushes the sand, grain by grain','Water poured the dunes','Someone built them with a shovel'],a:0,
+     mis:['','mixup','dug'],why:'Wind piles the sand and slowly walks the dunes along.'},
+    {pic:'🪨',k:'card_pebbles',voice:'pw3',q:'The beach pebbles are smooth and round. Who did it?',
+     o:['Water — waves rolled and rubbed them smooth','Wind polished them in one day','They were always smooth'],a:0,
+     mis:['','mixup','never'],why:'Waves tumbled the rocks against each other until they went smooth.'},
+    {pic:'🍂',k:'card_geese',voice:'pa1',q:'Autumn comes — cold days ahead. What do the geese do?',
+     o:['Fly south, where it stays warm','Nothing — seasons don\'t affect animals','Hide until the trees grow new leaves that same day'],a:0,
+     mis:['','noanswer','speed'],why:'Living things answer the seasons — geese fly, trees drop leaves, people bundle up.'}
+  ];
+  let sq=[];
+  function startScenario(){ document.getElementById('srt').style.display='none'; const sc=document.getElementById('scn'); sc.style.display='flex';
+    document.getElementById('pTitle').firstChild.textContent='Who did it? ';
+    document.getElementById('pLead').innerHTML='Be a land detective. <b>Wind or water</b> — who made the change?';
+    say('Be a land detective! Wind, or water — who made the change? Tap your answer.','scn_intro');
+    sq=SCN.slice(); showScn(); }
+  function showScn(){
+    if(!sq.length){ document.getElementById('ppic').textContent='🌍'; document.getElementById('ptext').textContent='Case closed, detective!'; document.getElementById('popts').innerHTML=''; document.getElementById('pcount').textContent='Practice done! 🎉'; document.getElementById('pfb').textContent=''; document.getElementById('pracNext').disabled=false; say('Case closed, detective! Now show what you know.','scn_done'); return; }
+    const s=sq[0]; const pp=document.getElementById('ppic'); if(img(s.k)) pp.innerHTML='<img src="'+img(s.k)+'" alt="">'; else pp.textContent=s.pic;
+    document.getElementById('ptext').textContent=s.q; document.getElementById('pfb').textContent='';
+    document.getElementById('pcount').textContent='';
+    document.getElementById('sayP').onclick=()=>say(s.q,s.voice);
+    const o=document.getElementById('popts'); o.innerHTML='';
+    s.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t; b.onclick=()=>pickScn(i); o.appendChild(b); });
+    say(s.q,s.voice);
+  }
+  function pickScn(i){
+    const s=sq[0]; const ok=i===s.a; tries++;
+    document.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===s.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('pfb');
+    if(ok){ sq.shift(); f.className='fb good'; f.textContent='✓ '+s.why; say('Yes! '+s.why,'why_'+s.voice); }
+    else{ const m=s.mis[i]||'other'; misses[m]=(misses[m]||0)+1;
+      const hint=m==='dug'?'No machines, no shovels — nature\'s slow sculptor did this all by itself.'
+        :m==='never'?'It DID change — the land is always changing, just slowly.'
+        :m==='noanswer'?'Seasons DO reach the animals — watch what they do when cold comes.'
+        :m==='speed'?'Careful — that would take much longer than one day.'
+        :'Think: was it moving air, or moving water?';
+      f.className='fb bad'; f.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+m); sq.push(sq.shift()); }
+    setTimeout(showScn, ok?1700:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🏞️',k:'card_canyon',q:'Who made the deep canyon?',o:['The river — carving little by little for a very long time','Someone dug it with machines','No one — canyons were always there and never change'],a:0,mis:'dug/never'},
+    {id:2,pic:'⛰️',k:'card_mountain',q:'Do mountains and rocks ever change?',o:['Yes — wind and water change them, very slowly','Never — mountains are forever'],a:0,mis:'never'},
+    {id:3,pic:'🌩️',k:'card_branch',q:'Which one is a FAST change?',o:['A storm knocks a branch down','A river carves a canyon','Waves turn rock into sand'],a:0,mis:'speed'},
+    {id:4,pic:'🌬️',k:'card_windwork',q:'Is a storm the only thing that changes the land?',o:['No — wind and water change it a little every single day','Yes — only storms change the land'],a:0,mis:'onlystorms'},
+    {id:5,pic:'🍂',k:'card_geese',q:'Autumn turns cold. Why do the geese fly south?',o:['Living things answer the changing seasons','Weather never affects living things'],a:0,mis:'noanswer'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic; document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can read the land\'s story! 🌍' : 'Good try! Let\'s watch the sculptors once more.';
+    document.getElementById('guessTxt').textContent = guess==='river' ? 'At the start you guessed the RIVER carved the canyon — right! Little by little, for ages.' : guess==='digger' ? 'At the start you guessed a DIGGER. Now you know: the river carved it — little by little, for a very long time!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the sculptors again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go find one thing outside that weather has changed. 🔍'; say('Lesson done! Now go outside with your parent and find one thing the weather has changed.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

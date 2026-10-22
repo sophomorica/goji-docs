@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.cycles.02",
+  "title": "Two life stories: frog and bean",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "2",
+  "objectives": ["obj.science.k2.cycles.02"],
+  "va_sol": ["2.4"],
+  "duration_min": 14,
+  "anchor": { "book": "aesop-fables", "note": "frog week (animal-of-the-week slot); retakes ride the current fable animal's cycle where one exists" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.cycles.02", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.cycles.02"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

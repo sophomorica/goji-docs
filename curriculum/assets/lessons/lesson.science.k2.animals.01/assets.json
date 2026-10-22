@@ -1,0 +1,314 @@
+{
+  "lesson": "lesson.science.k2.animals.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "fox": {
+      "prompt": "a friendly red fox, full body, standing in profile facing left, russet-orange fur, white chest and tail tip, large upright ears, bushy tail, warm amber eyes, calm expression, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    {
+      "id": "hook_ears",
+      "ref": "fox",
+      "prompt": "close view of the same fox's head with both large ears swiveled forward, alert and listening, meadow grass behind",
+      "kind": "card"
+    },
+    {
+      "id": "hook_tail",
+      "ref": "fox",
+      "prompt": "close view of the same fox's big bushy tail with its white tip, curled across the frame, body soft in the background",
+      "kind": "card"
+    },
+    {
+      "id": "teach_ears",
+      "ref": "fox",
+      "prompt": "the same fox standing in a snowy-edged meadow, ears turned toward a tiny mouse peeking from grass far to the right, listening pose",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_tail",
+      "ref": "fox",
+      "prompt": "the same fox curled up asleep with her bushy tail wrapped over her nose like a blanket, dusk light",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_teeth",
+      "ref": "fox",
+      "prompt": "the same fox with mouth slightly open showing small pointed teeth, a caught fish on the ground before her, calm and not scary",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_legs",
+      "ref": "fox",
+      "prompt": "the same fox mid-stride sprinting across an open meadow, legs stretched, grass bending",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_crow",
+      "prompt": "a glossy black crow perched on an oak branch, beak, folded wings and gripping claws all clearly visible, side view",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_people",
+      "prompt": "a child's hand reaching to pick up an acorn from a wooden table, seen from the side, nothing else in frame",
+      "kind": "scene"
+    },
+    {
+      "id": "card_fox",
+      "ref": "fox",
+      "prompt": "the same fox standing in full profile so ears, tail, teeth and legs are all clearly visible",
+      "kind": "card"
+    },
+    {
+      "id": "card_crow",
+      "prompt": "a black crow perched on a branch in full profile, beak, wings and claws clearly visible",
+      "kind": "card"
+    },
+    {
+      "id": "card_fox_head",
+      "ref": "fox",
+      "prompt": "the same fox's head with tall alert ears, front-facing",
+      "kind": "card"
+    },
+    {
+      "id": "card_fox_teeth",
+      "ref": "fox",
+      "prompt": "the same fox in gentle profile with mouth slightly open showing small pointed teeth, calm, not fierce",
+      "kind": "card"
+    },
+    {
+      "id": "card_fox_crow",
+      "ref": "fox",
+      "prompt": "the same fox sitting at the base of a tree looking up at a crow perched above, both calm",
+      "kind": "card"
+    },
+    {
+      "id": "card_fable",
+      "prompt": "a crow on a branch holding a wedge of yellow cheese in its beak, a tree trunk below, storybook fable scene",
+      "kind": "card"
+    },
+    {
+      "id": "card_rabbit",
+      "prompt": "a soft brown rabbit sitting in grass, fluffy fur texture clearly visible",
+      "kind": "card"
+    },
+    {
+      "id": "card_duck",
+      "prompt": "a cream-and-brown duck standing on a pond bank, layered feathers clearly visible",
+      "kind": "card"
+    },
+    {
+      "id": "card_fish",
+      "prompt": "a blue-grey river fish seen from the side, rounded scales clearly visible, in clear water",
+      "kind": "card"
+    },
+    {
+      "id": "card_snake",
+      "prompt": "a green garden snake curled on a warm rock, smooth scale pattern clearly visible, calm and not menacing",
+      "kind": "card"
+    },
+    {
+      "id": "badge_ears",
+      "prompt": "a single upright fox ear, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_tail",
+      "prompt": "a bushy orange fox tail with a white tip, curled, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_teeth",
+      "prompt": "a small white pointed animal tooth, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_legs",
+      "prompt": "a single animal paw print, simple emblem",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_ears",
+      "from": "teach_ears",
+      "seconds": 6,
+      "prompt": "the fox's ears swivel toward the tiny mouse, her head turns slowly to follow the sound, grass sways gently"
+    },
+    {
+      "id": "teach_tail",
+      "from": "teach_tail",
+      "seconds": 6,
+      "prompt": "the sleeping fox breathes slowly, her bushy tail settles snugly over her nose, dusk light dims a little"
+    },
+    {
+      "id": "teach_legs",
+      "from": "teach_legs",
+      "seconds": 6,
+      "prompt": "the fox runs smoothly across the meadow from left to right, legs cycling, grass bending in her wake"
+    },
+    {
+      "id": "teach_crow",
+      "from": "teach_crow",
+      "seconds": 6,
+      "prompt": "the crow shifts its grip on the branch, half-opens and refolds its wings, turns its head"
+    },
+    {
+      "id": "teach_people",
+      "from": "teach_people",
+      "seconds": 6,
+      "prompt": "the child's hand closes gently around the acorn and lifts it, fingers curling one by one"
+    }
+  ],
+  "voice": [
+    {
+      "id": "hook",
+      "text": "A mouse squeaks far away, under the grass. [pause] The fox hears it! Which part does that job? Tap your guess."
+    },
+    {
+      "id": "t_ears",
+      "text": "The fox's big <emphasis>ears</emphasis> have a job. [pause] They catch tiny sounds — like a mouse squeak, far away."
+    },
+    {
+      "id": "t_tail",
+      "text": "The bushy <emphasis>tail</emphasis> has a job. [pause] It balances the fox when she turns fast. And at night, it wraps her up warm."
+    },
+    {
+      "id": "t_teeth",
+      "text": "The sharp <emphasis>teeth</emphasis> have a job. [pause] Eating meat."
+    },
+    {
+      "id": "t_legs",
+      "text": "The strong <emphasis>legs</emphasis> have a job. [pause] Running fast!"
+    },
+    {
+      "id": "t_crow",
+      "text": "Now look — the crow! [pause] Different parts. A <emphasis>beak</emphasis> to pick up food. <emphasis>Wings</emphasis> to fly. <emphasis>Claws</emphasis> to grab the branch. [pause] Different parts — but the same needs: food, water, and air."
+    },
+    {
+      "id": "t_people",
+      "text": "You have parts with jobs too! [pause] Hands that grab. Teeth of different kinds. [pause] And here is the secret: no animal picks its parts. Every animal is born with parts that fit its life."
+    },
+    {
+      "id": "prac_intro",
+      "text": "Listen to the job. [pause] Then tap the part that does it."
+    },
+    {
+      "id": "prac_done",
+      "text": "All done! Every part matched its job. [pause] Now show what you know."
+    },
+    {
+      "id": "fb_ears",
+      "text": "Not quite. The ears' job is hearing tiny sounds. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_tail",
+      "text": "Not quite. The tail's job is balance, and keeping warm. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_teeth",
+      "text": "Not quite. The teeth's job is eating meat. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_legs",
+      "text": "Not quite. The legs' job is running. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_beak",
+      "text": "Not quite. The beak's job is picking up food. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_wings",
+      "text": "Not quite. The wings' job is flying. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_claws",
+      "text": "Not quite. The claws' job is grabbing the branch. [pause] Which part fits this job?"
+    },
+    {
+      "id": "fb_fur",
+      "text": "Not quite. Fur is soft hair, like the fox's coat. [pause] Look again — what covers this animal?"
+    },
+    {
+      "id": "fb_feathers",
+      "text": "Not quite. Feathers belong to birds. [pause] Look again — what covers this animal?"
+    },
+    {
+      "id": "fb_scales",
+      "text": "Not quite. Scales are smooth little plates, like on a fish. [pause] Look again — what covers this animal?"
+    },
+    {
+      "id": "why_p1",
+      "text": "Yes! [pause] Big ears catch tiny sounds, far away."
+    },
+    {
+      "id": "why_p2",
+      "text": "Yes! [pause] The bushy tail wraps around her like a blanket — and balances her when she runs."
+    },
+    {
+      "id": "why_p3",
+      "text": "Yes! [pause] Sharp teeth are made for eating meat."
+    },
+    {
+      "id": "why_p4",
+      "text": "Yes! [pause] Strong legs let the fox run and pounce."
+    },
+    {
+      "id": "why_p5",
+      "text": "Yes! [pause] Claws curl around the branch and hold on tight."
+    },
+    {
+      "id": "why_p6",
+      "text": "Yes! [pause] The beak is the crow's food-picker. It has no hands!"
+    },
+    {
+      "id": "why_c1",
+      "text": "Yes! [pause] Soft fur covers the rabbit and keeps it warm."
+    },
+    {
+      "id": "why_c2",
+      "text": "Yes! [pause] Feathers cover the duck. Birds are the feather group."
+    },
+    {
+      "id": "why_c3",
+      "text": "Yes! [pause] Smooth scales cover the fish."
+    },
+    {
+      "id": "why_c4",
+      "text": "Yes! [pause] The snake has scales too. No fur, no feathers."
+    },
+    {
+      "id": "q1",
+      "text": "Which part does the hearing job for the fox?"
+    },
+    {
+      "id": "q2",
+      "text": "Why does the fox have sharp teeth?"
+    },
+    {
+      "id": "q3",
+      "text": "The fox and the crow both need…"
+    },
+    {
+      "id": "q4",
+      "text": "What covers a bird's body?"
+    },
+    {
+      "id": "q5",
+      "text": "In the fable, the crow held the cheese with its…"
+    },
+    {
+      "id": "pass",
+      "text": "<soft>You can match parts to jobs!</soft> [pause] Well done."
+    },
+    {
+      "id": "retry",
+      "text": "Good try! Let's watch the jobs once more."
+    },
+    {
+      "id": "done",
+      "text": "Lesson done! Now go look up the fox, and find one job a fox part does."
+    }
+  ]
+}

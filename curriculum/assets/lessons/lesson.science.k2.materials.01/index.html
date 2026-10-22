@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The material tester — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(36vw,300px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(36vw,300px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--cream2) 0 78%,#e6d9bf 78% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg.ex{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .5s}
+.scene>svg.ex.show{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media svg.ex{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.show .m-pieces{animation:mpieces 2.4s ease-in-out infinite alternate}
+@keyframes mpieces{from{transform:translate(0,0)}to{transform:translate(26px,10px)}}
+.show .m-beam{animation:mbeam 2s ease-in-out infinite}
+@keyframes mbeam{0%{opacity:.25}45%{opacity:1}100%{opacity:.25}}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.stamp{position:absolute;z-index:3;right:5%;top:22%;font-size:38px;font-weight:900;letter-spacing:2px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-12deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.88)}
+.stamp.show{transform:rotate(-12deg) scale(1)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+/* ---- practice ---- */
+.pstage{display:flex;flex-direction:column;flex:1;gap:10px}
+.pv{position:relative;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);min-height:210px;flex:1;overflow:hidden}
+.pv svg{position:absolute;inset:0;width:100%;height:100%}
+.pv img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.pq{font-size:28px;font-weight:800;text-align:center;margin:2px 0}
+.mbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.mbtn{font:inherit;font-weight:800;font-size:24px;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 10px;cursor:pointer;box-shadow:var(--shadow);min-height:78px}
+.mbtn:active{transform:translateY(3px);box-shadow:none}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px} .pv{min-height:160px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>What is it made of? <button class="say" data-say="Two spoons. Same shape. Are they made of the same thing? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Two spoons. Same shape. <b>Are they made of the same thing?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="same">
+      <img data-img="hook_same" alt="" hidden><svg viewBox="0 0 200 130" aria-label="the same"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><g transform="translate(58,20)"><ellipse cx="0" cy="18" rx="22" ry="26" fill="#a9865a"/><rect x="-7" y="40" width="14" height="52" rx="7" fill="#a9865a"/></g><g transform="translate(142,20)"><ellipse cx="0" cy="18" rx="22" ry="26" fill="#a9865a"/><rect x="-7" y="40" width="14" height="52" rx="7" fill="#a9865a"/></g></svg>
+      <span>Yes — the same</span>
+    </div>
+    <div class="pick" data-guess="diff">
+      <img data-img="hook_diff" alt="" hidden><svg viewBox="0 0 200 130" aria-label="different"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><g transform="translate(58,20)"><ellipse cx="0" cy="18" rx="22" ry="26" fill="#a9865a"/><rect x="-7" y="40" width="14" height="52" rx="7" fill="#a9865a"/><path d="M-10 4 q6 10 2 24" stroke="#8a6b45" stroke-width="3" fill="none"/></g><g transform="translate(142,20)"><ellipse cx="0" cy="18" rx="22" ry="26" fill="#b9c0c6"/><rect x="-7" y="40" width="14" height="52" rx="7" fill="#b9c0c6"/><path d="M-8 2 q10 8 12 22" stroke="#eef2f4" stroke-width="4" fill="none" stroke-linecap="round"/></g></svg>
+      <span>No — different</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Test them →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The material tester <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <!-- ex1: object vs material -->
+    <svg class="ex" id="ex1" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(330,110)"><ellipse cx="0" cy="40" rx="52" ry="62" fill="#a9865a"/><rect x="-16" y="94" width="32" height="130" rx="14" fill="#a9865a"/><path d="M-24 8 q14 26 6 58" stroke="#8a6b45" stroke-width="6" fill="none"/><text x="0" y="268" font-size="30" font-weight="800" fill="#6b5646" text-anchor="middle">wood</text></g>
+      <g transform="translate(670,110)"><ellipse cx="0" cy="40" rx="52" ry="62" fill="#b9c0c6"/><rect x="-16" y="94" width="32" height="130" rx="14" fill="#b9c0c6"/><path d="M-20 4 q22 18 26 52" stroke="#eef2f4" stroke-width="8" fill="none" stroke-linecap="round"/><text x="0" y="268" font-size="30" font-weight="800" fill="#6b5646" text-anchor="middle">metal</text></g>
+    </svg>
+    <!-- ex2: one material, many objects -->
+    <svg class="ex" id="ex2" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <rect x="90" y="120" width="150" height="200" rx="14" fill="#a9865a"/><path d="M110 140 q20 60 0 160 M150 130 q26 70 4 180 M195 135 q18 66 0 170" stroke="#8a6b45" stroke-width="5" fill="none"/>
+      <g transform="translate(380,150)"><ellipse cx="0" cy="24" rx="30" ry="36" fill="#a9865a"/><rect x="-9" y="56" width="18" height="80" rx="8" fill="#a9865a"/></g>
+      <g transform="translate(540,130)"><rect x="0" y="0" width="16" height="170" rx="7" fill="#a9865a"/><rect x="104" y="70" width="16" height="100" rx="7" fill="#a9865a"/><rect x="0" y="70" width="120" height="16" rx="7" fill="#a9865a"/><rect x="0" y="0" width="90" height="14" rx="6" fill="#a9865a" transform="rotate(0)"/></g>
+      <g transform="translate(760,190)"><rect x="0" y="0" width="110" height="110" rx="14" fill="#a9865a"/><path d="M14 16 q16 36 0 80" stroke="#8a6b45" stroke-width="5" fill="none"/></g>
+    </svg>
+    <!-- ex3: cut the paper -->
+    <svg class="ex" id="ex3" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(180,120)"><rect width="220" height="180" rx="8" fill="#fff" stroke="#9fc7d6" stroke-width="5"/><circle cx="55" cy="55" r="16" fill="#e0a93b"/><circle cx="150" cy="110" r="16" fill="#e0a93b"/><path d="M30 140 h160" stroke="#9fc7d6" stroke-width="6"/></g>
+      <g transform="translate(470,180)" fill="#6b5646"><circle cx="26" cy="10" r="14" fill="none" stroke="#6b5646" stroke-width="8"/><circle cx="26" cy="58" r="14" fill="none" stroke="#6b5646" stroke-width="8"/><path d="M38 18 L96 44 M38 50 L96 24" stroke="#6b5646" stroke-width="10" stroke-linecap="round"/></g>
+      <g class="m-pieces" transform="translate(620,110)">
+        <g transform="rotate(-8)"><rect width="100" height="82" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><circle cx="30" cy="30" r="12" fill="#e0a93b"/></g>
+        <g transform="translate(120,14) rotate(7)"><rect width="100" height="82" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><path d="M16 58 h66" stroke="#9fc7d6" stroke-width="5"/></g>
+        <g transform="translate(6,110) rotate(5)"><rect width="100" height="82" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><circle cx="62" cy="40" r="12" fill="#e0a93b"/></g>
+        <g transform="translate(122,122) rotate(-6)"><rect width="100" height="82" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><path d="M18 30 h60" stroke="#9fc7d6" stroke-width="5"/></g>
+      </g>
+    </svg>
+    <!-- ex4: light through glass -->
+    <svg class="ex" id="ex4" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(90,180)"><rect width="120" height="64" rx="18" fill="#6b5646"/><rect x="112" y="8" width="26" height="48" rx="8" fill="#8d8d8d"/></g>
+      <polygon class="m-beam" points="228,196 470,180 470,244 228,228" fill="#f5d97a" opacity=".9"/>
+      <rect x="470" y="90" width="26" height="240" rx="6" fill="#cfe6ee" opacity=".75" stroke="#9fc7d6" stroke-width="4"/>
+      <text x="483" y="72" font-size="26" font-weight="800" fill="#6b5646" text-anchor="middle">glass</text>
+      <polygon class="m-beam" points="496,182 860,168 860,252 496,242" fill="#f5d97a" opacity=".85"/>
+      <circle cx="880" cy="210" r="52" fill="#f5d97a"/>
+      <text x="880" y="300" font-size="28" font-weight="800" fill="#3f7d4e" text-anchor="middle">ALL the light!</text>
+    </svg>
+    <!-- ex5: light through wax paper -->
+    <svg class="ex" id="ex5" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(90,180)"><rect width="120" height="64" rx="18" fill="#6b5646"/><rect x="112" y="8" width="26" height="48" rx="8" fill="#8d8d8d"/></g>
+      <polygon class="m-beam" points="228,196 470,180 470,244 228,228" fill="#f5d97a" opacity=".9"/>
+      <rect x="470" y="90" width="26" height="240" rx="6" fill="#f3ecd8" stroke="#d9ccb4" stroke-width="4"/>
+      <text x="483" y="72" font-size="26" font-weight="800" fill="#6b5646" text-anchor="middle">wax paper</text>
+      <polygon class="m-beam" points="496,190 800,184 800,238 496,234" fill="#f5d97a" opacity=".35"/>
+      <circle cx="820" cy="211" r="36" fill="#f5d97a" opacity=".4"/>
+      <text x="820" y="300" font-size="28" font-weight="800" fill="#e0a93b" text-anchor="middle">only SOME — a glow</text>
+    </svg>
+    <!-- ex6: wood + thin ruler block -->
+    <svg class="ex" id="ex6" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(60,180)"><rect width="120" height="64" rx="18" fill="#6b5646"/><rect x="112" y="8" width="26" height="48" rx="8" fill="#8d8d8d"/></g>
+      <polygon class="m-beam" points="198,196 380,184 380,240 198,228" fill="#f5d97a" opacity=".9"/>
+      <rect x="380" y="90" width="60" height="240" rx="6" fill="#a9865a" stroke="#8a6b45" stroke-width="4"/>
+      <text x="410" y="72" font-size="26" font-weight="800" fill="#6b5646" text-anchor="middle">wood</text>
+      <rect x="440" y="120" width="130" height="180" fill="#3b2a1e" opacity=".18"/>
+      <g transform="translate(600,180)"><rect width="120" height="64" rx="18" fill="#6b5646"/><rect x="112" y="8" width="26" height="48" rx="8" fill="#8d8d8d"/></g>
+      <polygon class="m-beam" points="738,196 880,188 880,236 738,228" fill="#f5d97a" opacity=".9"/>
+      <rect x="880" y="100" width="16" height="220" rx="5" fill="#a9865a" stroke="#8a6b45" stroke-width="3"/>
+      <text x="888" y="80" font-size="26" font-weight="800" fill="#6b5646" text-anchor="middle">thin ruler</text>
+      <rect x="896" y="130" width="70" height="160" fill="#3b2a1e" opacity=".18"/>
+    </svg>
+    <div class="stamp yes" id="stampThin">THIN ≠ SEE-THROUGH</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🥄</span>Object ≠ material</div>
+    <div class="badge" id="b1"><span class="em">✂️</span>Cut it — still the same</div>
+    <div class="badge" id="b2"><span class="em">🔦</span>All / some / none</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Test it! <button class="say" data-say="Look at each thing. Tap the answer. The flashlight rounds ask: all, some, or none?" data-voice="prac_intro">🔊</button></h2>
+  <div class="pstage">
+    <div class="pv" id="pv"></div>
+    <div class="pq" id="pq"></div>
+    <div class="mbtns" id="mbtns"></div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the tester again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.materials.01',version:1,quiz:'quiz.science.k2.materials.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_material'],['b1','badge_cut'],['b2','badge_light']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), stampThin=document.getElementById('stampThin');
+  const exs=[1,2,3,4,5,6].map(i=>document.getElementById('ex'+i));
+  const badges=[0,1,2].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const teachScript=[
+    "Same object — a spoon. Different materials. One is wood. One is metal. The material is what it is made of.",
+    "One material makes many objects. Wood can be a spoon, a chair, a block — all wood!",
+    "Snip! Snip! Small pieces now. Are they still paper? Yes! Cutting changes the size — never the material.",
+    "The flashlight test! Glass: all the light goes through. Wax paper: only some light — a soft glow.",
+    "Wood: no light gets through. Now a thin ruler… still no light! Thin does not mean see-through."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function showEx(i){ exs.forEach((e,j)=>e.classList.toggle('show',j===i)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    exs.forEach(e=>e.classList.remove('show'));
+    badges.forEach(b=>b.className='badge'); stampThin.className='stamp yes'; cap.textContent='';
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    showEx(0); cap.textContent='Same OBJECT — different MATERIALS.'; say(teachScript[0],'t_object'); showBeat('teach_object');
+    later(()=>{ badges[0].classList.add('on'); },3800);
+    later(()=>{ showEx(1); cap.textContent='One material makes MANY objects.'; say(teachScript[1],'t_many'); showBeat('teach_many'); },5200);
+    later(()=>{ showEx(2); cap.textContent='Cut the paper — every piece is STILL paper.'; say(teachScript[2],'t_cut'); showBeat('teach_cut'); },9800);
+    later(()=>{ badges[1].classList.add('on'); },13600);
+    later(()=>{ showEx(3); cap.textContent='Flashlight test: glass lets ALL light through.'; say(teachScript[3],'t_light'); showBeat('teach_light'); },15200);
+    later(()=>{ showEx(4); cap.textContent='Wax paper lets only SOME light through.'; },19200);
+    later(()=>{ badges[2].classList.add('on'); },21400);
+    later(()=>{ showEx(5); cap.textContent='Wood: NO light. The thin ruler: still NO light!'; say(teachScript[4],'t_none'); showBeat('teach_none'); },22600);
+    later(()=>{ cap.textContent='Thin does NOT mean see-through.'; stampThin.classList.add('show'); document.getElementById('teachNext').disabled=false; },27200);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (material tester) ---------- */
+  function sv(kind){
+    const torch='<g transform="translate(40,120)"><rect width="90" height="48" rx="14" fill="#6b5646"/><rect x="84" y="6" width="20" height="36" rx="6" fill="#8d8d8d"/></g><polygon class="m-beam" points="144,132 330,122 330,168 144,158" fill="#f5d97a" opacity=".9"/>';
+    const art={
+      spoonm:'<g transform="translate(400,60)"><ellipse cx="0" cy="40" rx="46" ry="56" fill="#b9c0c6"/><rect x="-14" y="88" width="28" height="120" rx="12" fill="#b9c0c6"/><path d="M-18 6 q20 16 24 46" stroke="#eef2f4" stroke-width="7" fill="none" stroke-linecap="round"/></g>',
+      chair:'<g transform="translate(330,50)"><rect x="0" y="0" width="18" height="210" rx="8" fill="#a9865a"/><rect x="122" y="90" width="18" height="120" rx="8" fill="#a9865a"/><rect x="0" y="90" width="140" height="18" rx="8" fill="#a9865a"/><path d="M4 20 q10 30 2 60" stroke="#8a6b45" stroke-width="4" fill="none"/></g>',
+      cup:'<g transform="translate(340,60)"><path d="M0 0 L120 0 L104 180 L16 180 Z" fill="#cfe6ee" opacity=".7" stroke="#9fc7d6" stroke-width="6"/><path d="M20 30 L100 30" stroke="#fff" stroke-width="6" opacity=".8"/></g>',
+      cutpaper:'<g transform="translate(250,60)"><g transform="rotate(-6)"><rect width="90" height="72" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><circle cx="28" cy="28" r="11" fill="#e0a93b"/></g><g transform="translate(110,10) rotate(6)"><rect width="90" height="72" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><path d="M14 50 h60" stroke="#9fc7d6" stroke-width="5"/></g><g transform="translate(20,100) rotate(4)"><rect width="90" height="72" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><circle cx="56" cy="36" r="11" fill="#e0a93b"/></g><g transform="translate(120,108) rotate(-5)"><rect width="90" height="72" rx="6" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><path d="M16 26 h56" stroke="#9fc7d6" stroke-width="5"/></g></g>',
+      cutwax:'<g transform="translate(300,70)"><rect x="0" y="30" width="70" height="150" rx="12" fill="#f3ecd8" stroke="#d9ccb4" stroke-width="5"/><path d="M35 30 L35 10" stroke="#3b2a1e" stroke-width="5"/><rect x="130" y="100" width="70" height="80" rx="12" fill="#f3ecd8" stroke="#d9ccb4" stroke-width="5"/><path d="M165 100 L165 82" stroke="#3b2a1e" stroke-width="5"/></g>',
+      lglass:torch+'<rect x="330" y="40" width="22" height="200" rx="6" fill="#cfe6ee" opacity=".75" stroke="#9fc7d6" stroke-width="4"/><polygon class="m-beam" points="352,124 620,116 620,174 352,166" fill="#f5d97a" opacity=".85"/><circle cx="650" cy="145" r="40" fill="#f5d97a"/>',
+      lwax:torch+'<rect x="330" y="40" width="22" height="200" rx="6" fill="#f3ecd8" stroke="#d9ccb4" stroke-width="4"/><polygon class="m-beam" points="352,128 580,124 580,166 352,162" fill="#f5d97a" opacity=".35"/><circle cx="605" cy="145" r="28" fill="#f5d97a" opacity=".4"/>',
+      lwood:torch+'<rect x="330" y="40" width="52" height="200" rx="6" fill="#a9865a" stroke="#8a6b45" stroke-width="4"/><rect x="382" y="60" width="120" height="160" fill="#3b2a1e" opacity=".18"/>',
+      lcard:torch+'<rect x="330" y="40" width="14" height="200" rx="5" fill="#c9a878" stroke="#a9865a" stroke-width="3"/><rect x="344" y="60" width="120" height="160" fill="#3b2a1e" opacity=".18"/><text x="440" y="46" font-size="24" font-weight="800" fill="#6b5646">thin!</text>'
+    };
+    return '<svg viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet">'+art[kind]+'</svg>';
+  }
+  const OPT_MAT=[['wood','Wood'],['metal','Metal'],['glass','Glass']];
+  const OPT_YN2=[['yes','Yes — still the same'],['no','No — cutting changed it']];
+  const OPT_LIGHT=[['all','☀️ All the light'],['some','🌤️ Some light'],['none','🌑 No light']];
+  const ITEMS=[
+    {k:'spoonm', q:'This spoon shines. What is it MADE of?', opts:OPT_MAT, a:'metal', why:'Shiny and hard and cold — this spoon is metal.'},
+    {k:'chair',  q:'What is this chair MADE of?', opts:OPT_MAT, a:'wood', why:'You can see the wood grain — this chair is wood.'},
+    {k:'cup',    q:'You can see through this cup. What is it MADE of?', opts:OPT_MAT, a:'glass', why:'See-through and smooth — this cup is glass.'},
+    {k:'cutpaper',q:'We cut the paper into little pieces. Are the pieces still paper?', opts:OPT_YN2, a:'yes', mis:'cut', why:'Smaller pieces — but every piece is still paper.'},
+    {k:'cutwax', q:'We cut the wax candle in half. Is each half still wax?', opts:OPT_YN2, a:'yes', mis:'cut', why:'Half the size, same wax. Cutting never changes the material.'},
+    {k:'lglass', q:'Flashlight at window glass! How much light gets through?', opts:OPT_LIGHT, a:'all', why:'Glass lets ALL the light through — you can see right through it.'},
+    {k:'lwax',   q:'Flashlight at wax paper! How much light gets through?', opts:OPT_LIGHT, a:'some', mis:'some', why:'Wax paper lets SOME light through — a soft glow, no clear picture.'},
+    {k:'lwood',  q:'Flashlight at the wood board! How much light gets through?', opts:OPT_LIGHT, a:'none', why:'Wood blocks it all. NO light gets through.'},
+    {k:'lcard',  q:'Flashlight at this THIN cardboard! How much light gets through?', opts:OPT_LIGHT, a:'none', mis:'thin', why:'Even thin cardboard blocks all the light. Thin does not mean see-through!'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0;
+  const pv=document.getElementById('pv'),fb=document.getElementById('fb'),mb=document.getElementById('mbtns');
+  function startPrac(){ queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; fb.textContent=''; document.getElementById('pracNext').disabled=true; showItem(); }
+  function showItem(){
+    if(!queue.length){ pv.innerHTML=''; document.getElementById('pq').textContent=''; mb.innerHTML=''; document.getElementById('counter').textContent='All nine tested! 🎉'; document.getElementById('pracNext').disabled=false; say('All nine tested! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    pv.innerHTML = img('card_'+it.k) ? '<img src="'+img('card_'+it.k)+'" alt="">' : sv(it.k);
+    document.getElementById('pq').textContent=it.q;
+    mb.innerHTML='';
+    it.opts.forEach(([v,t])=>{ const b=document.createElement('button'); b.className='mbtn'; b.textContent=t; b.onclick=()=>answer(v); mb.appendChild(b); });
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} tested`;
+    say(it.q);
+  }
+  function answer(v){
+    if(!queue.length) return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=v===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      let hint,vid;
+      if(it.mis==='cut'){ hint='Cutting only changes the size. Look — the pieces still look just the same inside.'; vid='fb_cut'; }
+      else if(it.mis==='thin'){ hint='It is thin — but look behind it: shadow! Thin does not mean see-through.'; vid='fb_thin'; }
+      else if(it.mis==='some'){ hint='Look behind it — a soft glow, not a bright spot and not darkness. That is SOME light.'; vid='fb_some'; }
+      else if(it.opts===OPT_MAT){ hint='Look and feel with your eyes: is it grainy wood, shiny metal, or see-through glass?'; vid='fb_material'; }
+      else { hint='Look at what happens behind the material, then try again.'; vid='fb_generic'; }
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,vid);
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:2000);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🪑',k:'card_chair',q:'A chair is made of wood. Which word is the MATERIAL?',o:['Chair','Wood','Big'],a:1,mis:'objmat'},
+    {id:2,pic:'📄',k:'card_cutpaper',q:'We cut a sheet of paper into little pieces. What are the little pieces?',o:['Still paper','Not paper any more','Wood'],a:0,mis:'cut'},
+    {id:3,pic:'🕯️',k:'card_cutwax',q:'We cut a wax candle in half. Is each half still wax?',o:['Yes — smaller, but still wax','No — cutting changed it'],a:0,mis:'cut'},
+    {id:4,pic:'🪟',k:'card_lglass',q:'A flashlight shines at window glass. How much light gets through?',o:['All of it','Some','None'],a:0},
+    {id:5,pic:'📦',k:'card_lcard',q:'A flashlight shines at a THIN sheet of cardboard. How much light gets through?',o:['All — it is thin','None — thin is not see-through','It makes its own light'],a:1,mis:'thin'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic; document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You are a real material tester! 🔦' : 'Good try! Let\'s watch the tester once more.';
+    document.getElementById('guessTxt').textContent = guess==='diff' ? 'At the start you guessed the spoons are DIFFERENT — right! Same object, but one is wood and one is metal.' : guess==='same' ? 'At the start you guessed the spoons are the SAME. Now you know: same object, but one is wood and one is metal — different materials!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the tester again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now grab a real flashlight and test your house. 🔦'; say('Lesson done! Now grab a real flashlight and test your house.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

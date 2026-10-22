@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invisible forces: gravity and magnets — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d; --blue:#3c6e9f;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:38px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,230px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,230px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 68%,#a9c98a 68% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.beatart{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:56px 12px 10px}
+.beatart.on{display:flex}
+.beatart svg{width:min(92%,660px);height:auto;max-height:100%}
+.scene.media .beatart{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+/* gentle beat motion */
+.fall{animation:fall 2.4s ease-in infinite}
+@keyframes fall{0%{transform:translateY(0)}70%{transform:translateY(150px)}100%{transform:translateY(150px)}}
+.fallslow{animation:fallslow 3.6s ease-in-out infinite}
+@keyframes fallslow{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(80px) rotate(-10deg)}100%{transform:translateY(150px) rotate(6deg)}}
+.rollball{animation:rollball 2.2s ease-out infinite}
+@keyframes rollball{0%{transform:translateX(0)}60%{transform:translateX(210px)}100%{transform:translateX(210px)}}
+.rise{animation:rise 2.2s ease-in-out infinite}
+@keyframes rise{0%{transform:translateY(0)}55%{transform:translateY(-46px)}100%{transform:translateY(-46px)}}
+.pushout{animation:pushout 2s ease-in-out infinite alternate}
+@keyframes pushout{from{transform:translateX(0)}to{transform:translateX(26px)}}
+.pushout2{animation:pushout2 2s ease-in-out infinite alternate}
+@keyframes pushout2{from{transform:translateX(0)}to{transform:translateX(-26px)}}
+.snapin{animation:snapin 2s ease-in-out infinite alternate}
+@keyframes snapin{from{transform:translateX(0)}to{transform:translateX(-22px)}}
+.snapin2{animation:snapin2 2s ease-in-out infinite alternate}
+@keyframes snapin2{from{transform:translateX(0)}to{transform:translateX(22px)}}
+/* ---- practice ---- */
+.lab{display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;justify-content:center}
+.item{width:min(420px,86vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;
+  font-size:27px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:84px;line-height:1.1;min-height:96px;display:flex;align-items:center;justify-content:center}
+.item .pic svg{width:min(260px,60vw);height:auto}
+.item .pic img{width:100%;max-width:200px;border-radius:14px;display:block;margin:0 auto}
+.tapbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:170px;font-size:23px;padding:14px 20px;min-height:72px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:25px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:100px;text-align:center;line-height:1.1;margin:8px 0;min-height:110px;display:flex;align-items:center;justify-content:center}
+.bigpic svg{width:min(300px,70vw);height:auto}
+.bigpic img{width:min(40vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:30px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Invisible forces <button class="say" data-say="The magnet sits near the paperclip. It is not touching it! Can it make the clip move? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The magnet is <b>near</b> the paperclip — not touching! Can it make the clip move?</p>
+  <div class="choice2">
+    <div class="pick" data-guess="yes">
+      <img data-img="hook_magnet" alt="" hidden><svg viewBox="0 0 220 130" aria-label="magnet near paperclip"><use href="#magclip"/></svg>
+      <span>Yes! No touch needed</span>
+    </div>
+    <div class="pick" data-guess="no">
+      <img data-img="hook_touch" alt="" hidden><svg viewBox="0 0 220 130" aria-label="hand touching paperclip"><rect width="220" height="130" rx="16" fill="#f3e9d6"/><path d="M60 95 q0 -22 18 -22 l30 0 q14 0 14 12 l0 10" fill="#e8b98e"/><rect x="66" y="55" width="9" height="26" rx="4" fill="#e8b98e"/><rect x="78" y="50" width="9" height="31" rx="4" fill="#e8b98e"/><rect x="90" y="52" width="9" height="29" rx="4" fill="#e8b98e"/><rect x="102" y="56" width="9" height="25" rx="4" fill="#e8b98e"/><use href="#clipshape" transform="translate(130,88) scale(.9)"/></svg>
+      <span>No — you must touch it</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Forces that touch — and forces that don't <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div class="beatart" id="a0"><svg viewBox="0 0 660 300">
+      <rect x="0" y="250" width="660" height="50" fill="#8fae6e"/>
+      <path d="M80 250 l0 -60 q0 -16 16 -16 l40 0 q30 0 44 40 l10 36 z" fill="#6b4a2f"/>
+      <rect x="70" y="238" width="130" height="16" rx="8" fill="#4a331f"/>
+      <g class="rollball"><circle cx="250" cy="228" r="26" fill="#b5382f"/><path d="M232 210 a26 26 0 0 1 36 0" stroke="#fbf5ea" stroke-width="6" fill="none"/></g>
+      <path d="M300 180 l120 0 m-18 -12 l18 12 l-18 12" stroke="#3b2a1e" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <text x="310" y="160" font-size="26" font-weight="800" fill="#3b2a1e">push!</text>
+    </svg></div>
+    <div class="beatart" id="a1"><svg viewBox="0 0 660 300">
+      <rect x="0" y="260" width="660" height="40" fill="#8fae6e"/>
+      <path d="M240 20 q60 -14 120 0" stroke="#5c4a33" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M300 26 q4 14 0 22" stroke="#3f7d4e" stroke-width="6" fill="none"/>
+      <g class="fall"><circle cx="300" cy="70" r="24" fill="#b5382f"/><path d="M300 48 q2 -10 8 -12" stroke="#5c4a33" stroke-width="5" fill="none"/></g>
+      <path d="M390 80 l0 130 m-16 -20 l16 20 l16 -20" stroke="#3c6e9f" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <text x="415" y="150" font-size="28" font-weight="800" fill="#3c6e9f">DOWN</text>
+    </svg></div>
+    <div class="beatart" id="a2"><svg viewBox="0 0 660 300">
+      <rect x="0" y="260" width="660" height="40" fill="#8fae6e"/>
+      <g class="fall"><path d="M170 60 l30 24 l-6 10 l-30 -22 z" fill="#7a7a7a"/><path d="M164 66 l40 26" stroke="#5c5c5c" stroke-width="4"/></g>
+      <text x="130" y="46" font-size="24" font-weight="800" fill="#3b2a1e">rock: fast</text>
+      <g class="fallslow"><path d="M430 60 q34 -26 66 -8 q-24 30 -60 26 z" fill="#e9dfc8" stroke="#c9b88f" stroke-width="3"/><path d="M436 72 q28 -18 54 -10" stroke="#c9b88f" stroke-width="3" fill="none"/></g>
+      <text x="410" y="46" font-size="24" font-weight="800" fill="#3b2a1e">feather: slow</text>
+      <path d="M470 230 l0 -34 m-12 14 l12 -14 l12 14" stroke="#9fc7d6" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M510 230 l0 -34 m-12 14 l12 -14 l12 14" stroke="#9fc7d6" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <text x="452" y="256" font-size="22" font-weight="700" fill="#3c6e9f">air pushes up</text>
+    </svg></div>
+    <div class="beatart" id="a3"><svg viewBox="0 0 660 300">
+      <use href="#barmag" transform="translate(250,40)"/>
+      <rect x="200" y="150" width="260" height="10" rx="5" fill="#fff" stroke="#c9b88f" stroke-width="3"/>
+      <text x="470" y="162" font-size="22" font-weight="700" fill="#6b5646">paper</text>
+      <g class="rise"><use href="#clipshape" transform="translate(310,225) scale(1.4)"/></g>
+      <path d="M330 130 q-14 12 0 24 m0 -24 q14 12 0 24" stroke="#8d8d8d" stroke-width="3" fill="none" stroke-dasharray="5 5"/>
+      <text x="70" y="110" font-size="24" font-weight="800" fill="#3b2a1e">pulls through</text>
+      <text x="70" y="140" font-size="24" font-weight="800" fill="#3b2a1e">air and paper!</text>
+    </svg></div>
+    <div class="beatart" id="a4"><svg viewBox="0 0 660 300">
+      <g class="pushout2"><use href="#barmag" transform="translate(60,40)"/></g>
+      <g class="pushout"><use href="#barmag" transform="translate(390,40) scale(-1,1) translate(-160,0)"/></g>
+      <path d="M262 70 l-24 0 m8 -9 l-8 9 l8 9 M398 70 l24 0 m-8 -9 l8 9 l-8 9" stroke="#b5382f" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <text x="252" y="130" font-size="24" font-weight="800" fill="#b5382f">N ↔ N push apart</text>
+      <g class="snapin2"><use href="#barmag" transform="translate(60,190)"/></g>
+      <g class="snapin"><use href="#barmag" transform="translate(390,190)"/></g>
+      <path d="M240 220 l24 0 m-8 -9 l8 9 l-8 9 M420 220 l-24 0 m8 -9 l-8 9 l8 9" stroke="#3f7d4e" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <text x="240" y="280" font-size="24" font-weight="800" fill="#3f7d4e">N + S snap together</text>
+    </svg></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">✋</span>Touch forces</div>
+    <div class="badge" id="b1"><span class="em">⬇️</span>Gravity — no touch</div>
+    <div class="badge" id="b2"><span class="em">🧲</span>Magnets — no touch</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>The invisible-forces lab <button class="say" data-say="Predict first, then test! Read each question and tap your prediction." data-voice="prac_intro">🔊</button></h2>
+  <p class="lead">Predict first — <b>then</b> see the test!</p>
+  <div class="lab">
+    <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemQ"></div></div>
+    <div class="tapbtns" id="taps"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the forces again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="barmag">
+      <rect x="0" y="40" width="80" height="60" rx="8" fill="#b5382f"/>
+      <rect x="80" y="40" width="80" height="60" rx="8" fill="#3c6e9f"/>
+      <rect x="76" y="40" width="8" height="60" fill="#fbf5ea"/>
+      <text x="28" y="80" font-size="34" font-weight="900" fill="#fff">N</text>
+      <text x="112" y="80" font-size="34" font-weight="900" fill="#fff">S</text>
+    </g>
+    <g id="clipshape">
+      <path d="M0 0 q0 -18 14 -18 q14 0 14 16 l0 26 q0 12 -10 12 q-10 0 -10 -11 l0 -22" stroke="#8d8d8d" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="magclip">
+      <rect width="220" height="130" rx="16" fill="#f3e9d6"/>
+      <use href="#barmag" transform="translate(30,-14) scale(.9)"/>
+      <use href="#clipshape" transform="translate(115,100)"/>
+      <path d="M108 62 q-10 10 0 20 m0 -20 q10 10 0 20" stroke="#8d8d8d" stroke-width="3" fill="none" stroke-dasharray="4 4"/>
+    </g>
+    <g id="magNN">
+      <use href="#barmag" transform="translate(0,0) scale(.8)"/>
+      <use href="#barmag" transform="translate(300,0) scale(-.8,.8) translate(-160,0)"/>
+      <path d="M150 55 l-14 0 m6 -7 l-6 7 l6 7 M156 55 l14 0 m-6 -7 l6 7 l-6 7" stroke="#b5382f" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="magNS">
+      <use href="#barmag" transform="translate(0,0) scale(.8)"/>
+      <use href="#barmag" transform="translate(150,0) scale(.8)"/>
+      <path d="M136 100 l32 0 m-10 -8 l10 8 l-10 8" stroke="#3f7d4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="paperclipunder">
+      <rect x="0" y="60" width="200" height="10" rx="5" fill="#fff" stroke="#c9b88f" stroke-width="3"/>
+      <use href="#barmag" transform="translate(40,-30) scale(.75)"/>
+      <use href="#clipshape" transform="translate(95,105)"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.forces.02',version:1,quiz:'quiz.science.k2.forces.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_touch'],['b1','badge_gravity'],['b2','badge_magnet']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  const badges=[0,1,2].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const BEATS=[
+    {art:'a0',badge:0,media:'teach_touch',cap:'Some forces TOUCH. A kick is a push.',vid:'t_touch',
+     txt:'Some forces touch. A kick is a push. The boot touches the ball, and off it goes.',dur:5200},
+    {art:'a1',badge:1,media:'teach_gravity',cap:'GRAVITY pulls with NO touch. Always DOWN.',vid:'t_gravity',
+     txt:'But some forces work without touching! Drop an apple. Nothing touches it — gravity pulls it down. Gravity pulls everything down.',dur:7200},
+    {art:'a2',badge:1,media:'teach_feather',cap:'Gravity pulls the feather too — air slows it down.',vid:'t_feather',
+     txt:'Even a feather! Gravity pulls light things down too. The feather falls slowly, because the air pushes up on it a little.',dur:7200},
+    {art:'a3',badge:2,media:'teach_magnet',cap:'A MAGNET pulls some metals — through air, even paper!',vid:'t_magnet',
+     txt:'Magnets pull without touching too. A magnet pulls a steel paperclip through the air — and even through paper! But only some metals, like iron and steel. Not crayons, not everything.',dur:9200},
+    {art:'a4',badge:2,media:'teach_poles',cap:'Two ends: different ends SNAP, same ends PUSH APART.',vid:'t_poles',
+     txt:'A magnet has two ends, called N and S. Different ends snap together. But two SAME ends push each other apart — a push with no touch!',dur:8600}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+    badges.forEach(b=>b.className='badge'); cap.textContent='';
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    let t=0;
+    BEATS.forEach((b,i)=>{
+      later(()=>{
+        document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+        document.getElementById(b.art).classList.add('on');
+        cap.textContent=b.cap; say(b.txt,b.vid); showBeat(b.media);
+        badges[b.badge].classList.add('on');
+      },t);
+      t+=b.dur;
+    });
+    later(()=>{ document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (predict-then-test) ---------- */
+  const svgNN='<svg viewBox="-10 -10 320 120"><use href="#magNN"/></svg>';
+  const svgNS='<svg viewBox="-10 -10 300 140"><use href="#magNS"/></svg>';
+  const svgPaper='<svg viewBox="-10 -40 230 190"><use href="#paperclipunder"/></svg>';
+  const PITEMS=[
+    {id:'clip',k:'card_clip',p:'📎',q:'The magnet comes near a steel paperclip. Will it grab it?',o:['Grab it!','Nothing happens'],a:0,mis:'musttouch',
+     why:'Snap! Steel has iron in it. The magnet pulls it with no touch at all.'},
+    {id:'crayon',k:'card_crayon',p:'🖍️',q:'Will the magnet grab a wax crayon?',o:['Grab it!','Nothing happens'],a:1,mis:'everything',
+     why:'Nothing happens. A crayon is wax — no iron inside, so no pull.'},
+    {id:'paper',k:'card_paper',s:svgPaper,q:'The paperclip hides UNDER a sheet of paper. Can the magnet move it?',o:['Yes — right through the paper!','No — the paper blocks it'],a:0,mis:'musttouch',
+     why:'It moves! The magnet\'s pull reaches right through the paper.'},
+    {id:'can',k:'card_can',p:'🥤',q:'The soda can is metal. Will the magnet grab it?',o:['Grab it!','Nothing happens'],a:1,mis:'allmetal',
+     why:'Nothing happens! The can is aluminum — a metal with no iron. Magnets only grab iron and steel.'},
+    {id:'ball',k:'card_ball',p:'⚽',q:'The ball rolls off the table. Which way does it go?',o:['Down','Up','It floats in the air'],a:0,mis:'gravdown',
+     why:'Down! Gravity pulls everything down toward the ground.'},
+    {id:'feather',k:'card_feather',p:'🪶',q:'You let go of a feather. What does it do?',o:['Falls down — slowly','Floats away — light things don\'t fall'],a:0,mis:'heavy',
+     why:'It falls — slowly. Gravity pulls it down while the air pushes up a little.'},
+    {id:'nn',k:'card_nn',s:svgNN,q:'Two magnets face N to N — the SAME ends. What happens?',o:['They snap together','They push apart'],a:1,mis:'poles',
+     why:'They push apart! Same ends always push away from each other.'},
+    {id:'ns',k:'card_ns',s:svgNS,q:'Now N faces S — DIFFERENT ends. What happens?',o:['They snap together','They push apart'],a:0,mis:'poles',
+     why:'Snap! Different ends pull together.'}
+  ];
+  const FB={
+    musttouch:'The magnet does not need to touch. Its pull reaches through air and paper.',
+    everything:'Magnets do not grab everything — only some metals, like iron and steel.',
+    allmetal:'Not ALL metal! Magnets grab iron and steel. Aluminum has no iron.',
+    gravdown:'Gravity never pushes up. It always pulls things DOWN.',
+    heavy:'Light things fall too! Gravity pulls the feather down — air just slows it.',
+    poles:'Remember: SAME ends push apart. DIFFERENT ends snap together.'
+  };
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,seen=0,pass1=true,busy=false;
+  const item=document.getElementById('item'),fb=document.getElementById('fb'),taps=document.getElementById('taps');
+  function startPrac(){ queue=PITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;seen=0;pass1=true;busy=false; fb.textContent=''; fb.className='fb'; document.getElementById('pracNext').disabled=true; showItem(); }
+  function showItem(){
+    if(!queue.length){ item.style.visibility='hidden'; taps.innerHTML=''; document.getElementById('counter').textContent='Lab complete! 🧲'; document.getElementById('pracNext').disabled=false; say('Lab complete! Now show what you know.','prac_done'); return; }
+    busy=false;
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic');
+    if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="">'; else if(it.s) ip.innerHTML=it.s; else ip.textContent=it.p;
+    document.getElementById('itemQ').textContent=it.q;
+    document.getElementById('counter').textContent=`${done} of ${PITEMS.length} tested`;
+    taps.innerHTML='';
+    it.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='btn ghost'; b.textContent=t; b.onclick=()=>answer(i); taps.appendChild(b); });
+    say(it.q,'p_'+it.id);
+  }
+  function answer(i){
+    if(busy||!queue.length) return; busy=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>PITEMS.length) pass1=false;
+    const ok=i===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say(it.why,'why_'+it.id);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint=FB[it.mis]||'Think about the invisible pull.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+(it.mis||'other'));
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1500:2000);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🍎',k:'card_apple',q:'Nothing touches the apple, but it falls. What pulls it down?',
+     o:['Gravity — a pull with no touch','Something must be touching it','The wind blew it'],a:0},
+    {id:2,pic:'🪶',k:'card_feather',q:'You drop a feather and a rock. What does the feather do?',
+     o:['Falls down too — just slowly','Floats away — only heavy things fall'],a:0},
+    {id:3,pic:'🖍️',k:'card_crayon',q:'Will the magnet grab the wax crayon?',
+     o:['Yes — magnets grab everything','No — magnets grab only some metals'],a:1},
+    {id:4,pic:'📎',k:'card_paper',s:svgPaper,q:'A steel paperclip is under a sheet of paper. Can the magnet move it?',
+     o:['Yes — its pull goes through paper','No — the magnet must touch it'],a:0},
+    {id:5,pic:'🧲',k:'card_nn',s:svgNN,q:'Two magnets face N to N — the same ends. What happens?',
+     o:['They push apart','They snap together'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic');
+    if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else if(q.s) qp.innerHTML=q.s; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You found the invisible forces! 🧲' : 'Good try! Let\'s watch the forces once more.';
+    document.getElementById('guessTxt').textContent = guess==='yes' ? 'At the start you guessed the magnet could pull with NO touch — you were right!' : guess==='no' ? 'At the start you guessed a touch was needed. Now you know: gravity and magnets pull without touching!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the forces again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go hunt the fridge: what does a magnet stick to? 🧲'; say('Lesson done! Now go hunt the fridge with a grown-up. What does a magnet stick to?','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

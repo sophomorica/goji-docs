@@ -1,0 +1,186 @@
+{
+  "lesson": "lesson.science.k2.cycles.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "butterfly": {
+      "prompt": "a friendly orange-and-black butterfly with rounded wings, simple clear wing pattern, seen from above with wings open, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    {
+      "id": "hook_pair",
+      "ref": "butterfly",
+      "prompt": "a green striped caterpillar on a leaf on the left and the same-colored orange-and-black butterfly resting on the right, side by side on one branch, soft garden background",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_egg",
+      "prompt": "one tiny pale butterfly egg on the underside of a big green leaf, close up, soft garden light, no face on the egg",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_caterpillar",
+      "prompt": "a green striped caterpillar munching the edge of a big leaf, bite marks visible, close up",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_chrysalis",
+      "prompt": "a pale green chrysalis hanging from a twig by a thin thread, still and quiet, soft light, no face on the chrysalis",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_butterfly",
+      "ref": "butterfly",
+      "prompt": "the same butterfly just emerged, resting on the empty chrysalis shell with wings opening, garden background",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_loop",
+      "ref": "butterfly",
+      "prompt": "the same butterfly bending to place tiny pale eggs on the underside of a leaf, garden background",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_frog",
+      "prompt": "a calm pond scene showing three small vignettes left to right: a cluster of round frog eggs in the water, a swimming tadpole with a long tail, and a green frog on a lily pad",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_pups",
+      "prompt": "a brown mother dog lying in grass with three puppies beside her, all the same brown coloring but each with different white spots and patches, calm and cozy",
+      "kind": "scene"
+    },
+    {
+      "id": "card_egg",
+      "prompt": "one tiny pale butterfly egg on a small piece of green leaf, simple, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_caterpillar",
+      "prompt": "a green striped caterpillar crawling on a leaf, side view",
+      "kind": "card"
+    },
+    {
+      "id": "card_chrysalis",
+      "prompt": "a pale green chrysalis hanging from a twig, simple, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_butterfly",
+      "ref": "butterfly",
+      "prompt": "the same orange-and-black butterfly with wings open, seen from above",
+      "kind": "card"
+    },
+    {
+      "id": "card_frogegg",
+      "prompt": "a small cluster of round clear frog eggs with dark centers floating in blue water, no faces",
+      "kind": "card"
+    },
+    {
+      "id": "card_tadpole",
+      "prompt": "a small dark tadpole with a round body and long tail swimming in blue water, side view",
+      "kind": "card"
+    },
+    {
+      "id": "card_frog",
+      "prompt": "a green frog sitting on a lily pad, side view, friendly",
+      "kind": "card"
+    },
+    {
+      "id": "card_chick",
+      "prompt": "a small fluffy yellow chick standing in grass",
+      "kind": "card"
+    },
+    {
+      "id": "card_hen",
+      "prompt": "a brown mother hen standing in grass",
+      "kind": "card"
+    },
+    {
+      "id": "card_puppy",
+      "prompt": "one brown puppy with a white patch over one ear, sitting, storybook style",
+      "kind": "card"
+    },
+    {
+      "id": "card_dog",
+      "prompt": "a brown mother dog with a white chest patch, sitting, same coloring family as the puppy but different patches",
+      "kind": "card"
+    },
+    {
+      "id": "badge_cycle",
+      "prompt": "a circular arrow looping back on itself, simple emblem",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_caterpillar",
+      "from": "teach_caterpillar",
+      "seconds": 6,
+      "prompt": "the caterpillar munches slowly along the leaf edge, the leaf trembles slightly"
+    },
+    {
+      "id": "teach_chrysalis",
+      "from": "teach_chrysalis",
+      "seconds": 6,
+      "prompt": "the chrysalis sways very gently in a light breeze, nothing else moves"
+    },
+    {
+      "id": "teach_butterfly",
+      "from": "teach_butterfly",
+      "seconds": 6,
+      "prompt": "the butterfly's wings open and close slowly as they dry, colors brightening"
+    },
+    {
+      "id": "teach_frog",
+      "from": "teach_frog",
+      "seconds": 6,
+      "prompt": "the tadpole swims a small slow circle, ripples spread, the frog blinks once"
+    },
+    {
+      "id": "teach_pups",
+      "from": "teach_pups",
+      "seconds": 6,
+      "prompt": "the puppies tumble gently beside their mother, her tail wags slowly"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "Look! A caterpillar… and a butterfly. [pause] Are they the same animal? Tap your guess." },
+    { "id": "t_egg", "text": "It starts with a <emphasis>tiny egg</emphasis> on a leaf." },
+    { "id": "t_cat", "text": "Out hatches… a <emphasis>caterpillar!</emphasis> [pause] It eats and eats and grows." },
+    { "id": "t_chry", "text": "Then it makes a <emphasis>chrysalis</emphasis>, and rests inside." },
+    { "id": "t_fly", "text": "Out comes… a <emphasis>butterfly!</emphasis> [pause] The same animal — all grown up." },
+    { "id": "t_loop", "text": "She lays eggs — and the circle goes <emphasis>round again</emphasis>. [pause] It never stops!" },
+    { "id": "t_frog", "text": "The frog goes round too! [pause] Egg… tadpole… frog. [pause] Same circle, different animal." },
+    { "id": "t_pups", "text": "Puppies look like their mother. [pause] But look close — different spots! [pause] Like her, <emphasis>not copies</emphasis>." },
+    { "id": "prac_b", "text": "Build the butterfly circle! [pause] Tap the card that comes next. Or drag it into the circle." },
+    { "id": "prac_frog", "text": "Now the frog! [pause] Same circle — build it in order." },
+    { "id": "prac_match", "text": "Baby and parent time! [pause] Who is this baby's parent? Tap the right one." },
+    { "id": "prac_done", "text": "Round and round — you built them all! [pause] Now show what you know." },
+    { "id": "fb_order", "text": "Almost! [pause] What comes next in the circle?" },
+    { "id": "fb_tiny", "text": "Not quite. The egg hatches a caterpillar — [pause] not a tiny butterfly." },
+    { "id": "fb_end", "text": "Cycles don't stop! [pause] The butterfly lays eggs, and it starts again." },
+    { "id": "fb_diff", "text": "Not quite. The caterpillar doesn't stay a caterpillar — [pause] it becomes the butterfly!" },
+    { "id": "fb_kind", "text": "Not quite. Look for the same kind of animal — all grown up." },
+    { "id": "why_egg", "text": "Yes! [pause] The circle starts with the egg." },
+    { "id": "why_cat", "text": "Yes! [pause] The egg hatches a hungry caterpillar." },
+    { "id": "why_chry", "text": "Yes! [pause] The caterpillar rests inside the chrysalis." },
+    { "id": "why_fly", "text": "Yes! [pause] Out comes the butterfly — same animal, grown up." },
+    { "id": "why_loop", "text": "Yes! [pause] She lays eggs, and the circle goes round again!" },
+    { "id": "why_fegg", "text": "Yes! [pause] Frog eggs float in the water." },
+    { "id": "why_tad", "text": "Yes! [pause] The egg becomes a swimming tadpole." },
+    { "id": "why_frog", "text": "Yes! [pause] The tadpole grows into a frog — and the circle goes round." },
+    { "id": "why_mat1", "text": "Yes! [pause] The tadpole grows up to be the frog." },
+    { "id": "why_mat2", "text": "Yes! [pause] The caterpillar becomes the butterfly. Same animal!" },
+    { "id": "why_mat3", "text": "Yes! [pause] The chick grows up to be a hen." },
+    { "id": "q1", "text": "What comes out of the butterfly's egg?" },
+    { "id": "q2", "text": "The caterpillar and the butterfly are…" },
+    { "id": "q3", "text": "What happens after the butterfly is grown?" },
+    { "id": "q4", "text": "Which baby grows up to be a frog?" },
+    { "id": "q5", "text": "A mother dog has five puppies. The puppies look…" },
+    { "id": "pass", "text": "<soft>Round and round — you know the circle of life!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the circle go round once more." },
+    { "id": "done", "text": "Lesson done! Now go find out what a real caterpillar eats." }
+  ]
+}

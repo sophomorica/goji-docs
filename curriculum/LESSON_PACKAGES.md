@@ -1,6 +1,6 @@
 # Interactive lesson packages — format, player, task type (proposal)
 
-Status: **proposal 2026-08-21** (Patrick + agent session) · Resolves the open question in `ANIMATIONS.md` §4 and the High-priority "Animation / explainer player" row in `TOOLS.md` §6A.  
+Status: **player shipped 2026-08-24** (hub app `lessons` + `/api/lessons`) · First live set: six K–2 phonics packages. Science K–4 packages play from the same player when present. Resolves `ANIMATIONS.md` §4.  
 Scope: **K–4 first** (animation-heavy, tap/drag interactive), format designed to serve K–12.  
 Exemplar: [`subjects/science/lessons/lesson.science.k2.living.01.md`](./subjects/science/lessons/lesson.science.k2.living.01.md) + package `assets/lessons/lesson.science.k2.living.01/`.
 
@@ -120,11 +120,11 @@ Order is by gap count × how well one template covers a whole slice:
 
 | Slice | Gap rows | Template family | Notes |
 |-------|----------|-----------------|-------|
-| K Science | 10 | "animal of the week" (K.6/K.7), observe-and-sort (K.3/K.5/K.10), weather journal (K.9), push-pull play (K.2) | Exemplar lives here |
+| K Science | 10 | "animal of the week" (K.6/K.7), observe-and-sort (K.3/K.5/K.10), weather journal (K.9), push-pull play (K.2) | **Authored 2026-08-24** (11 packages: K.7 split into needs + cycles). Player pending. |
 | Grade 2 US History | 13 | story-map + timeline drag | |
 | Grade 4 Virginia Studies | 13 | map + timeline + primary-source tap | |
 | Grade 1 / 3 History | 7 + 10 | same families | |
-| Grades 1–4 Science | 7 each | observe-and-sort, cycle animation (life/water), cause-effect | |
+| Grades 1–4 Science | 7 each | observe-and-sort, cycle animation (life/water), cause-effect | **Authored 2026-08-24** (7 + 7 + 7 + 7 packages). Grade 5 still `gap`. Player pending. |
 | K–4 Math gaps | 4–8 each | principle animation + manipulative practice (complements drills) | Math modules remain the practice surface |
 
 Each lesson authored = objective row + lesson plan + quiz blueprint + package + INDEX row + `skills/` status flip + tracker row filled (Objective ID, Lesson ID, Teach media). That is the unit of work; ~125 units.

@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.matter.02",
+  "title": "Shape-shifter: solid, liquid, gas",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "2",
+  "objectives": ["obj.science.k2.matter.02"],
+  "va_sol": ["2.3"],
+  "duration_min": 14,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off: kitchen chocolate-melt watch with parent, then journal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.matter.02", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.matter.02"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

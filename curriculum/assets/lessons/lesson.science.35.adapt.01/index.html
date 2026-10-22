@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why the mongoose wins — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:170px;min-height:68px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:12px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:220px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:25px;font-weight:800;padding:14px;min-height:110px;text-align:center}
+.pick.sel{border-color:var(--gold)}
+.hookart{width:100%;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:8px;margin-bottom:14px}
+.hookart svg{width:100%;max-height:250px;height:auto;display:block;margin:0 auto}
+.hookart img{width:100%;border-radius:16px;display:none}
+.hookart.media img{display:block}.hookart.media svg{display:none}
+/* ---- teach ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 60%,#9bb87a 60% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:25px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.75)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media>svg{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+#tsvg .beat{display:none}
+#tsvg.b1 #tb1,#tsvg.b2 #tb2,#tsvg.b3 #tb3,#tsvg.b4 #tb4,#tsvg.b5 #tb5{display:inline}
+#tsvg.b1 .dart{animation:dartmove 1.6s 1.2s forwards ease-in-out}
+@keyframes dartmove{40%{transform:translateX(-150px)}100%{transform:translateX(0)}}
+#tsvg.b2 .tigerfade{animation:blend 3s 1s forwards}
+@keyframes blend{to{opacity:.45}}
+#tsvg.b3 .wolfrun{animation:circlein 3s 1s forwards ease-in-out}
+@keyframes circlein{to{transform:translateX(-120px)}}
+#tsvg.b3 .wolfrun2{animation:circlein2 3s 1s forwards ease-in-out}
+@keyframes circlein2{to{transform:translateX(120px)}}
+#tsvg.b4 .gen2{opacity:0;animation:fadein2 1.5s 2.2s forwards}
+#tsvg.b4 .gen3{opacity:0;animation:fadein2 1.5s 3.8s forwards}
+@keyframes fadein2{to{opacity:1}}
+.shelf{display:flex;gap:10px;margin:12px 0 0;justify-content:center;flex-wrap:wrap}
+.tool{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:6px 16px 6px 10px;
+  font-size:19px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.94)}
+.tool.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+/* ---- practice ---- */
+.pwrap{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;flex:1;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ppic{font-size:96px;line-height:1.1}
+.ppic img{width:min(34vw,220px);border-radius:16px;display:block}
+.pq{font-size:26px;font-weight:800;text-align:center;max-width:850px}
+.popts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;width:100%;max-width:900px}
+.popt{font:inherit;font-size:22px;font-weight:800;background:var(--cream);border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 12px;cursor:pointer;box-shadow:var(--shadow);min-height:72px}
+.popt.right{border-color:var(--green);background:#eaf5ec}
+.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.popt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:22px;font-weight:700;text-align:center;margin-top:4px;color:var(--ink2);max-width:900px}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:20px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:27px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:86px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.gate{text-align:center;font-size:27px;font-weight:800}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important}
+  #tsvg.b2 .tigerfade{opacity:.45} #tsvg.b4 .gen2,#tsvg.b4 .gen3{opacity:1}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:20px} .choice2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Why does the mongoose win? <button class="say" data-say="In The Jungle Book, Rikki-tikki the little mongoose fights the great cobra — and wins. How can a small furry animal beat a giant snake? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">In <b>The Jungle Book</b>, Rikki-tikki the little mongoose fights the great cobra — <b>and wins</b>. How? Tap your guess.</p>
+  <div class="hookart" id="hookart">
+    <img data-img="hook_fight" alt="">
+    <svg viewBox="0 0 700 250" aria-label="mongoose facing a cobra">
+      <ellipse cx="180" cy="185" rx="95" ry="38" fill="#8a6f4d"/>
+      <ellipse cx="95" cy="160" rx="34" ry="26" fill="#967b57"/>
+      <path d="M70 145 l-8 -18 l16 8z" fill="#967b57"/>
+      <circle cx="84" cy="155" r="4" fill="#2b2b2b"/>
+      <path d="M265 175 q45 -18 40 -48" stroke="#8a6f4d" stroke-width="16" fill="none" stroke-linecap="round"/>
+      <rect x="130" y="210" width="16" height="26" rx="7" fill="#7a6142"/><rect x="200" y="210" width="16" height="26" rx="7" fill="#7a6142"/>
+      <path d="M520 220 q-60 -10 -30 -60 q26 -42 60 -30 q40 14 20 60" fill="none" stroke="#5d7a4c" stroke-width="22" stroke-linecap="round"/>
+      <path d="M560 130 q-4 -50 20 -58 q30 -8 34 30 q2 24 -18 38 q-18 12 -36 -10z" fill="#5d7a4c"/>
+      <circle cx="590" cy="98" r="4.5" fill="#2b2b2b"/>
+      <path d="M552 92 q28 -26 62 -8" stroke="#4a6340" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <text x="310" y="130" font-size="48" font-weight="900" fill="#6b5646">VS</text>
+    </svg>
+  </div>
+  <div class="choice2">
+    <div class="pick" data-guess="luck"><span>He's just lucky</span></div>
+    <div class="pick" data-guess="adapt"><span>His body and his moves fit the fight</span></div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Adaptations — built to survive <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="tsvg" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid meet">
+      <!-- beat 1: mongoose physical -->
+      <g class="beat" id="tb1">
+        <g class="dart">
+          <ellipse cx="330" cy="290" rx="95" ry="38" fill="#8a6f4d"/>
+          <ellipse cx="245" cy="262" rx="34" ry="26" fill="#967b57"/>
+          <path d="M220 247 l-8 -18 l16 8z" fill="#967b57"/>
+          <circle cx="234" cy="257" r="4" fill="#2b2b2b"/>
+          <path d="M415 280 q45 -18 40 -48" stroke="#8a6f4d" stroke-width="16" fill="none" stroke-linecap="round"/>
+          <rect x="280" y="315" width="16" height="26" rx="7" fill="#7a6142"/><rect x="350" y="315" width="16" height="26" rx="7" fill="#7a6142"/>
+        </g>
+        <path d="M700 330 q-50 -8 -26 -50 q22 -36 52 -26 q34 12 16 52" fill="none" stroke="#5d7a4c" stroke-width="18" stroke-linecap="round"/>
+        <path d="M735 255 q-3 -42 17 -49 q26 -7 29 25 q2 20 -15 32 q-16 10 -31 -8z" fill="#5d7a4c"/>
+        <circle cx="760" cy="228" r="4" fill="#2b2b2b"/>
+        <text x="120" y="120" font-size="30" font-weight="800" fill="#6b5646">fast · thick fur · tough body</text>
+        <text x="120" y="160" font-size="26" font-weight="800" fill="#3f7d4e">PHYSICAL — born with it</text>
+      </g>
+      <!-- beat 2: tiger camouflage -->
+      <g class="beat" id="tb2">
+        <g fill="#c9a061"><rect x="120" y="150" width="26" height="220" rx="10"/><rect x="190" y="130" width="26" height="240" rx="10"/><rect x="620" y="140" width="26" height="230" rx="10"/><rect x="700" y="120" width="26" height="250" rx="10"/><rect x="810" y="150" width="26" height="220" rx="10"/></g>
+        <g class="tigerfade">
+          <ellipse cx="430" cy="290" rx="150" ry="60" fill="#d98e4a"/>
+          <ellipse cx="300" cy="255" rx="52" ry="40" fill="#e09a55"/>
+          <path d="M262 232 l-10 -24 l22 10z M320 224 l10 -22 l12 20z" fill="#e09a55"/>
+          <circle cx="286" cy="250" r="5" fill="#2b2b2b"/>
+          <g fill="#3b2a1e"><rect x="380" y="240" width="18" height="90" rx="8"/><rect x="440" y="235" width="18" height="100" rx="8"/><rect x="500" y="240" width="18" height="90" rx="8"/></g>
+          <rect x="345" y="320" width="18" height="40" rx="8" fill="#c9803f"/><rect x="490" y="320" width="18" height="40" rx="8" fill="#c9803f"/>
+        </g>
+        <text x="600" y="90" font-size="30" font-weight="800" fill="#6b5646">stripes melt into tall grass</text>
+        <text x="600" y="130" font-size="26" font-weight="800" fill="#3f7d4e">camouflage = PHYSICAL</text>
+      </g>
+      <!-- beat 3: behavioral (pack + winter sleep) -->
+      <g class="beat" id="tb3">
+        <ellipse cx="500" cy="300" rx="46" ry="30" fill="#b08d5f"/>
+        <g class="wolfrun"><ellipse cx="700" cy="290" rx="55" ry="24" fill="#7d7569"/><ellipse cx="650" cy="272" rx="22" ry="17" fill="#8a8276"/><circle cx="643" cy="269" r="3.5" fill="#2b2b2b"/></g>
+        <g class="wolfrun2"><ellipse cx="300" cy="290" rx="55" ry="24" fill="#7d7569"/><ellipse cx="352" cy="272" rx="22" ry="17" fill="#8a8276"/><circle cx="359" cy="269" r="3.5" fill="#2b2b2b"/></g>
+        <text x="270" y="100" font-size="30" font-weight="800" fill="#6b5646">the pack hunts TOGETHER</text>
+        <text x="270" y="140" font-size="26" font-weight="800" fill="#b5382f">a thing they DO = BEHAVIORAL</text>
+        <path d="M840 360 q-40 0 -40 -34 q0 -30 34 -30 q10 -22 36 -18 q26 4 28 26 q22 6 18 30 q-4 26 -34 26z" fill="#8d8d8d" opacity=".9"/>
+        <text x="770" y="250" font-size="24" font-weight="800" fill="#6b5646">bear's winter sleep too</text>
+      </g>
+      <!-- beat 4: populations change over long time -->
+      <g class="beat" id="tb4">
+        <g>
+          <circle cx="180" cy="180" r="30" fill="#b08d5f"/><path d="M205 178 l26 8 l-26 8z" fill="#e0a93b"/>
+          <circle cx="180" cy="280" r="30" fill="#b08d5f"/><path d="M205 278 l40 10 l-40 10z" fill="#e0a93b"/>
+          <text x="120" y="360" font-size="24" font-weight="800" fill="#6b5646">year 1: small + big beaks</text>
+        </g>
+        <g class="gen2">
+          <circle cx="480" cy="230" r="30" fill="#b08d5f"/><path d="M505 228 l40 10 l-40 10z" fill="#e0a93b"/>
+          <circle cx="480" cy="140" r="30" fill="#b08d5f"/><path d="M505 138 l40 10 l-40 10z" fill="#e0a93b"/>
+          <text x="420" y="360" font-size="24" font-weight="800" fill="#6b5646">hard seeds: big beaks eat</text>
+        </g>
+        <g class="gen3">
+          <circle cx="790" cy="140" r="26" fill="#b08d5f"/><path d="M812 138 l36 9 l-36 9z" fill="#e0a93b"/>
+          <circle cx="850" cy="210" r="26" fill="#b08d5f"/><path d="M872 208 l36 9 l-36 9z" fill="#e0a93b"/>
+          <circle cx="780" cy="270" r="26" fill="#b08d5f"/><path d="M802 268 l36 9 l-36 9z" fill="#e0a93b"/>
+          <text x="700" y="360" font-size="24" font-weight="800" fill="#6b5646">many generations later…</text>
+        </g>
+      </g>
+      <!-- beat 5: fossils -->
+      <g class="beat" id="tb5">
+        <polygon points="200,370 500,90 800,370" fill="#a99b84"/>
+        <polygon points="440,146 500,90 560,146 500,180" fill="#e8e0d2"/>
+        <g transform="translate(430,240)">
+          <ellipse cx="70" cy="40" rx="52" ry="24" fill="#d9ccb4" stroke="#8d8d8d" stroke-width="4"/>
+          <path d="M30 40 q40 -26 80 0 q-40 26 -80 0z M110 40 l24 -14 l0 28z M45 30 l0 20 M65 24 l0 32 M85 26 l0 28" stroke="#8d8d8d" stroke-width="3.5" fill="none"/>
+        </g>
+        <text x="120" y="110" font-size="30" font-weight="800" fill="#6b5646">a stone fish — high on a mountain?</text>
+        <text x="120" y="150" font-size="26" font-weight="800" fill="#b5382f">clue: this was once UNDER WATER</text>
+      </g>
+    </svg>
+  </div>
+  <div class="shelf">
+    <div class="tool" id="m0">🐾 Physical — body</div><div class="tool" id="m1">🎬 Behavioral — action</div>
+    <div class="tool" id="m2">⏳ Change takes generations</div><div class="tool" id="m3">🐟 Fossils are clues</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Sort the survival tricks <button class="say" data-say="An adaptation appears. Is it physical — a body part — or behavioral — a thing the animal does? Then two detective questions!" data-voice="prac_intro">🔊</button></h2>
+  <p class="lead">Is it <b>physical</b> (a body part) or <b>behavioral</b> (a thing the animal DOES)? Then two detective questions.</p>
+  <div class="pwrap">
+    <div class="ppic" id="ppic"></div>
+    <div class="pq"><span id="pq"></span><button class="say" id="sayP">🔊</button></div>
+    <div class="popts" id="popts"></div>
+    <div class="fb" id="pfb"></div>
+    <div class="counter" id="pcount"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the adaptations again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.adapt.01',version:1,quiz:'quiz.science.35.adapt.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.closest('.hookart')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const tsvg=document.getElementById('tsvg'), cap=document.getElementById('cap');
+  const tools=[0,1,2,3].map(i=>document.getElementById('m'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const BEATS=[
+    {k:'teach_mongoose', v:'t_mongoose', cls:'b1', cap:'Rikki-tikki wins with PHYSICAL adaptations — body parts he was born with: lightning speed, thick coarse fur, a tough body the cobra can barely hurt.',
+     txt:'Rikki-tikki wins with physical adaptations — body parts he was born with. Lightning speed to dodge the strike. Thick, coarse fur that is hard to bite through. A tough body that even the cobra can barely hurt.'},
+    {k:'teach_tiger', v:'t_tiger', cls:'b2', cap:'The tiger’s stripes melt into the tall grass — camouflage. A body pattern it was born with: PHYSICAL.',
+     txt:'The tiger has one too: stripes. In tall grass they melt away — that is camouflage, a body pattern it was born with. Physical.'},
+    {k:'teach_behave', v:'t_behave', cls:'b3', cap:'The wolf pack hunts TOGETHER — that is a thing wolves DO, not a body part: BEHAVIORAL. The bear’s winter sleep is behavioral too.',
+     txt:'Now something different. One wolf cannot catch a big deer — but the pack hunts together. Hunting together is a thing wolves DO, not a body part. That is a behavioral adaptation. The bear’s long winter sleep is behavioral too.'},
+    {k:'teach_time', v:'t_time', cls:'b4', cap:'Populations change over LONG time. Hard-seed years feed the big-beaked birds — they survive and have chicks. Many generations later, most beaks are big. No bird chose it.',
+     txt:'Can a whole population change? Yes — but slowly. One year, only big hard seeds are left. Birds with bigger beaks can crack them; they survive and have chicks. Many, many generations later, most of the birds have big beaks. No bird chose to change — it happened over a long, long time.'},
+    {k:'teach_fossil', v:'t_fossil', cls:'b5', cap:'Fossils are clues to long ago. A stone fish high on a mountain? Then this land was once UNDER WATER.',
+     txt:'How do we know about animals from long, long ago? Fossils — living things turned to stone are clues. A fish fossil high on a mountain tells a story: this land was once under water.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    tsvg.setAttribute('class',''); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    tools.forEach(t=>t.className='tool');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    const gap= reduced? 2600 : 7500;
+    BEATS.forEach((b,i)=>{
+      later(()=>{
+        tsvg.setAttribute('class',b.cls); cap.textContent=b.cap; say(b.txt,b.v); showBeat(b.k);
+        if(i===1) tools[0].classList.add('on');
+        if(i===2) tools[1].classList.add('on');
+        if(i===3) tools[2].classList.add('on');
+        if(i===4) tools[3].classList.add('on');
+        if(i===BEATS.length-1) later(()=>{ document.getElementById('teachNext').disabled=false; }, reduced?800:5600);
+      }, i*gap+300);
+    });
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const SOPTS=['Physical — a body part','Behavioral — a thing it DOES'];
+  const ITEMS=[
+    {key:'stripes',pic:'🐅',k:'card_stripes',q:'The tiger’s stripes hide it in tall grass.',opts:SOPTS,a:0,mis:'mix',
+     why:'Stripes are a body pattern the tiger was born with — physical.',
+     hint:'Ask: is it a body part it was BORN with, or something it chooses to DO? Stripes grow on the body.'},
+    {key:'pack',pic:'🐺',k:'card_pack',q:'Wolves hunt in a pack — together.',opts:SOPTS,a:1,mis:'mix',
+     why:'Hunting together is a thing wolves DO — behavioral. No body part does it for them.',
+     hint:'Ask: body part, or action? Hunting together is an ACTION the pack takes.'},
+    {key:'fur',pic:'🦡',k:'card_fur',q:'The mongoose’s thick, coarse fur is hard to bite through.',opts:SOPTS,a:0,mis:'mix',
+     why:'Fur grows on the body — a physical adaptation Rikki-tikki was born with.',
+     hint:'Fur is not something an animal decides to do — it grows on the body.'},
+    {key:'dead',pic:'💤',k:'card_dead',q:'The opossum flops over and plays dead when a fox comes near.',opts:SOPTS,a:1,mis:'mix',
+     why:'Playing dead is an act the opossum performs — behavioral.',
+     hint:'Playing dead is a trick the animal DOES in the moment — not a body part.'},
+    {key:'claws',pic:'🐾',k:'card_claws',q:'The eagle’s sharp claws grip slippery fish.',opts:SOPTS,a:0,mis:'mix',
+     why:'Claws are body parts — physical.',
+     hint:'Claws grow on the body. Born with it = physical.'},
+    {key:'south',pic:'🦢',k:'card_south',q:'Geese fly south before winter comes.',opts:SOPTS,a:1,mis:'mix',
+     why:'Flying south is a journey the geese make — behavioral.',
+     hint:'Wings are physical — but the trip south is something the geese DO each year.'},
+    {key:'hare',pic:'🐇',k:'card_hare',q:'Detective: a hare lives where winter means deep snow. Which adaptation helps it survive HERE?',
+     opts:['White winter fur','Bright green feathers','Big flat desert ears'],a:0,mis:'habitat',
+     why:'White fur vanishes against snow — the right trick for THIS home. Adaptations fit the habitat.',
+     hint:'Match the trick to the HOME: what color is everything in deep winter snow?'},
+    {key:'fossil',pic:'🐟',k:'card_fossil',q:'Detective: high on a mountain you find a stone fish — a fossil. What is its story?',
+     opts:['This land was once under water','It is just an old rock — no story','A fish once climbed the mountain'],a:0,mis:'rock',
+     why:'A fossil is a clue: fish live in water, so this high ground was once a sea floor — long, long ago.',
+     hint:'A fossil is never “just a rock” — it is a clue. Ask: where do fish live?'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,plock=false;
+  const pfb=document.getElementById('pfb');
+  function startPrac(){ queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;plock=false; pfb.textContent=''; pfb.className='fb'; showP(); }
+  function showP(){
+    plock=false;
+    if(!queue.length){ document.getElementById('pq').textContent='All sorted, detective!'; document.getElementById('popts').innerHTML=''; document.getElementById('ppic').textContent='🕵️';
+      document.getElementById('pcount').textContent='All '+ITEMS.length+' solved'; document.getElementById('pracNext').disabled=false;
+      say('All sorted, detective! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    const pp=document.getElementById('ppic'); if(img(it.k)) pp.innerHTML='<img src="'+img(it.k)+'" alt="">'; else pp.textContent=it.pic;
+    document.getElementById('pq').textContent=it.q;
+    document.getElementById('pcount').textContent=done+' of '+ITEMS.length+' solved';
+    document.getElementById('sayP').onclick=()=>say(it.q);
+    const o=document.getElementById('popts'); o.innerHTML='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t; b.onclick=()=>answer(i,b); o.appendChild(b); });
+    say(it.q);
+  }
+  function answer(i,btn){
+    if(plock||!queue.length) return; plock=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=i===it.a;
+    document.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===it.a&&ok) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ done++; if(pass1) pass1correct++;
+      pfb.className='fb good'; pfb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.key);
+    } else {
+      misses[it.mis]=(misses[it.mis]||0)+1;
+      pfb.className='fb bad'; pfb.textContent='Not quite. '+it.hint; say('Not quite. '+it.hint,'fb_'+it.mis);
+      queue.push(it);
+    }
+    setTimeout(showP, ok?1700:2300);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🐅',k:'card_stripes',q:'The tiger’s stripes hide it in tall grass. What kind of adaptation?',
+     o:['Physical — a body pattern it was born with','Behavioral — a thing it decides to do'],a:0},
+    {id:2,pic:'🐺',k:'card_pack',q:'Wolves hunt in a pack. What kind of adaptation?',
+     o:['Physical — pack-hunting is in their paws','Behavioral — hunting together is a thing they DO'],a:1},
+    {id:3,pic:'🐦',k:'card_beaks',q:'One year, only big hard seeds are left. How does the bird population end up with bigger beaks?',
+     o:['Each bird decides to grow a bigger beak','Over many generations, big-beaked birds survive and have chicks','Beaks stretch bigger in a week or two'],a:1},
+    {id:4,pic:'🐟',k:'card_fossil',q:'High on a mountain you find a fish fossil. What does it tell you?',
+     o:['Nothing — it is just an old rock','This place was once under water','Fish used to climb mountains'],a:1},
+    {id:5,pic:'🦡',k:'card_mongoose',q:'Why does Rikki-tikki the mongoose beat the cobra?',
+     o:['Pure luck, every time','Adaptations: speed, thick fur, and a tough body','He wants to win more than the cobra does'],a:1}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can read an animal like a detective! 🐾' : 'Good try! Let’s watch the adaptations once more.';
+    document.getElementById('guessTxt').textContent = guess==='adapt' ? 'At the start you guessed it was his body and his moves — exactly right: adaptations!' : guess==='luck' ? 'At the start you guessed luck. Now you know: it’s adaptations — his body and his moves fit the fight.' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the adaptations again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now research the REAL mongoose. 🦡'; say('Lesson done! Now open research and look up the real mongoose. Find two adaptations the story got right, and save them in notebooks.','done');
+    document.getElementById('finish').disabled=true;
+  };
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,practice:()=>({items:ITEMS,queue:queue.length,done,tries,misses}),answer,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+})();
+</script>
+</body>
+</html>

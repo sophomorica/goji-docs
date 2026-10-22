@@ -1,0 +1,166 @@
+{
+  "lesson": "lesson.science.k2.forces.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "images": [
+    {
+      "id": "hook_wagon",
+      "prompt": "a small red toy wagon with a wooden handle standing perfectly still on short green grass in a sunny backyard, nobody around, no faces on the wagon, clearly an ordinary wagon",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_push",
+      "prompt": "a child's hand at the left edge pushing a red-and-cream striped play ball, the ball rolling away to the right across short grass, small motion arcs behind the ball, only the hand and forearm visible, no full figure",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_pull",
+      "prompt": "a child's hand at the right edge pulling the wooden handle of a small red wagon so the wagon rolls toward the hand, rope-taut handle, grass below, only the hand and forearm visible",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_strength",
+      "prompt": "the same red-and-cream ball shown twice on one lawn: near the left a gentle fingertip tap with a short dotted path, near the right the ball far away at the end of a long dotted path, showing a small push and a strong push compared",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_direction",
+      "prompt": "the red-and-cream ball mid-lawn with a curved dotted path that bends where an open hand meets it, showing the ball changing direction after a sideways push, no faces anywhere",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_self",
+      "prompt": "the small red wagon standing completely still in the middle of a quiet lawn, long soft evening shadows, nothing touching it, clearly not moving, no faces on the wagon",
+      "kind": "scene"
+    },
+    {
+      "id": "card_ball",
+      "prompt": "a red play ball with a cream stripe and a gold band, on grass, clearly a toy ball, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_ball_still",
+      "prompt": "the same red play ball sitting perfectly still on flat short grass, nothing near it, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_wagon",
+      "prompt": "a small red toy wagon with black wheels and a wooden handle, side view, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_stuck",
+      "prompt": "the small red wagon with its wheels sunk in thick tufty grass, clearly stuck, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_swing",
+      "prompt": "a simple wooden A-frame swing with two ropes and a flat wooden seat hanging perfectly straight and still, empty seat, side view, no people, no faces",
+      "kind": "card"
+    },
+    {
+      "id": "prac_ball_hand",
+      "prompt": "a child's hand about to push the red-and-cream ball on grass, hand open at the ball's left side, ball not yet moving",
+      "kind": "scene"
+    },
+    {
+      "id": "prac_wagon_rope",
+      "prompt": "the small red wagon at the left with a rope tied to it, the rope stretching to a child's hand at the right edge, grass, no full figure",
+      "kind": "scene"
+    },
+    {
+      "id": "prac_swing_still",
+      "prompt": "the empty wooden swing hanging perfectly straight and still, nobody near it, calm backyard, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "badge_push",
+      "prompt": "two open hands pushing forward, simple emblem, no body",
+      "kind": "card"
+    },
+    {
+      "id": "badge_pull",
+      "prompt": "a hand gripping a taut rope, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_strong",
+      "prompt": "a long arrow next to a short arrow, the long one bold, simple emblem, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "badge_direction",
+      "prompt": "one arrow bending at a right angle, simple emblem, no creatures",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_push",
+      "from": "teach_push",
+      "seconds": 6,
+      "prompt": "the hand gives the ball one gentle push and the ball rolls away to the right, slowing to a stop, grass sways slightly"
+    },
+    {
+      "id": "teach_pull",
+      "from": "teach_pull",
+      "seconds": 6,
+      "prompt": "the hand pulls the handle and the wagon rolls smoothly toward the hand, wheels turning, then stops"
+    },
+    {
+      "id": "teach_strength",
+      "from": "teach_strength",
+      "seconds": 6,
+      "prompt": "first a gentle tap rolls the ball a short way, then a strong push sends it rolling far across the lawn"
+    },
+    {
+      "id": "teach_direction",
+      "from": "teach_direction",
+      "seconds": 6,
+      "prompt": "the ball rolls to the right, the hand pushes it from the side, and the ball's path bends the other way"
+    },
+    {
+      "id": "teach_self",
+      "from": "teach_self",
+      "seconds": 6,
+      "prompt": "the wagon stands completely still while shadows drift very slowly, nothing moves the wagon until a hand enters and pushes it into motion at the end"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "Here is a red wagon, sitting very still. [pause] Can it start moving all by itself? Tap your guess." },
+    { "id": "t_push", "text": "<emphasis>A push moves things away from you.</emphasis> [pause] Push the ball, and away it rolls." },
+    { "id": "t_pull", "text": "<emphasis>A pull brings things toward you.</emphasis> [pause] Pull the handle, and the wagon comes to you." },
+    { "id": "t_strength", "text": "A gentle push moves it a little. [pause] A <emphasis>strong</emphasis> push moves it far!" },
+    { "id": "t_direction", "text": "A push or a pull can <emphasis>change which way</emphasis> it goes. [pause] Push from the side, and the ball turns." },
+    { "id": "t_self", "text": "Can the wagon start all by itself? [pause] No! Nothing moves by itself. It waits for a push, [pause] or a pull." },
+    { "id": "prac_intro", "text": "First guess what will happen. [pause] Then tap Test it, and watch!" },
+    { "id": "prac_done", "text": "All done! [pause] Now show what you know." },
+    { "id": "p_ball_gentle", "text": "Give the ball a gentle push. How far will it roll?" },
+    { "id": "p_ball_strong", "text": "Now a strong push! How far will it roll?" },
+    { "id": "p_wagon_pull", "text": "The wagon is far away. What brings it to you?" },
+    { "id": "p_wagon_push", "text": "Now push the wagon. Where will it go?" },
+    { "id": "p_swing_still", "text": "Nobody is touching the swing. Will it start swinging by itself?" },
+    { "id": "p_swing_push", "text": "Give the swing a push. What happens?" },
+    { "id": "p_ball_pull", "text": "A rope is tied to the ball. Pull the rope. Which way does the ball go?" },
+    { "id": "p_wagon_strong", "text": "The wagon is stuck! A gentle push did not move it. Will a strong push help?" },
+    { "id": "why_ball_gentle", "text": "Yes! [pause] A gentle push moves it just a little." },
+    { "id": "why_ball_strong", "text": "Yes! [pause] A stronger push moves it much farther." },
+    { "id": "why_wagon_pull", "text": "Yes! [pause] A pull brings things toward you." },
+    { "id": "why_wagon_push", "text": "Yes! [pause] A push sends things away from you." },
+    { "id": "why_swing_still", "text": "Yes! [pause] It stays still. Things never start moving by themselves." },
+    { "id": "why_swing_push", "text": "Yes! [pause] Your push starts the motion!" },
+    { "id": "why_ball_pull", "text": "Yes! [pause] Pulls make things move too. Toward you!" },
+    { "id": "why_wagon_strong", "text": "Yes! [pause] When gentle is not enough, a stronger push does the job." },
+    { "id": "fb_onlypush", "text": "Not what you guessed! [pause] See? The pull moved it toward you. Pulls make things move too!" },
+    { "id": "fb_strength", "text": "Not what you guessed! [pause] Watch the strength. A stronger push moves it farther than a gentle one." },
+    { "id": "fb_self", "text": "Not what you guessed! [pause] Look. Nothing happened until a push or a pull came. Things do not move by themselves." },
+    { "id": "fb_direction", "text": "Not what you guessed! [pause] Watch which way it went. A push sends things away. A pull brings them toward you." },
+    { "id": "q1", "text": "The wagon is across the yard. To bring it to you, what do you do?" },
+    { "id": "q2", "text": "Which kick sends the ball farther?" },
+    { "id": "q3", "text": "A ball sits still on the grass. What can start it moving?" },
+    { "id": "q4", "text": "A gentle push did not move the stuck wagon. What should you try?" },
+    { "id": "q5", "text": "To send the swing away from you, what do you do?" },
+    { "id": "pass", "text": "<soft>You know what makes things move!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch pushes and pulls once more." },
+    { "id": "done", "text": "Lesson done! Now go hunt for pushes and pulls with your grown-up." }
+  ]
+}

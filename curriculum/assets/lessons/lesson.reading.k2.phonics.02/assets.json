@@ -1,0 +1,111 @@
+{
+  "lesson": "lesson.reading.k2.phonics.02",
+  "style": "../../../tools/lesson_assets/style.json",
+  "voice": [
+    {
+      "id": "hook",
+      "text": "Cap and cape. What did the silent e do? Tap your guess."
+    },
+    {
+      "id": "prac_done",
+      "text": "You can add and take the magic e!"
+    },
+    {
+      "id": "yes",
+      "text": "Yes!"
+    },
+    {
+      "id": "hint",
+      "text": "Try again."
+    },
+    {
+      "id": "pass",
+      "text": "You can work the magic-e switch!"
+    },
+    {
+      "id": "retry",
+      "text": "Remember: e is silent. It wakes the other vowel."
+    },
+    {
+      "id": "hook_wake",
+      "text": "Yes. Magic e wakes the vowel."
+    },
+    {
+      "id": "hook_add",
+      "text": "The e is silent. It changes the other vowel."
+    },
+    {
+      "id": "t1",
+      "text": "Hop is short o. Add e and it becomes hope."
+    },
+    {
+      "id": "t2",
+      "text": "The e is silent. It wakes the first vowel."
+    },
+    {
+      "id": "t3",
+      "text": "Cap cape. Kit kite. Cut cute."
+    },
+    {
+      "id": "p1",
+      "text": "Make hop say its name."
+    },
+    {
+      "id": "p2",
+      "text": "Take the magic e off cape."
+    },
+    {
+      "id": "p3",
+      "text": "Wake the i in kit."
+    },
+    {
+      "id": "p4",
+      "text": "Take e off cute."
+    },
+    {
+      "id": "p5",
+      "text": "Wake the a in cap."
+    },
+    {
+      "id": "p6",
+      "text": "Take e off pine."
+    },
+    {
+      "id": "p7",
+      "text": "Wake the o in not."
+    },
+    {
+      "id": "p8",
+      "text": "Make hid say its name."
+    },
+    {
+      "id": "q1",
+      "text": "hop + magic e is\u2026 hopp, or hope, or hoop"
+    },
+    {
+      "id": "q2",
+      "text": "The e in cape is\u2026 said /e/, or silent \u2014 it wakes a, or a blend"
+    },
+    {
+      "id": "q3",
+      "text": "Which pair is a magic-e switch? fox / box, or cap / cape, or ship / shop"
+    },
+    {
+      "id": "q4",
+      "text": "bone (the dog's bone) has\u2026 short o, or long o, or silent o"
+    },
+    {
+      "id": "q5",
+      "text": "kit without a change is short. kite is\u2026 still short i, or long i, or a new consonant"
+    }
+  ],
+  "images": [
+    {
+      "id": "hook",
+      "prompt": "storybook scene for Magic-e, Aesop meadow, no letters",
+      "kind": "scene"
+    }
+  ],
+  "clips": [],
+  "notes": "House voice is luna (Grok TTS, British woman, 0.92). Packages run with speechSynthesis until media/ is generated."
+}

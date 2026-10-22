@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.habitats.01",
+  "title": "Home sweet habitat",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "2",
+  "objectives": ["obj.science.k2.habitats.01"],
+  "va_sol": ["2.5"],
+  "duration_min": 12,
+  "anchor": { "book": "aesop-fables", "note": "hare week (The Tortoise and the Hare); retakes swap the fable animal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.habitats.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.habitats.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

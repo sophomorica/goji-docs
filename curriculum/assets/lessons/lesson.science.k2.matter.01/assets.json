@@ -1,0 +1,174 @@
+{
+  "lesson": "lesson.science.k2.matter.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "images": [
+    {
+      "id": "hook_balloonrock",
+      "prompt": "a very large round rose-pink party balloon on a string next to a small grey pebble, side by side on a plain cream table, sizes clearly very different, no faces on anything, clearly ordinary objects",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_color",
+      "prompt": "three toys in a row on a cream shelf: a red striped play ball, a blue child's sock, a yellow wooden star, each a clearly different color, plain background, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_shape",
+      "prompt": "three objects in a row: the round red ball, a square yellow wooden block, a pointy blue diamond kite, shapes clearly different, plain cream background, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_feel",
+      "prompt": "three objects in a row: a smooth shiny metal spoon, a rough grey rock with a bumpy surface, a soft fluffy blue sock, textures clearly different, plain background, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_weight",
+      "prompt": "a wooden seesaw balance: a very big rose-pink balloon on the high side and a small grey rock on the low side, the rock side tipped down, showing the small rock is heavier, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_rule",
+      "prompt": "the red ball, small red button and big blue kite shown twice: first grouped red together and blue apart, then regrouped big together and small apart, two simple labeled groupings on one cream board, no text words, no faces",
+      "kind": "scene"
+    },
+    {
+      "id": "card_ball",
+      "prompt": "a big red play ball with a cream stripe and gold band, clearly round and red, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_button",
+      "prompt": "one small red sewing button with four holes, plain background, clearly tiny, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_kite",
+      "prompt": "a big blue diamond kite with a red tail, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_sock",
+      "prompt": "a small soft blue child's sock with a cream cuff, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_plate",
+      "prompt": "a big dinner plate with a red rim and cream center, seen from above, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_mitten",
+      "prompt": "a small blue knitted mitten with a cream cuff, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_spoon",
+      "prompt": "a smooth shiny metal spoon, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_rock",
+      "prompt": "a small rough grey rock with a bumpy surface, plain background, no face",
+      "kind": "card"
+    },
+    {
+      "id": "card_balloon",
+      "prompt": "a very big rose-pink party balloon on a curly string, plain background, clearly a balloon, no face",
+      "kind": "card"
+    },
+    {
+      "id": "badge_color",
+      "prompt": "three small paint dots, red blue and yellow, simple emblem, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "badge_shape",
+      "prompt": "a circle, a square and a triangle outline side by side, simple emblem, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "badge_feel",
+      "prompt": "an open hand palm touching a wavy surface, simple emblem, hand only",
+      "kind": "card"
+    },
+    {
+      "id": "badge_size",
+      "prompt": "a big circle next to a small circle with a tiny balance scale beneath, simple emblem, no creatures",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_color",
+      "from": "teach_color",
+      "seconds": 6,
+      "prompt": "a soft spotlight glow moves from the red ball to the blue sock to the yellow star, each brightening gently in turn, nothing else moves"
+    },
+    {
+      "id": "teach_shape",
+      "from": "teach_shape",
+      "seconds": 6,
+      "prompt": "a gentle outline traces around the ball's circle, then the block's square, then the kite's diamond, one after another"
+    },
+    {
+      "id": "teach_weight",
+      "from": "teach_weight",
+      "seconds": 6,
+      "prompt": "the seesaw starts level, then slowly tips down on the rock side while the big balloon side rises, settling gently"
+    },
+    {
+      "id": "teach_rule",
+      "from": "teach_rule",
+      "seconds": 6,
+      "prompt": "the three toys slide slowly from color groups into size groups: the button leaves the ball's group and the kite joins it, calm smooth motion"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "A big balloon, [pause] and a little rock. Which one is heavier? Tap your guess." },
+    { "id": "t_color", "text": "Words can tell a thing's <emphasis>color</emphasis>. [pause] Red ball. Blue sock. Yellow star." },
+    { "id": "t_shape", "text": "Words can tell its <emphasis>shape</emphasis>. [pause] Round ball. Square block. Pointy kite." },
+    { "id": "t_feel", "text": "Words can tell how it <emphasis>feels</emphasis>. [pause] Smooth spoon. Rough rock. Soft sock." },
+    { "id": "t_weight", "text": "Words can compare. Big, or small. Heavy, or light. [pause] The big balloon is <emphasis>light</emphasis>. The little rock is <emphasis>heavy</emphasis>! Big is not always heavy." },
+    { "id": "t_rule", "text": "When we sort, the <emphasis>rule</emphasis> decides the group. [pause] Sort by color: red things together. [pause] Sort by size: now the ball goes with the big kite! Same toys, [pause] new groups." },
+    { "id": "prac_intro", "text": "Look at each thing. Which word answers the question?" },
+    { "id": "p_d1", "text": "Which word tells the ball's color? Round, red, or smooth?" },
+    { "id": "p_d2", "text": "Which word tells the ball's shape? Round, red, or big?" },
+    { "id": "p_d3", "text": "Which word tells how the sock feels? Blue, small, or soft?" },
+    { "id": "p_d4", "text": "Which word tells the button's size? Little, red, or round?" },
+    { "id": "p_d5", "text": "Which one is heavier? The big balloon, or the little rock?" },
+    { "id": "why_d1", "text": "Yes! [pause] Red is its color." },
+    { "id": "why_d2", "text": "Yes! [pause] Round is its shape." },
+    { "id": "why_d3", "text": "Yes! [pause] Soft is how it feels." },
+    { "id": "why_d4", "text": "Yes! [pause] Little is its size." },
+    { "id": "why_d5", "text": "Yes! [pause] The little rock is heavier. Big is not always heavy!" },
+    { "id": "fb_d1_0", "text": "Not quite. Round tells its shape, [pause] not its color." },
+    { "id": "fb_d1_2", "text": "Not quite. Smooth tells how it feels, [pause] not its color." },
+    { "id": "fb_d2_1", "text": "Not quite. Red tells its color, [pause] not its shape." },
+    { "id": "fb_d2_2", "text": "Not quite. Big tells its size, [pause] not its shape." },
+    { "id": "fb_d3_0", "text": "Not quite. Blue tells its color, [pause] not how it feels." },
+    { "id": "fb_d3_1", "text": "Not quite. Small tells its size, [pause] not how it feels." },
+    { "id": "fb_d4_1", "text": "Not quite. Red tells its color, [pause] not its size." },
+    { "id": "fb_d4_2", "text": "Not quite. Round tells its shape, [pause] not its size." },
+    { "id": "fb_d5_0", "text": "Not quite. Big is not always heavy! The balloon is full of air." },
+    { "id": "sort_color", "text": "Sort each thing by its color. Drag it to a bin, [pause] or tap a button." },
+    { "id": "sort_size", "text": "New rule! Sort the same things again. [pause] This time, by size." },
+    { "id": "sort_done", "text": "Same toys, two ways! The rule decides the group. [pause] Now show what you know." },
+    { "id": "why_color_red", "text": "Yes! It is red. The rule is color." },
+    { "id": "why_color_blue", "text": "Yes! It is blue. The rule is color." },
+    { "id": "why_size_big", "text": "Yes! It is big. The rule is size." },
+    { "id": "why_size_small", "text": "Yes! It is small. The rule is size." },
+    { "id": "fb_color_red", "text": "Check the rule! We are sorting by color now. This one is red." },
+    { "id": "fb_color_blue", "text": "Check the rule! We are sorting by color now. This one is blue." },
+    { "id": "fb_size_big", "text": "Check the rule! Size now, not color! This one is big." },
+    { "id": "fb_size_small", "text": "Check the rule! Size now, not color! This one is small." },
+    { "id": "q1", "text": "Which word tells the ball's color?" },
+    { "id": "q2", "text": "Which word tells how the sock feels?" },
+    { "id": "q3", "text": "We are sorting by shape. Where does the ball go?" },
+    { "id": "q4", "text": "A big balloon and a little rock. Which one is heavier?" },
+    { "id": "q5", "text": "We sorted by color. Now the rule is size. Where does the little red button go now?" },
+    { "id": "pass", "text": "<soft>You are a property detective!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's look at the describing words once more." },
+    { "id": "done", "text": "Lesson done! Now go sort real spoons and socks with your grown-up." }
+  ]
+}

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What does the lion need? — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+.hookscene{display:flex;justify-content:center;margin:2px 0 10px}
+.hookscene svg{width:min(56vw,380px);height:auto}
+.hookscene img{width:min(56vw,380px);border-radius:var(--radius);box-shadow:var(--shadow)}
+/* ---- teach / scene (savanna) ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 58%,#d8b95c 58% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg{position:absolute}
+#lion{left:10%;bottom:8%;width:34%;transition:transform 1.2s ease,left 1.6s ease}
+#lion.drink{transform:rotate(10deg);transform-origin:bottom center}
+#lion.breathe #lbody{animation:breathe 2.6s ease-in-out infinite;transform-origin:center}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+#lion.roam{left:56%}
+#meat{left:44%;bottom:10%;width:12%;opacity:0;transition:opacity .6s}
+#meat.show{opacity:1}
+#pool{left:0;bottom:0;width:100%;opacity:0;transition:opacity .8s}
+#pool.show{opacity:1}
+#rocks{right:4%;bottom:6%;width:38%;opacity:0;transition:opacity .8s}
+#rocks.show{opacity:1}
+#breeze{left:8%;top:12%;width:60%;opacity:0;transition:opacity .8s}
+#breeze.show{opacity:1}
+#breeze.blow path{stroke-dasharray:40 26;animation:blow 2.2s linear infinite}
+@keyframes blow{to{stroke-dashoffset:-66}}
+#ball{left:48%;bottom:9%;width:9%;opacity:0;transition:opacity .6s,left 1.4s ease}
+#ball.show{opacity:1;left:36%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.badge.fail{color:var(--ink);border-color:var(--red);transform:scale(1)}
+.badge.fail .em{background:var(--red);color:#fff}
+.stamp{position:absolute;z-index:3;right:5%;top:22%;font-size:40px;font-weight:900;letter-spacing:2px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-12deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.85)}
+.stamp.show{transform:rotate(-12deg) scale(1)}
+.stamp.no{color:var(--red);border-color:var(--red)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media #lion,.scene.media #meat,.scene.media #pool,.scene.media #rocks,.scene.media #breeze,.scene.media #ball{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.sortwrap{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:18px;flex:1;min-height:360px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:14px;gap:10px;min-height:300px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:28px;text-align:center}
+.bin.need h3{color:var(--green)} .bin.nope h3{color:var(--red)}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bin .got span{font-size:40px}
+.bin .got img{width:56px;height:56px;object-fit:cover;border-radius:10px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.item{width:min(260px,40vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:26px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:80px;line-height:1.1}
+.item img{width:100%;max-width:170px;border-radius:14px;display:block;margin:0 auto}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.tapbtns{display:flex;gap:12px}
+.tapbtns .btn{min-width:150px;font-size:22px;padding:14px 20px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* mouse round */
+#mouseround{display:none;flex:1;flex-direction:column;align-items:center;gap:14px}
+#mouseround.on{display:flex}
+.mq{font-size:28px;font-weight:800;text-align:center;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.mopts{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%;max-width:760px}
+.mopt{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:120px}
+.mopt .pic{font-size:56px;line-height:1.2}
+.mopt.right{border-color:var(--green);background:#eaf5ec}
+.mopt.wrong{border-color:var(--red);background:#fbe9e7}
+.mousebig{font-size:64px;line-height:1}
+.mousebig img{width:110px;border-radius:14px}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:100px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .sortwrap{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .bin{min-height:130px} .scene{min-height:240px} .caption{font-size:22px}
+  .mopts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>What does the lion need? <button class="say" data-say="The lion is the king of beasts! What does even a king need? Water, or a toy? Tap your guess." data-voice="hook">🔊</button></h1>
+  <div class="hookscene">
+    <img data-img="hook_lion" alt="" hidden>
+    <svg viewBox="0 0 300 150" aria-label="lion on the savanna">
+      <rect width="300" height="88" fill="#cfe6ee"/><rect y="88" width="300" height="62" fill="#d8b95c"/>
+      <circle cx="256" cy="34" r="20" fill="#e8d44f"/>
+      <g transform="translate(60,30) scale(.9)"><use href="#lionshape"/></g>
+    </svg>
+  </div>
+  <p class="lead">The lion is the king of beasts. <b>What does even a king need?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="water">
+      <svg viewBox="0 0 200 130" aria-label="water"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><ellipse cx="100" cy="78" rx="74" ry="32" fill="#5aa3bf"/><ellipse cx="100" cy="74" rx="60" ry="24" fill="#7fc0d8"/><path d="M64 72 q16 8 34 2 M104 80 q16 6 32 0" stroke="#fff" stroke-width="4" fill="none" opacity=".8" stroke-linecap="round"/></svg>
+      <span>Water</span>
+    </div>
+    <div class="pick" data-guess="toy">
+      <svg viewBox="0 0 200 130" aria-label="toy ball"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><circle cx="100" cy="66" r="44" fill="#b5382f"/><path d="M56 66 a44 44 0 0 1 88 0" fill="#e0a93b"/><path d="M56 66 h88" stroke="#fbf5ea" stroke-width="6"/><circle cx="100" cy="66" r="44" fill="none" stroke="#8e2a23" stroke-width="4"/></svg>
+      <span>A toy</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Five needs, five badges <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="pool" viewBox="0 0 1000 130" preserveAspectRatio="none"><ellipse cx="500" cy="120" rx="380" ry="60" fill="#5aa3bf"/><ellipse cx="500" cy="114" rx="320" ry="46" fill="#7fc0d8"/><path d="M300 108 q40 12 90 4 M560 118 q40 10 86 2" stroke="#fff" stroke-width="6" fill="none" opacity=".7" stroke-linecap="round"/></svg>
+    <svg id="rocks" viewBox="0 0 400 220">
+      <ellipse cx="210" cy="208" rx="180" ry="14" fill="#8a6b3f" opacity=".5"/>
+      <path d="M60 200 q-4 -90 80 -110 q90 -20 130 40 q60 -10 76 40 q10 30 -14 30z" fill="#9a8a72"/>
+      <path d="M90 198 q0 -60 60 -74" stroke="#7d6e58" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <g stroke="#8a6b3f" stroke-width="7" stroke-linecap="round"><path d="M30 200 v-46"/><path d="M44 200 v-58"/><path d="M58 200 v-44"/><path d="M330 200 v-50"/><path d="M346 200 v-62"/><path d="M362 200 v-46"/></g>
+      <ellipse cx="190" cy="204" rx="120" ry="10" fill="#5c4432" opacity=".45"/>
+    </svg>
+    <svg id="breeze" viewBox="0 0 600 160">
+      <g stroke="#9fc7d6" stroke-width="9" fill="none" stroke-linecap="round">
+        <path d="M10 40 q140 -26 260 0 q60 14 120 0"/>
+        <path d="M40 90 q120 -22 230 0 q70 16 130 2"/>
+        <path d="M20 140 q150 -24 280 0"/>
+      </g>
+    </svg>
+    <svg id="meat" viewBox="0 0 120 80"><ellipse cx="52" cy="40" rx="38" ry="26" fill="#b5382f"/><ellipse cx="52" cy="36" rx="30" ry="18" fill="#c9564a"/><rect x="84" y="34" width="28" height="11" rx="5" fill="#e8e2d5"/><circle cx="112" cy="33" r="7" fill="#e8e2d5"/><circle cx="112" cy="46" r="7" fill="#e8e2d5"/></svg>
+    <svg id="ball" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#b5382f"/><path d="M6 50 a44 44 0 0 1 88 0" fill="#e0a93b"/><path d="M6 50 h88" stroke="#fbf5ea" stroke-width="6"/><circle cx="50" cy="50" r="44" fill="none" stroke="#8e2a23" stroke-width="4"/></svg>
+    <svg id="lion" viewBox="0 0 220 140"><g id="lbody"><use href="#lionshape"/></g></svg>
+    <div class="stamp no" id="stampNo">NOT A NEED</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🍖</span>Food</div>
+    <div class="badge" id="b1"><span class="em">💧</span>Water</div>
+    <div class="badge" id="b2"><span class="em">🌳</span>Shelter</div>
+    <div class="badge" id="b3"><span class="em">💨</span>Air</div>
+    <div class="badge" id="b4"><span class="em">🌾</span>Space</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pracTitle">Give the lion what it needs! <button class="say" id="sayPrac" data-say="Give the lion what it needs! Drag each card to Needs it, or Doesn't need it. Or tap a button." data-voice="sort_intro">🔊</button></h2>
+  <p class="lead" id="pLead">Drag each card — does the lion <b>need</b> it?</p>
+  <div class="sortwrap" id="sortwrap">
+    <div class="bin need" data-bin="need"><h3>🦁 Needs it</h3><div class="got" id="gotNeed"></div></div>
+    <div class="deck">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="tapbtns"><button class="btn ghost" data-tap="need">Needs it</button><button class="btn ghost" data-tap="nope">Doesn't</button></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="bin nope" data-bin="nope"><h3>✗ Doesn't need it</h3><div class="got" id="gotNope"></div></div>
+  </div>
+  <div id="mouseround">
+    <div class="mousebig" id="mousePic">🐭</div>
+    <div class="mq"><span id="mqText"></span><button class="say" id="sayMq">🔊</button></div>
+    <div class="mopts" id="mopts"></div>
+    <div class="counter" id="mcount"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the five badges again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="lionshape">
+      <!-- tail -->
+      <path d="M185 78 q30 -8 30 -34" stroke="#c9973f" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <circle cx="215" cy="40" r="9" fill="#8a5a28"/>
+      <!-- body -->
+      <ellipse cx="120" cy="82" rx="66" ry="32" fill="#d8a04f"/>
+      <!-- legs -->
+      <rect x="76" y="98" width="15" height="36" rx="7" fill="#c9973f"/>
+      <rect x="100" y="100" width="15" height="34" rx="7" fill="#b8842f"/>
+      <rect x="142" y="100" width="15" height="34" rx="7" fill="#b8842f"/>
+      <rect x="164" y="98" width="15" height="36" rx="7" fill="#c9973f"/>
+      <!-- mane -->
+      <circle cx="52" cy="56" r="36" fill="#a86a2a"/>
+      <!-- head -->
+      <circle cx="48" cy="54" r="26" fill="#d8a04f"/>
+      <path d="M30 32 a8 8 0 0 1 14 -4" fill="#c9973f"/><path d="M56 26 a8 8 0 0 1 14 6" fill="#c9973f"/>
+      <circle cx="40" cy="50" r="3.6" fill="#2b2b2b"/><circle cx="58" cy="50" r="3.6" fill="#2b2b2b"/>
+      <path d="M44 60 l5 5 l5 -5z" fill="#8a5a28"/>
+      <path d="M49 65 q-7 7 -13 2 M49 65 q7 7 13 2" stroke="#8a5a28" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.needs.01',version:1,quiz:'quiz.science.k2.needs.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_food'],['b1','badge_water'],['b2','badge_shelter'],['b3','badge_air'],['b4','badge_space']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; const p=el.closest('.pick'); if(p)p.classList.add('media'); const h=el.closest('.hookscene'); if(h){const s=h.querySelector('svg'); if(s)s.remove();} } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startSort(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const lion=document.getElementById('lion'),meat=document.getElementById('meat'),pool=document.getElementById('pool'),
+        rocks=document.getElementById('rocks'),breeze=document.getElementById('breeze'),ball=document.getElementById('ball'),
+        cap=document.getElementById('cap'),stampNo=document.getElementById('stampNo');
+  const badges=[0,1,2,3,4].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const teachScript=[
+    "Animals need FOOD. The lion eats meat.",
+    "Animals need WATER. She drinks at the waterhole.",
+    "Animals need SHELTER — a safe place. For a lion, shade and rocks. Not a house!",
+    "Animals need AIR. In… and out. You can't see it, but it is a need.",
+    "Animals need SPACE — room to roam.",
+    "A toy? It's not food, not water, not shelter, not air, not space. The lion does NOT need it."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    lion.className=''; lion.style.display=''; lion.style.left='';
+    meat.className=''; pool.className=''; rocks.className=''; breeze.className=''; ball.className='';
+    badges.forEach(b=>b.className='badge'); stampNo.className='stamp no'; cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    // beat 1: food
+    cap.textContent='Animals need FOOD.'; say(teachScript[0],'t_food'); showBeat('teach_food'); meat.classList.add('show'); lion.classList.add('drink');
+    later(()=>{ badges[0].classList.add('on'); lion.classList.remove('drink'); meat.classList.remove('show'); },2600);
+    // beat 2: water
+    later(()=>{ cap.textContent='Animals need WATER.'; say(teachScript[1],'t_water'); showBeat('teach_water'); pool.classList.add('show'); lion.classList.add('drink'); },3800);
+    later(()=>{ badges[1].classList.add('on'); lion.classList.remove('drink'); pool.classList.remove('show'); },6400);
+    // beat 3: shelter
+    later(()=>{ cap.textContent='Animals need SHELTER — shade and rocks. Not a house!'; say(teachScript[2],'t_shelter'); showBeat('teach_shelter'); rocks.classList.add('show'); lion.style.left='30%'; },7600);
+    later(()=>{ badges[2].classList.add('on'); },10400);
+    // beat 4: air
+    later(()=>{ cap.textContent='Animals need AIR. In… and out.'; say(teachScript[3],'t_air'); showBeat('teach_air'); rocks.classList.remove('show'); lion.style.left='10%'; breeze.classList.add('show','blow'); lion.classList.add('breathe'); },11600);
+    later(()=>{ badges[3].classList.add('on'); lion.classList.remove('breathe'); breeze.classList.remove('show','blow'); },14600);
+    // beat 5: space
+    later(()=>{ cap.textContent='Animals need SPACE — room to roam.'; say(teachScript[4],'t_space'); showBeat('teach_space'); lion.classList.add('roam'); },15800);
+    later(()=>{ badges[4].classList.add('on'); },18200);
+    // beat 6: toy test
+    later(()=>{ cap.textContent='What about a TOY?'; say(teachScript[5],'t_toy'); showBeat('teach_toy'); lion.classList.remove('roam'); ball.classList.add('show'); badges.forEach(b=>b.className='badge'); },19400);
+    later(()=>{ badges[0].classList.add('fail'); cap.textContent='Is it food? ✗'; },21200);
+    later(()=>{ badges[1].classList.add('fail'); cap.textContent='Is it water? ✗'; },22300);
+    later(()=>{ badges[2].classList.add('fail'); cap.textContent='Is it shelter? ✗'; },23400);
+    later(()=>{ badges[3].classList.add('fail'); cap.textContent='Is it air? ✗'; },24500);
+    later(()=>{ badges[4].classList.add('fail'); cap.textContent='Is it space? ✗'; },25600);
+    later(()=>{ stampNo.classList.add('show'); cap.textContent='People-fun is not a need.'; },26700);
+    later(()=>{ stampNo.classList.remove('show'); ball.classList.remove('show'); badges.forEach(b=>{b.className='badge on';});
+      cap.textContent='Food · Water · Shelter · Air · Space'; document.getElementById('teachNext').disabled=false; },28600);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (habitat sort, then mouse round) ---------- */
+  const ITEMS=[
+    {n:'Meat',p:'🍖',k:'card_meat',a:'need',mis:'need',why:'Food. A lion eats meat.'},
+    {n:'Waterhole',p:'💧',k:'card_waterhole',a:'need',mis:'need',why:'Water. Every animal drinks.'},
+    {n:'Toy ball',p:'⚽',k:'card_toy',a:'nope',mis:'fun',why:'A toy is people-fun, not a need.'},
+    {n:'Shady rocks',p:'🪨',k:'card_rocks',a:'need',mis:'house',why:'Shelter! Shade and rocks — a lion\'s safe place.'},
+    {n:'Air to breathe',p:'💨',k:'card_air',a:'need',mis:'air',why:'Air. In and out, all day long.'},
+    {n:'Room to roam',p:'🌾',k:'card_grass',a:'need',mis:'need',why:'Space. Room to roam.'},
+    {n:'A TV',p:'📺',k:'card_tv',a:'nope',mis:'fun',why:'A TV is people-fun, not a need.'},
+    {n:'Candy',p:'🍬',k:'card_candy',a:'nope',mis:'candy',why:'Candy is a people-treat, not lion food.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0;
+  const item=document.getElementById('item'),fb=document.getElementById('fb');
+  function startSort(){
+    queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; mi=0; mmiss=0;
+    document.getElementById('gotNeed').innerHTML='';document.getElementById('gotNope').innerHTML=''; fb.textContent='';
+    document.getElementById('sortwrap').style.display=''; document.getElementById('mouseround').classList.remove('on');
+    document.getElementById('pracNext').disabled=true;
+    document.getElementById('pracTitle').firstChild.textContent='Give the lion what it needs! ';
+    document.getElementById('pLead').innerHTML='Drag each card — does the lion <b>need</b> it?';
+    showItem();
+  }
+  function showItem(){
+    if(!queue.length){ item.style.visibility='hidden'; document.getElementById('counter').textContent='All sorted! 🦁'; startMouse(); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p; document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} sorted`;
+    say(it.n+'. Does the lion need it?');
+  }
+  function answer(bin){
+    if(cur!==2 || !queue.length || item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=bin===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n; document.getElementById(bin==='need'?'gotNeed':'gotNope').appendChild(s);
+    } else {
+      misses[it.mis]=(misses[it.mis]||0)+1;
+      const hint = it.mis==='fun' ? 'That is people-fun. It is not one of the five needs.'
+        : it.mis==='candy' ? 'Candy is a people-treat. Lion food is meat.'
+        : it.mis==='house' ? 'A lion\'s shelter is not a house. Shade and rocks count!'
+        : it.mis==='air' ? 'You can\'t see air — but every animal needs it.'
+        : 'That IS one of the five needs. Which badge is it?';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+it.mis);
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:1900);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+
+  /* mouse round: same needs, different forms */
+  const MITEMS=[
+    {q:'The mouse needs FOOD too. What is mouse food?',
+     o:[{t:'Seeds and crumbs',p:'🌰',ok:true},{t:'A big meal of meat',p:'🍖',ok:false}],
+     why:'Mouse food is seeds and crumbs — not a big meal of meat.'},
+    {q:'The mouse needs SHELTER too. Which is the mouse\'s shelter?',
+     o:[{t:'A snug little burrow',p:'🕳️',ok:true},{t:'A big rock den',p:'🪨',ok:false}],
+     why:'A mouse\'s shelter is a snug little burrow.'},
+    {q:'The mouse needs SPACE too. How much?',
+     o:[{t:'A little corner is enough',p:'🐾',ok:true},{t:'The whole savanna',p:'🌾',ok:false}],
+     why:'A mouse needs just a little space. Same needs, different amounts!'}
+  ];
+  let mi=0,mmiss=0;
+  function startMouse(){
+    document.getElementById('sortwrap').style.display='none';
+    document.getElementById('mouseround').classList.add('on');
+    document.getElementById('pracTitle').firstChild.textContent='Here comes the mouse! ';
+    document.getElementById('pLead').innerHTML='The mouse has the <b>same five needs</b> — mouse-sized.';
+    document.getElementById('sayPrac').dataset.say='Here comes the mouse! Same five needs — but mouse-sized. Tap the right one.';
+    document.getElementById('sayPrac').dataset.voice='mouse_intro';
+    const mp=document.getElementById('mousePic'); if(img('card_mouse')) mp.innerHTML='<img src="'+img('card_mouse')+'" alt="">';
+    say('Here comes the mouse! Same five needs — but mouse-sized. Tap the right one.','mouse_intro');
+    mi=0; mmiss=0; setTimeout(showM, 1600);
+  }
+  function showM(){
+    if(mi>=MITEMS.length){
+      document.getElementById('mqText').textContent='Same needs — lion-sized or mouse-sized!';
+      document.getElementById('mopts').innerHTML=''; document.getElementById('mcount').textContent='';
+      fb.className='fb good'; fb.textContent='✓ The lion has everything it needs!';
+      document.getElementById('pracNext').disabled=false;
+      say('The lion has everything it needs! Now show what you know.','sort_done');
+      return;
+    }
+    const m=MITEMS[mi];
+    document.getElementById('mqText').textContent=m.q;
+    document.getElementById('mcount').textContent=`${mi+1} of ${MITEMS.length}`;
+    document.getElementById('sayMq').onclick=()=>say(m.q+' '+m.o.map(o=>o.t).join(', or '));
+    fb.textContent='';
+    const box=document.getElementById('mopts'); box.innerHTML='';
+    m.o.forEach(o=>{
+      const b=document.createElement('button'); b.className='mopt';
+      b.innerHTML='<div class="pic">'+o.p+'</div>'+o.t;
+      b.onclick=()=>{
+        if(o.ok){ b.classList.add('right'); fb.className='fb good'; fb.textContent='✓ '+m.why; say('Yes! '+m.why,'why_m'+(mi+1));
+          box.querySelectorAll('.mopt').forEach(x=>x.disabled=true);
+          mi++; setTimeout(showM,1700);
+        } else { b.classList.add('wrong'); b.disabled=true; mmiss++; misses.same=(misses.same||0)+1;
+          fb.className='fb bad'; fb.textContent='Not quite. The mouse has the same need — just mouse-sized.'; say('Not quite. The mouse has the same need — just mouse-sized.','fb_same');
+        }
+      };
+      box.appendChild(b);
+    });
+    say(m.q);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🦁',k:'hook_lion',q:'Which of these does the lion need to live?',o:['Water','A toy ball','A TV'],a:0,hint:'Toys and TVs are people-fun — not needs.'},
+    {id:2,pic:'🪨',k:'card_rocks',q:'What is the lion\'s shelter?',o:['Shady rocks and tall grass','A house with walls and a door','Lions don\'t need shelter'],a:0,hint:'Shelter is a safe place — for a lion, shade and rocks.'},
+    {id:3,pic:'🍬',k:'card_candy',q:'Which one is NOT a basic need?',o:['Candy','Food','Air'],a:0,hint:'Candy is a people-treat. Food, water, shelter, air, space are the needs.'},
+    {id:4,pic:'💨',k:'card_air',q:'Who needs air and space?',o:['Every animal','Only people','Only big animals'],a:0,hint:'Every animal — even the tiniest mouse — needs air and space.'},
+    {id:5,pic:'🐭',k:'card_mouse',q:'A mouse and a lion both need food. What is different?',o:['The kind and the amount','The mouse needs no food','They eat exactly the same'],a:0,hint:'Same need — different forms and amounts.'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic; document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'". '+q.hint;
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses,mouse_misses:mmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know the five needs! 🦁' : 'Good try! Let\'s watch the five badges once more.';
+    document.getElementById('guessTxt').textContent = guess==='water' ? 'At the start you guessed WATER — you were right. Even a king needs it!' : guess==='toy' ? 'At the start you guessed a TOY. Now you know: toys are people-fun, not a need!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the five badges again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go find out what real lions eat. 🦁'; say('Lesson done! Now go find out what real lions eat.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

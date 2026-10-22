@@ -1,0 +1,103 @@
+{
+  "lesson": "lesson.reading.k2.phonics.06",
+  "style": "../../../tools/lesson_assets/style.json",
+  "voice": [
+    {
+      "id": "hook",
+      "text": "Picnic is a big word. How do we read it? Tap your guess."
+    },
+    {
+      "id": "prac_done",
+      "text": "Chopped! Endings next in the check."
+    },
+    {
+      "id": "yes",
+      "text": "Yes!"
+    },
+    {
+      "id": "hint",
+      "text": "Try again."
+    },
+    {
+      "id": "pass",
+      "text": "You can chop big words!"
+    },
+    {
+      "id": "retry",
+      "text": "Chop between the vowel chunks, then add the ending."
+    },
+    {
+      "id": "hook_chop",
+      "text": "Yes. Two bites."
+    },
+    {
+      "id": "hook_guess",
+      "text": "Don't guess. Chop first."
+    },
+    {
+      "id": "t1",
+      "text": "Every bite needs a vowel. Picnic. Pic. Nic."
+    },
+    {
+      "id": "t2",
+      "text": "Rabbit. Rab. Bit."
+    },
+    {
+      "id": "t3",
+      "text": "Endings. S, I N G, E D. Jump, jumping, jumped, jumps."
+    },
+    {
+      "id": "p1",
+      "text": "Chop picnic."
+    },
+    {
+      "id": "p2",
+      "text": "Chop rabbit."
+    },
+    {
+      "id": "p3",
+      "text": "Chop basket."
+    },
+    {
+      "id": "p4",
+      "text": "Chop sunset."
+    },
+    {
+      "id": "p5",
+      "text": "Chop napkin."
+    },
+    {
+      "id": "p6",
+      "text": "Chop helmet."
+    },
+    {
+      "id": "q1",
+      "text": "picnic chops into\u2026 pi \u00b7 cnic, or pic \u00b7 nic, or picn \u00b7 ic"
+    },
+    {
+      "id": "q2",
+      "text": "Each syllable needs\u2026 a silent e, or a vowel, or a blend"
+    },
+    {
+      "id": "q3",
+      "text": "jump + ing is\u2026 jumpd, or jumping, or jumpsed"
+    },
+    {
+      "id": "q4",
+      "text": "-ed can say\u2026 only /ed/, or /t/, /d/, or /ed/, or always /\u0113d/"
+    },
+    {
+      "id": "q5",
+      "text": "rabbit (the hare's cousin) is\u2026 one closed syllable, or two closed syllables, or magic-e"
+    }
+  ],
+  "images": [
+    {
+      "id": "hook",
+      "prompt": "storybook scene for Two bites, Aesop meadow, no letters",
+      "kind": "scene"
+    }
+  ],
+  "clips": [],
+  "notes": "House voice is luna (Grok TTS, British woman, 0.92). Packages run with speechSynthesis until media/ is generated."
+}

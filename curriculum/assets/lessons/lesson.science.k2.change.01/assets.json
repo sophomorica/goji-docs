@@ -1,0 +1,62 @@
+{
+  "lesson": "lesson.science.k2.change.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "puppy": {
+      "prompt": "a friendly tan puppy with floppy ears, round and small, standing in profile, warm brown eyes, the same dog also appears grown up in other images",
+      "kind": "card"
+    }
+  },
+  "images": [
+    { "id": "hook_ice", "prompt": "an ice cream cone in bright sunshine, the scoop just starting to drip down one side, plain sun without a face above, no creatures", "kind": "scene" },
+    { "id": "hook_both", "prompt": "side by side in one scene: a dripping ice cream cone in the sun on the left and a big steady oak tree on the right, plain sun without a face, no creatures", "kind": "scene" },
+    { "id": "teach_fast", "prompt": "a fast-change scene: an orange leaf caught mid-fall from a tree branch, and nearby an ice cream cone melting into a small pink puddle, plain sun without a face, no faces on anything", "kind": "scene" },
+    { "id": "teach_slow", "ref": "puppy", "prompt": "a slow-change scene in four steps left to right: an acorn in soil, a small green sprout, a sapling, a full oak tree, with soft arrows between the steps; the same puppy sits small at the left edge and grown up at the right edge", "kind": "scene" },
+    { "id": "teach_nonliving", "prompt": "a nonliving-change scene: on the left, gentle waves washing over a sandcastle that is half worn down to a smooth mound; on the right, people's yellow digger truck laying a fresh grey road, no faces on truck or castle", "kind": "scene" },
+    { "id": "card_seed", "prompt": "a single brown acorn seed lying on dark soil", "kind": "card" },
+    { "id": "card_tree", "prompt": "a tall full oak tree in leaf", "kind": "card" },
+    { "id": "card_puppy", "ref": "puppy", "prompt": "the same puppy small and round, sitting, full body", "kind": "card" },
+    { "id": "card_dog", "ref": "puppy", "prompt": "the same dog fully grown, standing tall, full body, clearly the adult of the puppy", "kind": "card" },
+    { "id": "card_ice", "prompt": "one clear ice cube on a plate, just starting to melt at the edges", "kind": "card" },
+    { "id": "card_puddle", "prompt": "a small puddle of water on a plate where an ice cube used to be", "kind": "card" },
+    { "id": "card_castle", "prompt": "a sandcastle with towers and a small red flag on a beach, no faces", "kind": "card" },
+    { "id": "card_flatsand", "prompt": "a smooth low mound of wet sand on a beach where a sandcastle used to be, a gentle wave edge nearby, no faces", "kind": "card" },
+    { "id": "card_crayon_new", "prompt": "one brand-new long red crayon with a sharp point, paper wrapper intact", "kind": "card" },
+    { "id": "card_crayon_worn", "prompt": "the same red crayon now short and stubby with a rounded worn tip and torn wrapper", "kind": "card" },
+    { "id": "card_leaf_branch", "prompt": "a green leaf attached to a tree branch", "kind": "card" },
+    { "id": "card_leaf_ground", "prompt": "an orange-brown fallen leaf lying on the ground", "kind": "card" },
+    { "id": "card_icecream", "prompt": "an ice cream cone melting in the sun, drips running down the cone, plain sun without a face", "kind": "card" },
+    { "id": "badge_fast", "prompt": "a small lightning-style zigzag arrow over a melting ice cube, simple emblem, no faces", "kind": "card" },
+    { "id": "badge_slow", "prompt": "a tiny sprout beside a tall tree with a long slow curving arrow between them, simple emblem, no faces", "kind": "card" },
+    { "id": "badge_nonliving", "prompt": "a small wave curling over a sand mound, simple emblem, no faces", "kind": "card" }
+  ],
+  "clips": [
+    { "id": "teach_fast", "from": "teach_fast", "seconds": 6, "prompt": "the leaf tumbles gently down from the branch to the ground while the ice cream scoop slowly slumps and the pink puddle spreads" },
+    { "id": "teach_slow", "from": "teach_slow", "seconds": 6, "prompt": "each step of the row brightens in turn from acorn to sprout to sapling to full tree, and the small puppy cross-fades to the grown dog" },
+    { "id": "teach_nonliving", "from": "teach_nonliving", "seconds": 6, "prompt": "a wave rolls softly over the sandcastle and pulls back leaving it smoother and lower, while the road extends a little further behind the truck" }
+  ],
+  "voice": [
+    { "id": "hook", "text": "An ice cream in the sun. [pause] A big oak tree. [pause] Which one is changing right now? Tap your guess." },
+    { "id": "t_fast", "text": "Some changes are <emphasis>fast</emphasis>. [pause] A leaf falls. Ice cream melts. [pause] You can watch them happen!" },
+    { "id": "t_slow", "text": "Some changes are <emphasis>slow</emphasis>. [pause] A seed becomes a tree. A puppy becomes a dog. [pause] Too slow to watch — but they never stop changing." },
+    { "id": "t_nonliv", "text": "Living things change by <emphasis>growing</emphasis>. [pause] Nonliving things get <emphasis>changed</emphasis> — waves wear the sandcastle down, [pause] and people build a road." },
+    { "id": "prac_intro", "text": "First, find each thing's after picture. [pause] Then tell me: was that change fast, or slow?" },
+    { "id": "pr_match", "text": "What does it become? [pause] Tap the after picture." },
+    { "id": "pr_speed", "text": "Was that change fast, [pause] or slow?" },
+    { "id": "ok_match", "text": "Yes! [pause] That is what it becomes." },
+    { "id": "ok_fast", "text": "Yes! [pause] You can watch that one happen. Fast!" },
+    { "id": "ok_slow", "text": "Yes! [pause] Too slow to watch, but always changing. Slow!" },
+    { "id": "fb_match", "text": "Not quite. [pause] Think what it turns into after a while." },
+    { "id": "fb_slowinvis", "text": "Not quite. [pause] You can't watch it move, but it is changing — a little every day. That is a slow change." },
+    { "id": "fb_fast", "text": "Not quite. [pause] You could stand and watch this one happen. That is a fast change." },
+    { "id": "prac_done", "text": "All matched and sorted! [pause] Now show what you know." },
+    { "id": "q1", "text": "A seed becomes a tall tree. Is the seed changing? [pause] Yes — slowly, even when we can't see it move, [pause] or, no — it isn't moving, so it isn't changing?" },
+    { "id": "q2", "text": "Which change is fast? [pause] Ice cream melting in the sun, [pause] or a puppy growing into a dog?" },
+    { "id": "q3", "text": "Waves wash the sandcastle flat. Can a nonliving sandcastle change? [pause] Yes — the waves change it, [pause] or, no — only living things change?" },
+    { "id": "q4", "text": "How does a puppy become a dog? [pause] It grows a little every day, [pause] or it changes all at once, in one night?" },
+    { "id": "q5", "text": "Which change is slow? [pause] A seed growing into a tree, [pause] or a leaf falling from the branch?" },
+    { "id": "pass", "text": "<soft>You can spot changes, fast and slow!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the changes once more." },
+    { "id": "done", "text": "Lesson done! Pick one thing to watch change this month. A plant, or the moon. Draw it in your journal every few days." }
+  ]
+}

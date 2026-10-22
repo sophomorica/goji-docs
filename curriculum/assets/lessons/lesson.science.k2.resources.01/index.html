@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earth helpers — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick .big{font-size:90px;line-height:1.1}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media .big{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 62%,#a9c98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg{position:absolute}
+#rStream{left:0;bottom:0;width:100%;opacity:0;transition:opacity .8s}
+#rStream.show{opacity:1}
+#rStream.flow path.w{stroke-dasharray:20 16;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-36}}
+#rTree{left:2%;bottom:22%;width:20%;opacity:0;transition:opacity .8s}
+#rTree.show{opacity:1}
+#rGarden{left:70%;bottom:24%;width:26%;opacity:0;transition:opacity .8s}
+#rGarden.show{opacity:1}
+#rBins{left:50%;bottom:8%;transform:translateX(-50%);width:min(70%,520px);opacity:0;transition:opacity .8s}
+#rBins.show{opacity:1}
+#rJar{left:47%;top:12%;width:9%;opacity:0;transition:opacity .6s,top 1.4s ease,left 1.4s ease}
+#rJar.show{opacity:1}
+#rJar.drop{top:52%;left:41%}
+#rSplit{left:0;bottom:0;width:100%;height:100%;opacity:0;transition:opacity .8s}
+#rSplit.show{opacity:1}
+#rSplit .fishA{animation:swim 3.4s ease-in-out infinite alternate}
+@keyframes swim{from{transform:translateX(0)}to{transform:translateX(26px)}}
+#rTruck{left:60%;bottom:10%;width:34%;opacity:0;transition:opacity .8s,left 2s ease}
+#rTruck.show{opacity:1}
+#rTruck.go{left:102%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice: 3-bin sort ---- */
+.bins3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:12px;gap:8px;min-height:150px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:26px}
+.bin.reuse h3{color:var(--gold)} .bin.recycle h3{color:var(--green)} .bin.trash h3{color:var(--grey)}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.bin .got span{font-size:34px}
+.bin .got img{width:48px;height:48px;object-fit:cover;border-radius:10px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;margin-top:14px}
+.item{width:min(260px,60vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:28px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:84px;line-height:1.1}
+.item .pic img{width:130px;border-radius:14px;display:block;margin:0 auto}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.tapbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:130px;font-size:22px;padding:14px 18px;min-height:64px}
+.tapbtns .btn.reuseB{background:var(--gold);box-shadow:0 6px 0 #b8862a}
+.tapbtns .btn.recycleB{background:var(--green);box-shadow:0 6px 0 var(--green2)}
+.tapbtns .btn.trashB{background:var(--grey);box-shadow:0 6px 0 #6e6e6e}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:12px}
+.opt{font:inherit;font-size:25px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.scpic{font-size:84px;text-align:center;line-height:1.15}
+.scpic img{width:min(40vw,240px);border-radius:16px;box-shadow:var(--shadow)}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px}
+  .bins3{grid-template-columns:1fr} .bin{min-height:100px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Earth helpers <button class="say" data-say="You drink a cup of water. Where did that water come from? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">You drink a cup of water. <b>Where did that water come from?</b></p>
+  <div class="choice2">
+    <div class="pick" data-guess="earth">
+      <img data-img="hook_earth" alt="" hidden>
+      <div class="big">🌧️🏞️</div>
+      <span>The Earth — rain and rivers</span>
+    </div>
+    <div class="pick" data-guess="store">
+      <img data-img="hook_store" alt="" hidden>
+      <div class="big">🏪</div>
+      <span>The store makes it</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The Earth gives — we choose <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="rStream" viewBox="0 0 1000 150" preserveAspectRatio="none"><path d="M0 60 Q250 30 500 70 T1000 55 L1000 150 L0 150Z" fill="#5aa3bf"/><path class="w" d="M0 70 Q250 45 500 80 T1000 68" stroke="#fff" stroke-width="6" fill="none" opacity=".8"/></svg>
+    <svg id="rTree" viewBox="0 0 200 190"><rect x="88" y="96" width="20" height="80" fill="#7a5a3a"/><circle cx="98" cy="66" r="52" fill="#4f7d46"/><rect x="128" y="140" width="60" height="12" rx="4" fill="#b08a68"/><rect x="128" y="156" width="60" height="12" rx="4" fill="#b08a68"/></svg>
+    <svg id="rGarden" viewBox="0 0 260 120"><rect y="70" width="260" height="40" rx="10" fill="#8a5a34"/><g fill="#e0873b"><path d="M40 76 l10 30 l10 -30z"/><path d="M110 76 l10 30 l10 -30z"/><path d="M180 76 l10 30 l10 -30z"/></g><g stroke="#4f7d46" stroke-width="5" fill="none"><path d="M50 74 q-8 -18 4 -26 M50 74 q10 -16 2 -26"/><path d="M120 74 q-8 -18 4 -26 M120 74 q10 -16 2 -26"/><path d="M190 74 q-8 -18 4 -26 M190 74 q10 -16 2 -26"/></g></svg>
+    <svg id="rBins" viewBox="0 0 520 170">
+      <g><rect x="10" y="60" width="140" height="100" rx="12" fill="#8d8d8d"/><rect x="2" y="40" width="156" height="22" rx="8" fill="#6e6e6e"/><text x="80" y="130" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">TRASH</text></g>
+      <g><rect x="190" y="60" width="140" height="100" rx="12" fill="#e0a93b"/><rect x="182" y="40" width="156" height="22" rx="8" fill="#b8862a"/><text x="260" y="130" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">REUSE</text></g>
+      <g><rect x="370" y="60" width="140" height="100" rx="12" fill="#3f7d4e"/><rect x="362" y="40" width="156" height="22" rx="8" fill="#2f6a3e"/><text x="440" y="130" font-size="24" font-weight="bold" fill="#fff" text-anchor="middle">RECYCLE</text><path d="M420 85 a18 18 0 1 1 -6 26" stroke="#fff" stroke-width="5" fill="none"/><path d="M410 118 l4 -12 l12 6z" fill="#fff"/></g>
+    </svg>
+    <svg id="rJar" viewBox="0 0 80 100"><rect x="14" y="26" width="52" height="66" rx="10" fill="#cfe6ee" stroke="#9fc7d6" stroke-width="4"/><rect x="10" y="10" width="60" height="16" rx="6" fill="#b08a68"/></svg>
+    <svg id="rSplit" viewBox="0 0 1000 400" preserveAspectRatio="none">
+      <rect width="490" height="400" fill="#dff0e2"/>
+      <path d="M0 260 Q120 230 250 265 T490 250 L490 400 L0 400Z" fill="#5aa3bf"/>
+      <g class="fishA"><path d="M120 320 q18 -14 40 0 q-18 14 -40 0z" fill="#e0a93b"/><path d="M120 320 l-14 -10 l0 20z" fill="#c98a2c"/><circle cx="148" cy="317" r="3" fill="#2b2b2b"/></g>
+      <g class="fishA" style="animation-delay:.9s"><path d="M300 340 q16 -12 36 0 q-16 12 -36 0z" fill="#b5382f"/><path d="M300 340 l-12 -9 l0 18z" fill="#8e2a23"/><circle cx="325" cy="337" r="3" fill="#2b2b2b"/></g>
+      <g><path d="M80 250 q4 -50 20 -66 q4 26 -2 66z" fill="#8a8276"/><circle cx="97" cy="180" r="10" fill="#8a8276"/><path d="M104 178 l14 4 l-14 6z" fill="#e0a93b"/><circle cx="94" cy="177" r="2.5" fill="#2b2b2b"/><path d="M96 250 l0 -34 M104 250 l0 -30" stroke="#6a6256" stroke-width="4"/></g>
+      <text x="245" y="50" font-size="30" font-weight="bold" fill="#3f7d4e" text-anchor="middle">Clean stream</text>
+      <rect x="510" width="490" height="400" fill="#e9e2d2"/>
+      <path d="M510 260 Q630 230 760 265 T1000 250 L1000 400 L510 400Z" fill="#7f9aa6"/>
+      <g fill="#8d8d8d"><rect x="600" y="300" width="44" height="26" rx="6" transform="rotate(-12 622 313)"/><rect x="760" y="330" width="34" height="44" rx="8" transform="rotate(14 777 352)"/><circle cx="700" cy="350" r="14"/></g>
+      <path d="M860 300 l26 -8 M866 316 l24 4" stroke="#8d8d8d" stroke-width="6" stroke-linecap="round"/>
+      <text x="755" y="50" font-size="30" font-weight="bold" fill="#8e2a23" text-anchor="middle">Littered stream</text>
+      <text x="755" y="86" font-size="24" fill="#6b5646" text-anchor="middle">Where did everyone go?</text>
+    </svg>
+    <svg id="rTruck" viewBox="0 0 340 140"><rect x="10" y="30" width="200" height="80" rx="14" fill="#3f7d4e"/><rect x="220" y="60" width="70" height="50" rx="8" fill="#2f6a3e"/><rect x="232" y="70" width="30" height="22" rx="4" fill="#cfe6ee"/><circle cx="70" cy="116" r="18" fill="#3b2a1e"/><circle cx="150" cy="116" r="18" fill="#3b2a1e"/><circle cx="255" cy="116" r="18" fill="#3b2a1e"/><circle cx="70" cy="116" r="7" fill="#f3e9d6"/><circle cx="150" cy="116" r="7" fill="#f3e9d6"/><circle cx="255" cy="116" r="7" fill="#f3e9d6"/></svg>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌍</span>Earth gives</div>
+    <div class="badge" id="b1"><span class="em">🔁</span>Reuse &amp; recycle</div>
+    <div class="badge" id="b2"><span class="em">🐟</span>Choices matter</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Sort it out! <button class="say" data-say="Drag each thing to trash, reuse, or recycle. Or tap a button. Then help the stream!" data-voice="prac_intro">🔊</button></h2>
+  <p class="lead" id="pPrompt">Where should each thing go? <b>Drag it to a bin, or tap a button.</b></p>
+  <div id="sortPhase">
+    <div class="bins3">
+      <div class="bin trash" data-bin="trash"><h3>🗑️ Trash</h3><div class="got" id="gotTrash"></div></div>
+      <div class="bin reuse" data-bin="reuse"><h3>🔁 Reuse</h3><div class="got" id="gotReuse"></div></div>
+      <div class="bin recycle" data-bin="recycle"><h3>♻️ Recycle</h3><div class="got" id="gotRecycle"></div></div>
+    </div>
+    <div class="deck">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="tapbtns">
+        <button class="btn trashB" data-tap="trash">Trash</button>
+        <button class="btn reuseB" data-tap="reuse">Reuse</button>
+        <button class="btn recycleB" data-tap="recycle">Recycle</button>
+      </div>
+    </div>
+  </div>
+  <div id="scPhase" style="display:none">
+    <div class="scpic" id="scPic"></div>
+    <div class="opts" id="scOpts"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="counter" id="counter"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the Earth again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.resources.01',version:1,quiz:'quiz.science.k2.resources.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_earth'],['b1','badge_loop'],['b2','badge_stream']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startSort(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const el=id=>document.getElementById(id);
+  const rStream=el('rStream'),rTree=el('rTree'),rGarden=el('rGarden'),rBins=el('rBins'),rJar=el('rJar'),
+        rSplit=el('rSplit'),rTruck=el('rTruck'),cap=el('cap');
+  const badges=[0,1,2].map(i=>el('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    [rStream,rTree,rGarden,rBins,rJar,rSplit,rTruck].forEach(x=>x.classList.remove('show'));
+    rStream.classList.remove('flow'); rJar.classList.remove('drop'); rTruck.classList.remove('go');
+    cap.textContent=''; badges.forEach(b=>b.className='badge');
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    el('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "Everything we use comes from the Earth. Water from rain and rivers. Wood from trees. Food from plants.",
+    "When we are done with a thing, we choose: trash, reuse, or recycle. The trash truck takes trash to a landfill on the land — it does not disappear. Reuse means: use it again! Recycle means: make it into something new.",
+    "Our choices touch the water, the land, the air, and the animals. A clean stream is full of life. A littered stream is empty. Every choice matters — even one wrapper."
+  ];
+  el('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: the Earth gives
+    cap.textContent='Everything we use comes from the EARTH.'; say(teachScript[0],'t_earth'); showBeat('teach_earth');
+    rStream.classList.add('show','flow'); rTree.classList.add('show'); rGarden.classList.add('show');
+    later(()=>{ badges[0].classList.add('on'); },3400);
+    // beat 2: we choose — three bins, jar drops into REUSE; truck to landfill
+    later(()=>{ cap.textContent='When we\'re done, we CHOOSE: trash, REUSE, or RECYCLE.'; say(teachScript[1],'t_choose'); showBeat('teach_choose');
+      rStream.classList.remove('show','flow'); rTree.classList.remove('show'); rGarden.classList.remove('show');
+      rBins.classList.add('show'); rJar.classList.add('show'); },4600);
+    later(()=>{ rJar.classList.add('drop'); },6400);
+    later(()=>{ cap.textContent='The jar can be used AGAIN — reuse!'; },7800);
+    later(()=>{ rTruck.classList.add('show'); cap.textContent='Trash rides the truck to a LANDFILL — it does not disappear.'; },9600);
+    later(()=>{ rTruck.classList.add('go'); badges[1].classList.add('on'); },11600);
+    // beat 3: choices touch the stream
+    later(()=>{ cap.textContent='Our choices touch the water, land, air — and the animals.'; say(teachScript[2],'t_stream'); showBeat('teach_stream');
+      rBins.classList.remove('show'); rJar.classList.remove('show'); rTruck.classList.remove('show','go');
+      rSplit.classList.add('show'); },13400);
+    later(()=>{ badges[2].classList.add('on'); cap.textContent='Every choice matters — even one wrapper.'; el('teachNext').disabled=false; },17400);
+  }
+  el('replay').onclick=playTeach;
+  el('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (3-bin sort, then stream scenarios) ---------- */
+  const ITEMS=[
+    {n:'Glass jar',p:'🫙',k:'card_jar',a:'reuse',why:'It\'s not broken — wash it and use it again! It can hold crayons.'},
+    {n:'Drawing paper',p:'📄',k:'card_paper',a:'recycle',why:'Paper can be made into NEW paper.'},
+    {n:'Banana peel',p:'🍌',k:'card_peel',a:'trash',why:'Food scraps go to trash or compost — not the recycle bin.'},
+    {n:'Plastic bottle',p:'🧴',k:'card_bottle',a:'recycle',why:'Plastic can be made into something new.'},
+    {n:'Old t-shirt',p:'👕',k:'card_shirt',a:'reuse',why:'It makes a great cleaning rag — used again!'},
+    {n:'Sticky candy wrapper',p:'🍬',k:'card_wrapper',a:'trash',why:'Too sticky and small to recycle — into the trash, never on the ground.'}
+  ];
+  const SCEN=[
+    {id:'sc1',pic:'🍬🏞️',k:'card_stream_wrapper',q:'A candy wrapper is in your hand at the stream. What helps the stream?',
+      o:['Keep it in your pocket until you find a trash can','Drop it — one little wrapper doesn\'t matter'],a:0,voice:'pr_sc1',
+      okv:'ok_sc1',ok:'Yes! Every wrapper you hold onto keeps the stream clean for the fish.',
+      mis:'onep',bad:'The stream animals feel EVERY wrapper. One person\'s choice matters!',badv:'fb_onep'},
+    {id:'sc2',pic:'🧴🏞️',k:'card_stream_bottle',q:'You find a plastic bottle by the stream. What helps?',
+      o:['Toss it in the water — the water will take it away','Take it home to the recycle bin'],a:1,voice:'pr_sc2',
+      okv:'ok_sc2',ok:'Yes! Now it becomes something new — and the stream stays clean.',
+      mis:'disappear',bad:'The water can\'t make it disappear — it just carries the trash to the animals.',badv:'fb_disappear'}
+  ];
+  const NP=ITEMS.length+SCEN.length;
+  let queue=[],scqueue=[],phase='sort',done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,answering=false;
+  const item=el('item'),fb=el('fb');
+  function startSort(){
+    queue=ITEMS.slice(); scqueue=SCEN.slice(); phase='sort'; done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;
+    el('gotTrash').innerHTML='';el('gotReuse').innerHTML='';el('gotRecycle').innerHTML=''; fb.textContent='';
+    el('sortPhase').style.display=''; el('scPhase').style.display='none'; el('pracNext').disabled=true;
+    el('pPrompt').innerHTML='Where should each thing go? <b>Drag it to a bin, or tap a button.</b>';
+    showItem();
+  }
+  function showItem(){
+    answering=false;
+    if(!queue.length){ startScen(); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=el('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p;
+    el('itemName').textContent=it.n;
+    el('counter').textContent=done+' of '+NP+' done';
+    say(it.n+'. Trash, reuse, or recycle?','pr_sort');
+  }
+  function answer(bin){
+    if(answering || phase!=='sort' || !queue.length || item.style.visibility==='hidden') return; answering=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>NP) pass1=false;
+    const ok=bin===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n;
+      el(bin==='trash'?'gotTrash':bin==='reuse'?'gotReuse':'gotRecycle').appendChild(s);
+    } else {
+      let hint,vid;
+      if(it.a==='reuse'&&bin==='recycle'){ misses.reuse_recycle=(misses.reuse_recycle||0)+1; hint='Recycling melts things into something NEW. This one isn\'t done yet — use the SAME one again. Reuse!'; vid='fb_reuse_recycle'; }
+      else if(it.a==='recycle'&&bin==='reuse'){ misses.reuse_recycle=(misses.reuse_recycle||0)+1; hint='It\'s all used up as it is — but it can be MADE INTO something new. Recycle!'; vid='fb_recycle_reuse'; }
+      else if(bin==='trash'){ misses.trash_default=(misses.trash_default||0)+1; hint='Wait! Trash sits in the landfill forever. This one can have a second life.'; vid='fb_trash_default'; }
+      else { misses.compost=(misses.compost||0)+1; hint='Food scraps can\'t become new paper or bottles. Trash or compost for this one.'; vid='fb_compost'; }
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,vid);
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1600:2000);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  // pointer drag (tap buttons remain the alternative)
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ if(phase!=='sort') return; drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+
+  function startScen(){
+    phase='scen';
+    el('sortPhase').style.display='none'; el('scPhase').style.display='';
+    el('pPrompt').innerHTML='<b>Now help the stream!</b> Tap the choice that helps.';
+    say('All sorted! Now help the stream. Tap the choice that helps.','sc_intro');
+    showScen();
+  }
+  function showScen(){
+    answering=false;
+    if(!scqueue.length){
+      el('counter').textContent='All done! ⭐'; el('scOpts').innerHTML=''; el('scPic').textContent='🏞️🐟';
+      el('pPrompt').innerHTML='<b>The stream is clean — thanks to you!</b>';
+      el('pracNext').disabled=false; say('The stream is clean, thanks to you! Now show what you know.','prac_done'); return;
+    }
+    const sc=scqueue[0];
+    el('counter').textContent=done+' of '+NP+' done';
+    const sp=el('scPic'); if(img(sc.k)) sp.innerHTML='<img src="'+img(sc.k)+'" alt="">'; else sp.textContent=sc.pic;
+    el('pPrompt').innerHTML='<b>'+sc.q+'</b>';
+    const o=el('scOpts'); o.innerHTML='';
+    sc.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>answerScen(i); o.appendChild(b); });
+    say(sc.q+' '+sc.o.join(', or '),sc.voice);
+  }
+  function answerScen(i){
+    if(answering || !scqueue.length) return; answering=true;
+    const sc=scqueue.shift(); tries++; seen++;
+    if(seen>NP) pass1=false;
+    const ok=i===sc.a;
+    document.querySelectorAll('#scOpts .opt').forEach((b,j)=>{ b.disabled=true; if(j===sc.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+sc.ok; say('Yes! '+sc.ok,sc.okv);
+    } else {
+      misses[sc.mis]=(misses[sc.mis]||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. '+sc.bad; say('Not quite. '+sc.bad,sc.badv);
+      scqueue.push(sc);
+    }
+    setTimeout(showScen, ok?1600:2000);
+  }
+  el('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🚛',k:'card_truck',q:'The trash truck drives away. Where does the trash go?',o:['To a landfill — a big pile on the land','It disappears forever'],a:0},
+    {id:2,pic:'🫙',k:'card_jar',q:'What does REUSE mean?',o:['Use the same thing again','Melt it down into something new — same as recycling'],a:0},
+    {id:3,pic:'📄',k:'card_paper',q:'Paper goes in the recycle bin. What happens to it?',o:['It is made into NEW paper','It is used again as the very same sheet'],a:0},
+    {id:4,pic:'🍬',k:'card_stream_wrapper',q:'One kid picks up one wrapper by the stream. Does it help?',o:['Yes — every choice helps the water and the animals','No — one person can\'t change anything'],a:0},
+    {id:5,pic:'🪑',k:'card_chair',q:'Where does the wood in your chair come from?',o:['Trees that grew on the Earth','The store makes it out of nothing'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; el('quiz').style.display=''; el('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; el('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=el('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    el('qtext').textContent=q.q; el('qfb').textContent='';
+    el('qNext').disabled=true; el('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=el('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=el('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    el('qNext').disabled=false;
+  }
+  el('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    el('quiz').style.display='none'; el('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); el('ring').style.setProperty('--pct',pct+'%'); el('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    el('gateTxt').textContent= passed? 'You are an Earth helper! 🌍' : 'Good try! Let\'s watch the Earth and the bins once more.';
+    el('guessTxt').textContent = guess==='earth' ? 'At the start you guessed the EARTH gives us water — you were right!' : guess==='store' ? 'At the start you guessed the store. Now you know: the store gets it from the EARTH — rain and rivers!' : '';
+    say(el('gateTxt').textContent+' '+el('guessTxt').textContent, passed?'pass':'retry');
+    el('finish').style.display = passed? '' : 'none';
+    el('againTeach').textContent = passed? '↺ Watch the Earth again' : '↺ Watch again, then try once more';
+  }
+  el('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  el('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    el('gateTxt').textContent='Lesson done! Go find 3 things at home to reuse — then journal them. 🔁'; say('Lesson done! Go find three things at home to reuse, with your parent. Then draw them in your journal.','done');
+    el('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

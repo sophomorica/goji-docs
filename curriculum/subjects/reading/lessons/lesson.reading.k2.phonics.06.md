@@ -7,7 +7,7 @@
 | **Band** | K–2 |
 | **Duration (target)** | 15 min on Goji (repeatable — run until the deck gates) |
 | **Objectives** | `obj.reading.k2.phonics.06` |
-| **Status** | ready (teach step is parent demo — animation TBD, stub rule) |
+| **Status** | ready (interactive package + seeded deck + typing; Lessons player on the Goji) |
 
 ---
 

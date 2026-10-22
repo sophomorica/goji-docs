@@ -126,6 +126,7 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--mock", action="store_true")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--no-optimize", action="store_true", help="keep PNGs, skip WebP conversion")
     a = ap.parse_args()
     only = set(a.only.split(","))
 
@@ -172,6 +173,8 @@ def main():
         for it in man.get("images", []):
             kind = it.get("kind", "card"); aspect = "1:1" if kind == "card" else style.get("video_aspect", "16:9")
             out = media / "img" / f"{it['id']}.png"; produced["img"][it["id"]] = f"media/img/{it['id']}.png"
+            if not a.force and (media / "img" / f"{it['id']}.webp").exists(): 
+                print(f"[img] {it['id']}: have webp, skip"); continue
             ref = refs.get(it.get("ref")) if it.get("ref") else None
             p = prompt_for(it, kind)
             if ref: p = "Keep this exact wolf character (same colours, markings, proportions). " + p
@@ -190,6 +193,7 @@ def main():
         vres = style.get("video_resolution", "720p")
         for c in man.get("clips", []):
             src = media / "img" / f"{c['from']}.png"
+            if not src.exists() and (media / "src" / f"{c['from']}.png").exists(): src = media / "src" / f"{c['from']}.png"
             out = media / "clip" / f"{c['id']}.mp4"; produced["clip"][c["id"]] = f"media/clip/{c['id']}.mp4"
             p = style["video_prefix"] + " " + c["prompt"]
             print(f"[clip] {c['id']} ← {c['from']} {c['seconds']}s @{vres}: {p[:90]}…")
@@ -213,6 +217,25 @@ def main():
                 if a.mock:
                     produced["voice"].pop(v["id"]); continue
                 write(out, xai.tts(v["text"], style.get("tts_voice", "luna"), style.get("tts_language", "en"), style.get("tts_speed", 1.0)))
+
+    # ---- optimize (optional: needs Pillow). Originals kept in media/src/, HTML gets small WebP ----
+    if not a.dry_run and not a.mock and not a.no_optimize:
+        try:
+            from PIL import Image
+            src_dir = media / "src"; src_dir.mkdir(exist_ok=True)
+            for it in man.get("images", []):
+                png = media / "img" / f"{it['id']}.png"
+                if not png.exists(): continue
+                kind = it.get("kind", "card"); maxw = 512 if kind == "card" else 1024
+                webp = media / "img" / f"{it['id']}.webp"
+                if need(webp) or png.stat().st_mtime > webp.stat().st_mtime:
+                    im = Image.open(png).convert("RGB"); im.thumbnail((maxw, maxw))
+                    im.save(webp, "WEBP", quality=82, method=6)
+                    png.replace(src_dir / png.name)
+                produced["img"][it["id"]] = f"media/img/{it['id']}.webp"
+            print(f"optimized images -> WebP (originals in media/src/)")
+        except ImportError:
+            print("Pillow not installed — skipping WebP optimize (pip install pillow to shrink images ~8x)")
 
     # ---- index.js (what the HTML actually loads; only lists files that exist) ----
     if not a.dry_run:

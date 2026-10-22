@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.animals.01",
+  "title": "The fox's parts have jobs",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": ["obj.science.k2.animals.01"],
+  "va_sol": ["1.5"],
+  "duration_min": 12,
+  "anchor": { "book": "aesop-fables", "note": "The Fox and the Crow week — fox is the specimen, the crow is the comparison animal; retakes swap the fable animal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.animals.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.animals.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

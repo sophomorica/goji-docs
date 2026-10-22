@@ -1,0 +1,111 @@
+{
+  "lesson": "lesson.reading.k2.phonics.05",
+  "style": "../../../tools/lesson_assets/style.json",
+  "voice": [
+    {
+      "id": "hook",
+      "text": "Moon and book both have o o. Same sound? Tap your guess."
+    },
+    {
+      "id": "prac_done",
+      "text": "Two faces sorted. Now the check."
+    },
+    {
+      "id": "yes",
+      "text": "Yes!"
+    },
+    {
+      "id": "hint",
+      "text": "Try again."
+    },
+    {
+      "id": "pass",
+      "text": "You can hear the noise-makers!"
+    },
+    {
+      "id": "retry",
+      "text": "Try the two faces of oo again."
+    },
+    {
+      "id": "hook_two",
+      "text": "Yes. Moon-oo and book-oo."
+    },
+    {
+      "id": "hook_same",
+      "text": "Not always. Two faces."
+    },
+    {
+      "id": "t1",
+      "text": "O I and O Y say ahoy. O U and O W say ouch."
+    },
+    {
+      "id": "t2",
+      "text": "A W is the crow's caw. Paw. Straw."
+    },
+    {
+      "id": "t3",
+      "text": "O O has two faces. Moon. Book."
+    },
+    {
+      "id": "p1",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p2",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p3",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p4",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p5",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p6",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p7",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "p8",
+      "text": "Which face of oo?"
+    },
+    {
+      "id": "q1",
+      "text": "oi in coin says\u2026 /\u014d/, or ahoy!, or /oo/"
+    },
+    {
+      "id": "q2",
+      "text": "mouse (Town Mouse) has\u2026 magic e only, or the ou ouch-team, or short u"
+    },
+    {
+      "id": "q3",
+      "text": "moon and book show that oo\u2026 is always the same, or has two faces, or is silent"
+    },
+    {
+      "id": "q4",
+      "text": "paw (the lion's paw) has\u2026 aw like the crow's caw, or long a, or ou"
+    },
+    {
+      "id": "q5",
+      "text": "out vs oat \u2014 out is\u2026 a vowel team /\u014d/, or a noise-maker ouch, or magic e"
+    }
+  ],
+  "images": [
+    {
+      "id": "hook",
+      "prompt": "storybook scene for Tricky teams, Aesop meadow, no letters",
+      "kind": "scene"
+    }
+  ],
+  "clips": [],
+  "notes": "House voice is luna (Grok TTS, British woman, 0.92). Packages run with speechSynthesis until media/ is generated."
+}

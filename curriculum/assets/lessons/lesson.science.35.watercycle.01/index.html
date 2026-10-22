@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One drop's endless journey — the water cycle — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --sea:#4f93ad; --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.12}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.gloss{font-size:19px;color:var(--ink2);background:var(--cream2);border-radius:12px;padding:2px 10px;white-space:nowrap}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:24px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:170px;min-height:70px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:25px;font-weight:800;padding:16px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+.scene{position:relative;flex:1;min-height:320px;background:linear-gradient(var(--sky) 0 70%,#a9c98a 70% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg.beatart{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s}
+.scene>svg.beatart.on{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 18px;font-size:24px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.75)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media svg.beatart{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:32px}
+.stamp{position:absolute;z-index:3;right:5%;bottom:12%;font-size:30px;font-weight:900;letter-spacing:1px;padding:10px 18px;border:6px solid var(--green);border-radius:14px;
+  color:var(--green);transform:rotate(-8deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.88)}
+.stamp.show{transform:rotate(-8deg) scale(1)}
+.seaflow path.w{stroke-dasharray:20 16;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-36}}
+.vaporrise{animation:rise 3s ease-in-out infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-46px);opacity:0}}
+.rainfall{animation:fall 1.4s linear infinite}
+@keyframes fall{0%{transform:translateY(-12px);opacity:0}30%{opacity:1}100%{transform:translateY(40px);opacity:0}}
+/* practice */
+.pracvis{position:relative;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;min-height:170px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.pracvis svg{max-width:100%;height:auto}
+#cyc .lab{opacity:0;transition:opacity .5s}
+#cyc .lab.show{opacity:1}
+#cyc .glow{opacity:0;transition:opacity .4s}
+#cyc .glow.on{opacity:1;animation:pulse 1.2s ease-in-out infinite alternate}
+@keyframes pulse{from{stroke-width:6}to{stroke-width:12}}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.item{width:min(340px,68vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;text-align:center;
+  font-size:23px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:60px;line-height:1.1}
+.item .pic img{width:100%;max-width:180px;border-radius:14px;display:block;margin:0 auto}
+.tapbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:150px;font-size:20px;padding:14px 18px;min-height:66px}
+.fb{min-height:60px;font-size:22px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:20px;color:var(--ink2);text-align:center}
+/* check */
+.q{font-size:26px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:86px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:92px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:26px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:19px}
+  .choice2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>The vanishing puddle <button class="say" data-say="A big puddle sits by the gate in the morning. By lunchtime it is gone. Where did the water go? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">A big puddle sits by the gate in the morning. By lunchtime it is <b>gone</b>.
+  Where did the water go? Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="vanish">
+      <img data-img="hook_vanish" alt="" hidden><svg viewBox="0 0 200 120" aria-label="empty dry ground"><rect width="200" height="120" rx="16" fill="#f3e9d6"/><ellipse cx="100" cy="80" rx="55" ry="16" fill="#e0d4bc" stroke="#c9b18f" stroke-width="3" stroke-dasharray="8 8"/><text x="100" y="50" font-size="30" text-anchor="middle">?</text></svg>
+      <span>It vanished — gone forever</span>
+    </div>
+    <div class="pick" data-guess="air">
+      <img data-img="hook_air" alt="" hidden><svg viewBox="0 0 200 120" aria-label="puddle with vapor rising into the air"><rect width="200" height="120" rx="16" fill="#f3e9d6"/><ellipse cx="100" cy="90" rx="45" ry="12" fill="#5aa3bf"/><g stroke="#9fc7d6" stroke-width="5" fill="none" stroke-linecap="round"><path d="M80 70 q6 -12 0 -22"/><path d="M100 66 q6 -12 0 -24"/><path d="M120 70 q6 -12 0 -22"/></g></svg>
+      <span>It went up into the air</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Follow the drop →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Follow one drop <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <!-- beat 1: evaporation -->
+    <svg class="beatart" id="ba1" viewBox="0 0 1000 420">
+      <circle cx="150" cy="90" r="52" fill="#e0a93b"/><g stroke="#e0a93b" stroke-width="8" stroke-linecap="round"><line x1="150" y1="10" x2="150" y2="26"/><line x1="76" y1="56" x2="90" y2="64"/><line x1="224" y1="56" x2="210" y2="64"/></g>
+      <g class="seaflow"><path d="M0 330 Q250 300 500 335 T1000 325 L1000 420 L0 420Z" fill="#4f93ad"/><path class="w" d="M0 345 Q250 318 500 350 T1000 340" stroke="#fff" stroke-width="6" fill="none" opacity=".7"/></g>
+      <circle cx="420" cy="318" r="14" fill="#5aa3bf" stroke="#fff" stroke-width="3"/>
+      <g stroke="#9fc7d6" stroke-width="7" fill="none" stroke-linecap="round">
+        <path class="vaporrise" d="M400 290 q8 -18 0 -34"/><path class="vaporrise" style="animation-delay:.7s" d="M430 284 q8 -18 0 -36"/><path class="vaporrise" style="animation-delay:1.3s" d="M460 290 q8 -18 0 -34"/>
+      </g>
+      <text x="560" y="230" font-size="32" font-weight="900" fill="#3b2a1e">EVAPORATION</text>
+      <text x="560" y="268" font-size="24" font-weight="700" fill="#6b5646">liquid → invisible gas, rising up</text>
+    </svg>
+    <!-- beat 2: condensation -->
+    <svg class="beatart" id="ba2" viewBox="0 0 1000 420">
+      <g fill="#eef4f7" stroke="#c8d8e0" stroke-width="4"><ellipse cx="500" cy="130" rx="150" ry="56"/><ellipse cx="400" cy="150" rx="80" ry="42"/><ellipse cx="610" cy="150" rx="86" ry="44"/></g>
+      <g fill="#5aa3bf"><circle cx="450" cy="120" r="8"/><circle cx="500" cy="105" r="8"/><circle cx="550" cy="122" r="8"/><circle cx="480" cy="145" r="8"/><circle cx="530" cy="145" r="8"/></g>
+      <g stroke="#9fc7d6" stroke-width="6" fill="none" stroke-linecap="round"><path d="M420 260 q10 -22 0 -44"/><path d="M500 250 q10 -22 0 -46"/><path d="M580 260 q10 -22 0 -44"/></g>
+      <text x="120" y="330" font-size="32" font-weight="900" fill="#3b2a1e">CONDENSATION</text>
+      <text x="120" y="368" font-size="24" font-weight="700" fill="#6b5646">cold turns gas back into tiny droplets — a cloud is water!</text>
+    </svg>
+    <!-- beat 3: precipitation -->
+    <svg class="beatart" id="ba3" viewBox="0 0 1000 420">
+      <g fill="#dfe9ee" stroke="#b8ccd6" stroke-width="4"><ellipse cx="500" cy="110" rx="170" ry="60"/><ellipse cx="380" cy="132" rx="90" ry="46"/><ellipse cx="630" cy="132" rx="90" ry="46"/></g>
+      <g stroke="#5aa3bf" stroke-width="7" stroke-linecap="round">
+        <line class="rainfall" x1="400" y1="200" x2="392" y2="232"/><line class="rainfall" style="animation-delay:.3s" x1="470" y1="205" x2="462" y2="237"/>
+        <line class="rainfall" style="animation-delay:.6s" x1="540" y1="200" x2="532" y2="232"/><line class="rainfall" style="animation-delay:.9s" x1="610" y1="205" x2="602" y2="237"/>
+      </g>
+      <g fill="#eef4f7" stroke="#b8ccd6" stroke-width="2"><path d="M330 250 l6 10 -12 0z"/><path d="M350 270 l6 10 -12 0z"/></g>
+      <text x="120" y="340" font-size="32" font-weight="900" fill="#3b2a1e">PRECIPITATION</text>
+      <text x="120" y="378" font-size="24" font-weight="700" fill="#6b5646">heavy droplets fall — rain, or snow when it's freezing</text>
+    </svg>
+    <!-- beat 4: the circle -->
+    <svg class="beatart" id="ba4" viewBox="0 0 1000 420">
+      <circle cx="120" cy="80" r="44" fill="#e0a93b"/>
+      <path d="M700 180 L840 340 L560 340 Z" fill="#8a8276"/><path d="M700 180 L740 226 L660 226 Z" fill="#eef4f7"/>
+      <path d="M690 250 Q600 300 420 330 Q220 360 60 350 L60 420 L1000 420 L1000 340 Z" fill="#4f93ad" opacity=".9"/>
+      <g fill="#dfe9ee" stroke="#b8ccd6" stroke-width="3"><ellipse cx="620" cy="90" rx="90" ry="34"/></g>
+      <g stroke="#3b2a1e" stroke-width="7" fill="none" stroke-linecap="round" opacity=".75">
+        <path d="M200 320 Q240 180 420 110" marker-end="url(#arrK)"/>
+        <path d="M700 120 Q760 200 750 250" marker-end="url(#arrK)"/>
+        <path d="M600 320 Q400 360 240 350" marker-end="url(#arrK)"/>
+      </g>
+      <text x="180" y="160" font-size="24" font-weight="800" fill="#3b2a1e">up (evaporation)</text>
+      <text x="770" y="180" font-size="24" font-weight="800" fill="#3b2a1e">down (rain)</text>
+      <text x="380" y="400" font-size="24" font-weight="800" fill="#fbf5ea">rivers run back to the sea</text>
+    </svg>
+    <!-- beat 5: reservoirs -->
+    <svg class="beatart" id="ba5" viewBox="0 0 1000 420">
+      <path d="M0 250 Q250 220 500 255 T1000 245 L1000 420 L0 420Z" fill="#4f93ad"/>
+      <text x="380" y="340" font-size="30" font-weight="900" fill="#fbf5ea">THE OCEAN — most of Earth's water</text>
+      <g><ellipse cx="130" cy="180" rx="70" ry="22" fill="#5aa3bf"/><text x="90" y="140" font-size="22" font-weight="800" fill="#3b2a1e">lakes</text></g>
+      <g><path d="M300 130 Q340 160 320 200" stroke="#5aa3bf" stroke-width="14" fill="none" stroke-linecap="round"/><text x="280" y="110" font-size="22" font-weight="800" fill="#3b2a1e">rivers</text></g>
+      <g><rect x="450" y="150" width="110" height="40" rx="12" fill="#9fc7d6"/><text x="440" y="130" font-size="22" font-weight="800" fill="#3b2a1e">underground</text></g>
+      <g><path d="M700 190 L760 120 L820 190 Z" fill="#eef4f7" stroke="#c8d8e0" stroke-width="3"/><text x="700" y="100" font-size="22" font-weight="800" fill="#3b2a1e">ice &amp; snow</text></g>
+    </svg>
+    <div class="stamp" id="stampCyc">SAME WATER, ROUND AND ROUND</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Label the cycle <button class="say" id="sayPrac" data-voice="label_intro">🔊</button></h2>
+  <p class="lead" id="pLead"></p>
+  <div class="pracvis" id="pracvis">
+    <svg id="cyc" viewBox="0 0 640 260" width="640" aria-label="water cycle diagram">
+      <circle cx="70" cy="46" r="26" fill="#e0a93b"/>
+      <path d="M0 210 Q160 190 320 214 T640 206 L640 260 L0 260Z" fill="#4f93ad"/>
+      <path d="M430 120 L520 210 L340 210 Z" fill="#8a8276"/>
+      <g fill="#dfe9ee" stroke="#b8ccd6" stroke-width="3"><ellipse cx="400" cy="60" rx="70" ry="26"/></g>
+      <path id="p_evap" d="M140 200 Q170 120 300 70" stroke="#3b2a1e" stroke-width="5" fill="none" marker-end="url(#arrK)" opacity=".7"/>
+      <path id="p_prec" d="M440 90 Q470 130 460 160" stroke="#3b2a1e" stroke-width="5" fill="none" marker-end="url(#arrK)" opacity=".7"/>
+      <path id="p_flow" d="M420 214 Q300 236 160 226" stroke="#3b2a1e" stroke-width="5" fill="none" marker-end="url(#arrK)" opacity=".7"/>
+      <circle class="glow" id="g_evap" cx="200" cy="130" r="26" fill="none" stroke="#e0a93b" stroke-width="8"/>
+      <circle class="glow" id="g_cond" cx="400" cy="60" r="26" fill="none" stroke="#e0a93b" stroke-width="8"/>
+      <circle class="glow" id="g_prec" cx="455" cy="128" r="26" fill="none" stroke="#e0a93b" stroke-width="8"/>
+      <text class="lab" id="lab_evap" x="90" y="110" font-size="21" font-weight="900" fill="#2f6a3e">EVAPORATION ↑</text>
+      <text class="lab" id="lab_cond" x="330" y="24" font-size="21" font-weight="900" fill="#2f6a3e">CONDENSATION</text>
+      <text class="lab" id="lab_prec" x="480" y="140" font-size="21" font-weight="900" fill="#2f6a3e">PRECIPITATION ↓</text>
+    </svg>
+  </div>
+  <div class="deck">
+    <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+    <div class="tapbtns" id="tapbtns"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Follow the drop again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arrK" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#3b2a1e"/></marker>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.watercycle.01',version:1,quiz:'quiz.science.35.watercycle.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.03; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), stampCyc=document.getElementById('stampCyc');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  const BEATS=[
+    {art:'ba1',media:'teach_evap',id:'t_evap',cap:'The sun heats the sea. Our drop rises as invisible gas — EVAPORATION (liquid → gas).',
+     say:'Meet one little water drop in the sea. The sun heats it and heats it — until the drop rises into the air as an invisible gas. That is evaporation: liquid water turning into gas.'},
+    {art:'ba2',media:'teach_cond',id:'t_cond',cap:'High up it is cold. The gas turns back into tiny droplets — CONDENSATION (gas → liquid). A cloud is billions of droplets!',
+     say:'High in the sky it is cold. The cold turns the gas back into tiny liquid droplets. That is condensation. A cloud is billions of those droplets floating together — a cloud is water, not smoke, and not cotton.'},
+    {art:'ba3',media:'teach_precip',id:'t_precip',cap:'Droplets bunch together, grow heavy, and FALL — PRECIPITATION: rain, or snow when it is freezing.',
+     say:'The droplets bump and bunch together. They grow bigger and heavier — until they fall. That is precipitation: rain, or snow when the air is freezing cold.'},
+    {art:'ba4',media:'teach_circle',id:'t_circle',cap:'Rain lands on the mountain and flows DOWNHILL — river to sea. A circle with no end, and the SUN is its engine.',
+     say:'Our drop lands high on a mountain and flows downhill — into a stream, into a river, back to the sea. Up, cloud, down, back. A circle with no end — and the sun is its engine.'},
+    {art:'ba5',media:'teach_res',id:'t_res',cap:'Where water waits: MOST of Earth’s water is the ocean. Lakes, rivers, underground water and ice hold the rest.',
+     say:'Where does water wait between trips? Most of Earth’s water is in the ocean. The rest waits in lakes, rivers, under the ground, and frozen as ice and snow. And it is always the same water, going round and round — your drop may once have been drunk by a dinosaur!'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.say).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+    stampCyc.classList.remove('show'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    BEATS.forEach((b,i)=>{
+      later(()=>{
+        document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+        document.getElementById(b.art).classList.add('on');
+        cap.textContent=b.cap; say(b.say,b.id); showBeat(b.media);
+        if(i===BEATS.length-1){ later(()=>{ stampCyc.classList.add('show'); document.getElementById('teachNext').disabled=false; },2400); }
+      }, i*8600+100);
+    });
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (three phases) ---------- */
+  const PROC=['Evaporation','Condensation','Precipitation'];
+  const LABELS=[
+    {n:'The glowing arrow rises from the sea into the sky. Which label goes here?',p:'⤴️',k:'card_diagram',a:0,w:'lab_evap',glow:'g_evap',vis:'lab_evap',mis:'procmix',why:'Going UP as invisible gas — evaporation.'},
+    {n:'The glow is where tiny droplets gather into a cloud. Which label goes here?',p:'☁️',k:'card_diagram',a:1,w:'lab_cond',glow:'g_cond',vis:'lab_cond',mis:'procmix',why:'Gas cooling into cloud droplets — condensation.'},
+    {n:'The glowing arrow falls from the cloud to the mountain. Which label goes here?',p:'🌧️',k:'card_diagram',a:2,w:'lab_prec',glow:'g_prec',vis:'lab_prec',mis:'procmix',why:'Heavy droplets falling — precipitation.'}
+  ];
+  const NEXT=[
+    {n:'The sun heats our drop in the sea. What happens next?',p:'☀️',k:'card_sea',a:0,w:'nx1',opts:['It rises into the air as invisible gas','It sinks to the sea floor','It is destroyed by the heat'],mis:'vanish',why:'Warmth lifts it up as gas — evaporation. Water is never destroyed.'},
+    {n:'Our drop is high up where the air is cold. Next?',p:'☁️',k:'card_cloudform',a:1,w:'nx2',opts:['It falls straight back before any cloud forms','It joins tiny droplets and becomes part of a cloud','It turns into smoke'],mis:'cloudsmoke',why:'Cold turns the gas into droplets — the drop joins a cloud. Clouds are water, not smoke.'},
+    {n:'The cloud droplets bunch up big and heavy. Next?',p:'🌧️',k:'card_rain',a:1,w:'nx3',opts:['They float forever','They fall as rain or snow','They evaporate again right away'],mis:'order',why:'Heavy droplets fall — precipitation.'},
+    {n:'Rain lands high on a mountain. Next?',p:'⛰️',k:'card_mountain',a:0,w:'nx4',opts:['It flows downhill in rivers back to the sea','It flows uphill to the mountain top','It stays on the mountain forever'],mis:'order',why:'Water always finds the low path — downhill, river, sea. The circle closes!'}
+  ];
+  const NAME=[
+    {n:'Dew drops sit on the morning grass. Which process put them there?',p:'🌿',k:'card_dew',a:1,w:'sc_dew',mis:'procmix',why:'Night cold turned water gas in the air into drops — condensation.'},
+    {n:'The puddle by the gate is gone by noon. Which process?',p:'🕛',k:'card_puddle',a:0,w:'sc_puddle',mis:'vanish',why:'The sun turned it into invisible gas — evaporation. It is not destroyed!'},
+    {n:'Snow falls on the hills all night. Which process?',p:'❄️',k:'card_snow',a:2,w:'sc_snow',mis:'procmix',why:'Falling snow is precipitation — frozen instead of liquid.'},
+    {n:'The bathroom mirror fogs up during a warm shower. Which process?',p:'🪞',k:'card_mirror',a:1,w:'sc_mirror',mis:'procmix',why:'Water gas met the cool mirror and became droplets — condensation.'},
+    {n:'A wet towel on the line is dry by evening. Which process?',p:'🧺',k:'card_towel',a:0,w:'sc_towel',mis:'vanish',why:'The water rose into the air as gas — evaporation.'},
+    {n:'Rain patters on the roof. Which process?',p:'🌧️',k:'card_roof',a:2,w:'sc_roof',mis:'procmix',why:'Falling rain is precipitation.'}
+  ];
+  const PHASES=[
+    {title:'Label the cycle',voice:'label_intro',lead:'Put the three process names on the diagram. Watch the glow.',
+     sayIntro:'Put the three process names on the diagram. Look where the glow is, then tap the right label.',
+     btns:PROC,items:LABELS,vis:true,retry:true,
+     doneVoice:'label_done',doneSay:'The cycle is labeled! Now ride along with the drop.'},
+    {title:'What happens next?',voice:'next_intro',lead:'Ride with the drop — tap what happens next.',
+     sayIntro:'Ride with the drop! At each stop, tap what happens next.',
+     btns:null,items:NEXT,vis:true,retry:true,
+     doneVoice:'next_done',doneSay:'Round the whole circle — well ridden! One last job: name the process.'},
+    {title:'Name the process',voice:'name_intro',lead:'Real-life clues: which process is at work?',
+     sayIntro:'Real life clues! For each one, tap the process at work: evaporation, condensation, or precipitation.',
+     btns:PROC,items:NAME,vis:false,retry:false,
+     doneVoice:'name_done',doneSay:'You can spot the water cycle everywhere! Now show what you know.'}
+  ];
+  let phase=0,queue=[],done=0,tries=0,misses={},pass1correct=0,seen=0,busy=false;
+  const item=document.getElementById('item'),fb=document.getElementById('fb'),tap=document.getElementById('tapbtns');
+  function startPractice(){ phase=0; tries=0;misses={};pass1correct=0;
+    document.querySelectorAll('#cyc .lab').forEach(l=>l.classList.remove('show'));
+    document.querySelectorAll('#cyc .glow').forEach(g=>g.classList.remove('on'));
+    startPhase(); }
+  function setButtons(list){ tap.innerHTML=''; list.forEach((t,i)=>{ const b=document.createElement('button'); b.className='btn ghost'; b.textContent=t; b.onclick=()=>answer(i); tap.appendChild(b); }); }
+  function startPhase(){
+    const P=PHASES[phase];
+    queue=P.items.slice(); done=0; seen=0; busy=false;
+    document.getElementById('pTitle').childNodes[0].textContent=P.title+' ';
+    document.getElementById('sayPrac').dataset.voice=P.voice;
+    document.getElementById('sayPrac').onclick=()=>say(P.sayIntro,P.voice);
+    document.getElementById('pLead').innerHTML=P.lead;
+    document.getElementById('pracvis').style.display=P.vis?'':'none';
+    if(P.btns) setButtons(P.btns);
+    fb.textContent=''; say(P.sayIntro,P.voice); showItem();
+  }
+  function showItem(){
+    const P=PHASES[phase];
+    document.querySelectorAll('#cyc .glow').forEach(g=>g.classList.remove('on'));
+    if(!queue.length){
+      if(phase<PHASES.length-1){ say(P.doneSay,P.doneVoice); setTimeout(()=>{phase++; startPhase();},1600); return; }
+      item.style.visibility='hidden'; tap.style.visibility='hidden';
+      document.getElementById('counter').textContent='All done!';
+      document.getElementById('pracNext').disabled=false; say(P.doneSay,P.doneVoice); return;
+    }
+    item.style.visibility='visible'; tap.style.visibility='visible'; busy=false;
+    const it=queue[0];
+    if(it.opts) setButtons(it.opts);
+    if(it.glow){ const g=document.getElementById(it.glow); if(g) g.classList.add('on'); }
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p;
+    document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${P.items.length}`;
+    say(it.n);
+  }
+  function answer(i){
+    const P=PHASES[phase];
+    if(busy||!queue.length||item.style.visibility==='hidden') return;
+    busy=true;
+    const it=queue.shift(); tries++; seen++;
+    const ok=i===it.a;
+    if(ok){ done++; if(seen<=P.items.length) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+(it.w||it.k));
+      if(it.vis){ const g=document.getElementById(it.vis); if(g) g.classList.add('show'); }
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint = it.mis==='procmix' ? 'Say the direction. UP as gas = evaporation. Gas becoming droplets = condensation. Falling DOWN = precipitation.'
+        : it.mis==='vanish' ? 'Water is never destroyed — it only changes form or place. Where could it have gone?'
+        : it.mis==='cloudsmoke' ? 'A cloud is not smoke or cotton — it is billions of tiny water droplets.'
+        : it.mis==='order' ? 'Follow the circle: up with the sun, into a cloud, down as rain, downhill to the sea.'
+        : 'Follow the drop around the circle.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+(it.mis||'other'));
+      if(P.retry) queue.unshift(it); else queue.push(it);
+    }
+    setTimeout(showItem, ok?1500:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🕛',k:'card_puddle',q:'The morning puddle is gone by noon. Where did the water go?',
+     o:['It was destroyed — gone forever','It evaporated — rose into the air as an invisible gas','It turned into dust'],a:1},
+     // 0 = water-is-destroyed; 2 = vanish variant
+    {id:2,pic:'☁️',k:'card_cloudform',q:'What are clouds made of?',
+     o:['Smoke from fires','Soft cotton','Billions of tiny water droplets'],a:2},
+     // 0 = clouds-are-smoke; 1 = clouds-are-cotton
+    {id:3,pic:'☀️',k:'card_engine',q:'What is the engine that keeps the water cycle turning?',
+     o:['The sun’s heat','The clouds make new water themselves','The rivers push the water up'],a:0},
+     // 1 = rain-is-new-water; 2 = no-engine/uphill confusion
+    {id:4,pic:'🌫️',k:'card_dew',q:'High in the cold sky, water gas turns into tiny cloud droplets. What is that process called?',
+     o:['Evaporation','Condensation','Precipitation'],a:1},
+     // 0 & 2 = process mix-ups
+    {id:5,pic:'🦕',k:'card_dino',q:'Is the rain that falls today brand-new water?',
+     o:['Yes — clouds make new water every day','No — it is the same water, recycled forever. A dinosaur may have drunk it!'],a:1}
+     // 0 = rain-is-new-water
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is: "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can follow a drop around the whole world! 💧' : 'Good try! Let’s follow the drop once more.';
+    document.getElementById('guessTxt').textContent = guess==='air' ? 'At the start you guessed the puddle went up into the air — you were right! That is evaporation.'
+      : guess==='vanish' ? 'At the start you guessed the puddle vanished forever. Now you know: water is never destroyed — it evaporated into the air!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Follow the drop again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,answer,peek:()=>queue[0]?{n:queue[0].n,a:queue[0].a,opts:(queue[0].opts||PHASES[phase].btns).length,phase}:null,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go read about the water cycle. 💧'; say('Lesson done! Now go read about the water cycle in the research app, and draw the circle in your notebook.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

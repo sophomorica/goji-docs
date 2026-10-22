@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sun and shadows — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(36vw,300px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(36vw,300px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 66%,#a9c98a 66% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg{position:absolute}
+#tSun{left:42%;top:5%;width:15%;transition:left 1.6s ease,top 1.6s ease}
+#tSun.sunL{left:4%;top:16%} #tSun.sunR{left:81%;top:16%}
+#tSun .ray{transform-origin:60px 60px;animation:glowray 2.2s ease-in-out infinite alternate}
+@keyframes glowray{from{opacity:.45}to{opacity:1}}
+#tTree{left:1%;bottom:6%;width:24%;opacity:0;transition:opacity .8s}
+#tTree.show{opacity:1}
+#tRockShade{left:9%;bottom:7%;width:9%;opacity:0;transition:opacity .8s}
+#tRockShade.show{opacity:1}
+#tRockSun{left:66%;bottom:7%;width:10%;opacity:0;transition:opacity .8s}
+#tRockSun.show{opacity:1}
+#tRockSun.warm .body{fill:#c98a5a}
+#tRockSun .body{transition:fill 1.4s}
+#tPond{right:0;bottom:0;width:26%;opacity:0;transition:opacity .8s}
+#tPond.show{opacity:1}
+#tPond .shim{animation:shim 1.6s linear infinite alternate}
+@keyframes shim{from{opacity:.3}to{opacity:.9}}
+#tHeat{left:30%;bottom:30%;width:40%;opacity:0;transition:opacity 1s}
+#tHeat.show{opacity:.8}
+#tHeat path{animation:shim 1.4s linear infinite alternate}
+#tDino{left:44%;bottom:8%;width:13%;opacity:0;transition:opacity .8s}
+#tDino.show{opacity:1}
+#tShad{bottom:5%;width:16%;opacity:0;transition:opacity 1s,left 1.4s ease;left:57%}
+#tShad.show{opacity:.85}
+#tShad.flipL{left:29%}
+#tBeam{left:0;top:0;width:100%;height:100%;opacity:0;transition:opacity .8s}
+#tBeam.show{opacity:.5}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice lab ---- */
+.lab{position:relative;flex:1;min-height:340px}
+.lab svg{width:100%;height:auto;max-height:52vh;display:block;margin:0 auto;border-radius:var(--radius);box-shadow:var(--shadow)}
+.zone{fill:rgba(255,255,255,.45);stroke:var(--sky2);stroke-width:5;stroke-dasharray:14 10;cursor:pointer;transition:.2s}
+.zone.hot{stroke:var(--gold);fill:rgba(255,255,255,.7)}
+.zone.good{stroke:var(--green);fill:rgba(63,125,78,.25);stroke-dasharray:none}
+.zone.bad{stroke:var(--red);stroke-dasharray:none}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Sun and shadows <button class="say" data-say="Two rocks sat outside all morning. One in the sun. One in the shade. Which rock feels warmer? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Two rocks sat outside all morning. <b>Which rock feels warmer?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="sun">
+      <img data-img="hook_rock_sun" alt="" hidden>
+      <svg viewBox="0 0 200 130" aria-label="rock in the sun"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><rect y="92" width="200" height="38" fill="#a9c98a"/><circle cx="46" cy="36" r="20" fill="#e0a93b"/><g stroke="#e0a93b" stroke-width="5" stroke-linecap="round"><line x1="46" y1="6" x2="46" y2="16"/><line x1="46" y1="56" x2="46" y2="66"/><line x1="16" y1="36" x2="26" y2="36"/><line x1="66" y1="36" x2="76" y2="36"/><line x1="25" y1="15" x2="32" y2="22"/><line x1="60" y1="50" x2="67" y2="57"/><line x1="67" y1="15" x2="60" y2="22"/><line x1="32" y1="50" x2="25" y2="57"/></g><path d="M110 100 q8 -30 38 -28 q30 2 30 28z" fill="#b08a68"/></svg>
+      <span>Rock in the sun</span>
+    </div>
+    <div class="pick" data-guess="shade">
+      <img data-img="hook_rock_shade" alt="" hidden>
+      <svg viewBox="0 0 200 130" aria-label="rock in the shade"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><rect y="92" width="200" height="38" fill="#a9c98a"/><rect x="52" y="52" width="12" height="44" fill="#7a5a3a"/><circle cx="58" cy="40" r="30" fill="#4f7d46"/><ellipse cx="90" cy="106" rx="60" ry="12" fill="#5c7a52" opacity=".55"/><path d="M78 108 q8 -26 34 -24 q26 2 26 24z" fill="#8d8d8d"/></svg>
+      <span>Rock in the shade</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The sun's light and warmth <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="tBeam" viewBox="0 0 1000 400" preserveAspectRatio="none"><polygon id="beamPoly" points="120,80 480,330 560,330" fill="#f4d98a"/></svg>
+    <svg id="tPond" viewBox="0 0 260 90"><ellipse cx="130" cy="60" rx="120" ry="28" fill="#5aa3bf"/><path class="shim" d="M40 55 q20 -8 40 0 q20 8 40 0" stroke="#fff" stroke-width="4" fill="none" opacity=".7"/><path class="shim" d="M120 70 q20 -8 40 0 q20 8 40 0" stroke="#fff" stroke-width="4" fill="none" opacity=".5"/></svg>
+    <svg id="tHeat" viewBox="0 0 300 80"><path d="M30 70 q10 -20 0 -40 q-8 -16 4 -26" stroke="#e0a93b" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M120 74 q10 -20 0 -40 q-8 -16 4 -26" stroke="#e0a93b" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M210 70 q10 -20 0 -40 q-8 -16 4 -26" stroke="#e0a93b" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/></svg>
+    <svg id="tTree" viewBox="0 0 220 190"><rect x="96" y="94" width="20" height="80" fill="#7a5a3a"/><circle cx="106" cy="66" r="52" fill="#4f7d46"/><circle cx="66" cy="86" r="34" fill="#5c8a52"/><circle cx="148" cy="86" r="34" fill="#5c8a52"/><ellipse cx="118" cy="180" rx="95" ry="14" fill="#42604a" opacity=".5"/></svg>
+    <svg id="tRockShade" viewBox="0 0 100 60"><path d="M12 56 q8 -34 40 -32 q34 2 36 32z" fill="#8d8d8d"/><path d="M30 34 q12 -8 26 0" stroke="#777" stroke-width="3" fill="none"/></svg>
+    <svg id="tRockSun" viewBox="0 0 100 60"><path class="body" d="M12 56 q8 -34 40 -32 q34 2 36 32z" fill="#b08a68"/><path d="M30 34 q12 -8 26 0" stroke="#96755a" stroke-width="3" fill="none"/></svg>
+    <svg id="tDino" viewBox="0 0 200 160"><use href="#dinoshape"/></svg>
+    <svg id="tShad" viewBox="0 0 200 60"><use href="#shadowshape"/></svg>
+    <svg id="tSun" viewBox="0 0 120 120"><g class="ray" stroke="#e0a93b" stroke-width="7" stroke-linecap="round"><line x1="60" y1="4" x2="60" y2="22"/><line x1="60" y1="98" x2="60" y2="116"/><line x1="4" y1="60" x2="22" y2="60"/><line x1="98" y1="60" x2="116" y2="60"/><line x1="20" y1="20" x2="33" y2="33"/><line x1="87" y1="87" x2="100" y2="100"/><line x1="100" y1="20" x2="87" y2="33"/><line x1="33" y1="87" x2="20" y2="100"/></g><circle cx="60" cy="60" r="34" fill="#e0a93b"/><circle cx="60" cy="60" r="34" fill="none" stroke="#d1962c" stroke-width="4"/></svg>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">☀️</span>Sun warms</div>
+    <div class="badge" id="b1"><span class="em">🌳</span>Shade is cooler</div>
+    <div class="badge" id="b2"><span class="em">⬛</span>Blocked light = shadow</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Shadow lab <button class="say" data-say="Look where the sun is. Then tap the spot where the shadow will fall. Sometimes I will ask which spot is cooler or warmer." data-voice="prac_intro">🔊</button></h2>
+  <p class="lead" id="pPrompt">Look where the sun is. <b>Tap where the shadow will fall.</b></p>
+  <div class="lab">
+    <svg id="pscene" viewBox="0 0 1000 430">
+      <rect width="1000" height="310" fill="#cfe6ee"/>
+      <rect y="310" width="1000" height="120" fill="#a9c98a"/>
+      <g id="pgSun"><g stroke="#e0a93b" stroke-width="8" stroke-linecap="round"><line x1="0" y1="-72" x2="0" y2="-52"/><line x1="0" y1="52" x2="0" y2="72"/><line x1="-72" y1="0" x2="-52" y2="0"/><line x1="52" y1="0" x2="72" y2="0"/><line x1="-48" y1="-48" x2="-36" y2="-36"/><line x1="36" y1="36" x2="48" y2="48"/><line x1="48" y1="-48" x2="36" y2="-36"/><line x1="-36" y1="36" x2="-48" y2="48"/></g><circle r="42" fill="#e0a93b" stroke="#d1962c" stroke-width="5"/></g>
+      <g id="pgTree"><rect x="-14" y="150" width="28" height="110" fill="#7a5a3a"/><circle cy="110" r="78" fill="#4f7d46"/><circle cx="-58" cy="140" r="48" fill="#5c8a52"/><circle cx="58" cy="140" r="48" fill="#5c8a52"/></g>
+      <ellipse id="pgShade" rx="150" ry="52" fill="#42604a" opacity=".5"/>
+      <g id="pgRockL"><path d="M-45 22 q10 -40 45 -38 q38 2 45 38z" fill="#b08a68"/></g>
+      <g id="pgRockR"><path d="M-45 22 q10 -40 45 -38 q38 2 45 38z" fill="#b08a68"/></g>
+      <g id="pgDino" transform="translate(500,318)"><g transform="translate(-70,-115) scale(.7)"><use href="#dinoshape"/></g></g>
+      <g id="pgShadow" opacity="0"><g transform="translate(-80,-28) scale(.8)"><use href="#shadowshape"/></g></g>
+      <ellipse id="zoneL" class="zone" cx="255" cy="358" rx="150" ry="52"/>
+      <ellipse id="zoneR" class="zone" cx="745" cy="358" rx="150" ry="52"/>
+    </svg>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="counter" id="counter"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the sun again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- a toy dinosaur: painted wooden toy on a wheeled base — clearly a toy, no face -->
+    <g id="dinoshape">
+      <rect x="20" y="128" width="160" height="14" rx="7" fill="#b5382f"/>
+      <circle cx="48" cy="146" r="12" fill="#8e2a23"/><circle cx="152" cy="146" r="12" fill="#8e2a23"/>
+      <circle cx="48" cy="146" r="4" fill="#f3e9d6"/><circle cx="152" cy="146" r="4" fill="#f3e9d6"/>
+      <path d="M40 128 q-4 -34 16 -52 q18 -16 44 -14 q30 2 44 22 q10 14 10 28 l0 16z" fill="#5c8a52"/>
+      <path d="M140 96 q26 -6 34 -30 q4 -12 -2 -22 q-10 6 -14 16 q-6 -10 -16 -12 q-2 14 -2 24z" fill="#5c8a52"/>
+      <rect x="58" y="112" width="16" height="18" rx="6" fill="#4f7d46"/>
+      <rect x="112" y="112" width="16" height="18" rx="6" fill="#4f7d46"/>
+      <circle cx="70" cy="90" r="7" fill="#f3e9d6"/><circle cx="100" cy="82" r="7" fill="#f3e9d6"/><circle cx="126" cy="94" r="7" fill="#f3e9d6"/>
+      <path d="M70 62 l8 -14 l8 14z" fill="#42604a"/><path d="M92 56 l8 -14 l8 14z" fill="#42604a"/><path d="M114 62 l8 -14 l8 14z" fill="#42604a"/>
+    </g>
+    <!-- the toy's shadow: flat dark silhouette on the ground -->
+    <g id="shadowshape">
+      <ellipse cx="100" cy="40" rx="95" ry="18" fill="#3b3b3b" opacity=".8"/>
+      <path d="M60 40 q-2 -18 12 -26 q16 -10 34 -8 q22 2 32 14 q6 8 6 20z" fill="#3b3b3b" opacity=".8"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.sun.01',version:1,quiz:'quiz.science.k2.sun.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_warm'],['b1','badge_shade'],['b2','badge_shadow']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startLab(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const el=id=>document.getElementById(id);
+  const tSun=el('tSun'),tTree=el('tTree'),tRockShade=el('tRockShade'),tRockSun=el('tRockSun'),
+        tPond=el('tPond'),tHeat=el('tHeat'),tDino=el('tDino'),tShad=el('tShad'),tBeam=el('tBeam'),
+        beamPoly=el('beamPoly'),cap=el('cap');
+  const badges=[0,1,2].map(i=>el('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    tSun.className='';
+    [tTree,tRockShade,tRockSun,tPond,tHeat,tDino,tBeam].forEach(x=>x.classList.remove('show'));
+    tRockSun.classList.remove('warm'); tShad.className='';
+    badges.forEach(b=>b.className='badge'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    el('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "The sun warms the land, the air, and the water.",
+    "Touch the rocks! The sunny rock is warm. The shady rock is cool — the tree blocks the sun.",
+    "Watch the toy dinosaur. It blocks the light — a shadow appears on the other side!",
+    "The sun moved. The shadow moved too — always on the side away from the sun."
+  ];
+  el('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: sun warms land, air, water
+    cap.textContent='The sun WARMS the land, the air, and the water.'; say(teachScript[0],'t_warm'); showBeat('teach_warm');
+    tPond.classList.add('show'); tHeat.classList.add('show');
+    later(()=>{ badges[0].classList.add('on'); },2400);
+    // beat 2: sunny rock vs shady rock
+    later(()=>{ cap.textContent='Sunny rock: WARM. Shady rock: COOL.'; say(teachScript[1],'t_rocks'); showBeat('teach_rocks');
+      tHeat.classList.remove('show'); tTree.classList.add('show'); tRockShade.classList.add('show'); tRockSun.classList.add('show');
+      tRockSun.classList.add('warm'); },4200);
+    later(()=>{ badges[1].classList.add('on'); },7600);
+    // beat 3: toy blocks light -> shadow (sun on the left)
+    later(()=>{ cap.textContent='The toy BLOCKS the light. A shadow!'; say(teachScript[2],'t_block'); showBeat('teach_block');
+      tTree.classList.remove('show'); tRockShade.classList.remove('show'); tRockSun.classList.remove('show'); tPond.classList.remove('show');
+      tSun.classList.add('sunL'); tDino.classList.add('show'); },9200);
+    later(()=>{ beamPoly.setAttribute('points','120,110 470,330 560,330'); tBeam.classList.add('show'); tShad.classList.add('show'); badges[2].classList.add('on'); },11400);
+    // beat 4: sun moves right -> shadow flips left
+    later(()=>{ cap.textContent='The sun moved — the shadow jumps to the OTHER side, away from the sun.'; say(teachScript[3],'t_flip'); showBeat('teach_flip');
+      tSun.classList.remove('sunL'); tSun.classList.add('sunR'); tBeam.classList.remove('show'); tShad.classList.add('flipL'); },13600);
+    later(()=>{ cap.textContent='A shadow is always AWAY from the sun.'; el('teachNext').disabled=false; },17200);
+  }
+  el('replay').onclick=playTeach;
+  el('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (shadow lab) ---------- */
+  const PRAC=[
+    {t:'sh',sun:[120,95],a:'R'},
+    {t:'sh',sun:[880,95],a:'L'},
+    {t:'temp',tree:'L',q:'cool',a:'L'},
+    {t:'sh',sun:[280,60],a:'R'},
+    {t:'temp',tree:'R',q:'warm',a:'L'},
+    {t:'sh',sun:[720,60],a:'L'},
+    {t:'sh',sun:[55,160],a:'R'},
+    {t:'temp',tree:'R',q:'cool',a:'R'},
+    {t:'sh',sun:[945,160],a:'L'}
+  ];
+  const NP=PRAC.length;
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,answering=false;
+  const fb=el('fb'), pPrompt=el('pPrompt');
+  const pgSun=el('pgSun'),pgTree=el('pgTree'),pgShadeEl=el('pgShade'),pgRockL=el('pgRockL'),pgRockR=el('pgRockR'),
+        pgDino=el('pgDino'),pgShadow=el('pgShadow'),zoneL=el('zoneL'),zoneR=el('zoneR');
+  function startLab(){ queue=PRAC.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; fb.textContent=''; el('pracNext').disabled=true; showPrac(); }
+  function showPrac(){
+    answering=false;
+    zoneL.setAttribute('class','zone'); zoneR.setAttribute('class','zone');
+    pgShadow.setAttribute('opacity','0');
+    if(!queue.length){
+      el('counter').textContent='Lab complete! ⭐'; pPrompt.innerHTML='<b>Great looking!</b> You found every shadow.';
+      el('pracNext').disabled=false; say('Lab complete! Now show what you know.','prac_done');
+      pgSun.setAttribute('transform','translate(500,70)'); pgTree.setAttribute('display','none'); pgShadeEl.setAttribute('display','none');
+      pgRockL.setAttribute('display','none'); pgRockR.setAttribute('display','none'); return;
+    }
+    const it=queue[0];
+    el('counter').textContent=(done)+' of '+NP+' done';
+    if(it.t==='sh'){
+      pgSun.setAttribute('display',''); pgSun.setAttribute('transform','translate('+it.sun[0]+','+it.sun[1]+')');
+      pgTree.setAttribute('display','none'); pgShadeEl.setAttribute('display','none');
+      pgRockL.setAttribute('display','none'); pgRockR.setAttribute('display','none');
+      pgDino.setAttribute('display','');
+      pPrompt.innerHTML='Look where the sun is. <b>Tap where the toy\'s shadow will fall.</b>';
+      say('Look where the sun is. Tap where the shadow will fall.', it.sun[0]<500?'pr_sh_l':'pr_sh_r');
+    } else {
+      const tx=it.tree==='L'?255:745;
+      pgSun.setAttribute('display',''); pgSun.setAttribute('transform','translate('+(it.tree==='L'?840:160)+',95)');
+      pgTree.setAttribute('display',''); pgTree.setAttribute('transform','translate('+tx+',60)');
+      pgShadeEl.setAttribute('display',''); pgShadeEl.setAttribute('cx',tx); pgShadeEl.setAttribute('cy',358);
+      pgRockL.setAttribute('display',''); pgRockL.setAttribute('transform','translate(255,352)');
+      pgRockR.setAttribute('display',''); pgRockR.setAttribute('transform','translate(745,352)');
+      pgDino.setAttribute('display','none');
+      if(it.q==='cool'){ pPrompt.innerHTML='One rock in the sun, one in the shade. <b>Tap the COOLER spot.</b>'; say('Tap the cooler spot.','pr_cool'); }
+      else { pPrompt.innerHTML='One rock in the sun, one in the shade. <b>Tap the WARMER spot.</b>'; say('Tap the warmer spot.','pr_warm'); }
+    }
+  }
+  function answerZone(side){
+    if(answering || !queue.length) return; answering=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>NP) pass1=false;
+    const ok=side===it.a;
+    const zone= side==='L'?zoneL:zoneR;
+    if(ok){
+      done++; if(pass1) pass1correct++;
+      zone.setAttribute('class','zone good');
+      if(it.t==='sh'){
+        pgShadow.setAttribute('transform','translate('+(side==='L'?255:745)+',358)'); pgShadow.setAttribute('opacity','1');
+        fb.className='fb good'; fb.textContent='✓ Yes! The shadow falls AWAY from the sun.'; say('Yes! The shadow falls away from the sun.','ok_sh');
+      } else if(it.q==='cool'){
+        fb.className='fb good'; fb.textContent='✓ Yes! The tree blocks the sun, so the shade is cooler.'; say('Yes! Shade is cooler. The tree blocks the sun.','ok_cool');
+      } else {
+        fb.className='fb good'; fb.textContent='✓ Yes! The sun shines there, so it is warmer.'; say('Yes! The sun warms that spot.','ok_warm');
+      }
+    } else {
+      zone.setAttribute('class','zone bad');
+      if(it.t==='sh'){ misses.sunside=(misses.sunside||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. The shadow goes on the OTHER side — away from the sun.'; say('Not quite. The shadow is on the other side, away from the sun. The toy blocks the light.','fb_sunside');
+      } else { misses.sametemp=(misses.sametemp||0)+1;
+        if(it.q==='cool'){ fb.className='fb bad'; fb.textContent='Not quite. The tree blocks the sun — the shade is the cooler spot.'; say('Not quite. The tree blocks the sun, so the shade is cooler.','fb_shadecool'); }
+        else { fb.className='fb bad'; fb.textContent='Not quite. The sun shines on the open spot — that one is warmer.'; say('Not quite. The sunny spot is warmer.','fb_sunwarm'); }
+      }
+      queue.push(it);
+    }
+    setTimeout(showPrac, ok?1500:1900);
+  }
+  function zoneTap(side){ return e=>{ e.preventDefault(); answerZone(side); }; }
+  zoneL.addEventListener('pointerdown',zoneTap('L'));
+  zoneR.addEventListener('pointerdown',zoneTap('R'));
+  el('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🦖',k:'card_dino',q:'What makes the toy dinosaur\'s shadow?',o:['The toy BLOCKS the sun\'s light','Dark stuff leaks out of the toy'],a:0},
+    {id:2,pic:'☀️',k:'card_sun_left',q:'The sun is on the LEFT. Where is the toy\'s shadow?',o:['On the RIGHT — away from the sun','On the LEFT — next to the sun'],a:0},
+    {id:3,pic:'🌳',k:'card_shade_tree',q:'Which spot feels COOLER?',o:['The shade under the tree','The sunny open spot','They feel the same'],a:0},
+    {id:4,pic:'🌍',k:'card_earth_warm',q:'What does the sun warm?',o:['The land, the air, AND the water','Only the land'],a:0},
+    {id:5,pic:'☀️',k:'card_sun_right',q:'The sun moves to the RIGHT. What does the shadow do?',o:['It moves to the LEFT — away from the sun','It stays next to the sun'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; el('quiz').style.display=''; el('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; el('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=el('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    el('qtext').textContent=q.q; el('qfb').textContent='';
+    el('qNext').disabled=true; el('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=el('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=el('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    el('qNext').disabled=false;
+  }
+  el('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    el('quiz').style.display='none'; el('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); el('ring').style.setProperty('--pct',pct+'%'); el('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    el('gateTxt').textContent= passed? 'You know where shadows fall! ☀️' : 'Good try! Let\'s watch the sun and the shadow once more.';
+    el('guessTxt').textContent = guess==='sun' ? 'At the start you guessed the SUNNY rock was warmer — you were right!' : guess==='shade' ? 'At the start you guessed the SHADY rock. Now you know: the sun warms things up!' : '';
+    say(el('gateTxt').textContent+' '+el('guessTxt').textContent, passed?'pass':'retry');
+    el('finish').style.display = passed? '' : 'none';
+    el('againTeach').textContent = passed? '↺ Watch the sun again' : '↺ Watch again, then try once more';
+  }
+  el('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  el('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    el('gateTxt').textContent='Lesson done! Now go trace a real shadow with chalk — morning AND afternoon. ☀️'; say('Lesson done! Now go trace a real shadow outside, in the morning and again in the afternoon.','done');
+    el('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

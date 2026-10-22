@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.sun.02",
+  "title": "The sun's day trip",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": ["obj.science.k2.sun.02"],
+  "va_sol": ["1.6"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off is the same-tree shadow check (morning/noon/evening) with a parent, extending the K.8 chalk tracing; journal entry closes it" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.sun.02", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.sun.02"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

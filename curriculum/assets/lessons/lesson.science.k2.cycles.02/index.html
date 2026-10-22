@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two life stories: frog and bean — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d; --blue:#3c6e9f;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:38px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 62%,#a9c98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.beatart{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:56px 12px 10px}
+.beatart.on{display:flex}
+.beatart svg{width:min(92%,660px);height:auto;max-height:100%}
+.scene.media .beatart{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+/* gentle beat motion */
+.swim{animation:swim 3s ease-in-out infinite alternate}
+@keyframes swim{from{transform:translateX(0)}to{transform:translateX(60px)}}
+.sway{animation:sway 3s ease-in-out infinite alternate;transform-origin:bottom center}
+@keyframes sway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+.hopup{animation:hopup 2.6s ease-in-out infinite}
+@keyframes hopup{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+.spin{animation:spin 14s linear infinite;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ---- practice: rings ---- */
+.ringwrap{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1}
+.ringbox{position:relative;width:min(560px,92vw);height:300px}
+.slot{position:absolute;transform:translate(-50%,-50%);width:118px;height:96px;border-radius:18px;border:5px dashed var(--sky2);background:rgba(255,255,255,.6);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--ink2);transition:.3s;text-align:center;line-height:1.05}
+.slot .spic{font-size:38px;line-height:1.1}
+.slot .spic svg{width:64px;height:auto}
+.slot .spic img{width:60px;height:60px;object-fit:cover;border-radius:10px}
+.slot.next{border-color:var(--gold);border-style:solid;background:#fff;transform:translate(-50%,-50%) scale(1.06)}
+.slot.filled{border-style:solid;border-color:var(--green);background:#fff;color:var(--ink)}
+.ringcenter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:30px;font-weight:900;color:var(--ink2);text-align:center;line-height:1.1}
+.ringcenter em{display:block;font-style:normal;font-size:40px}
+.tapbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:150px;font-size:22px;padding:12px 18px;min-height:76px}
+.tapbtns .btn .bp{display:block;font-size:34px;line-height:1.1}
+.tapbtns .btn .bp svg{width:56px;height:auto}
+.tapbtns .btn .bp img{width:52px;height:52px;object-fit:cover;border-radius:10px}
+.crossbox{display:none;flex-direction:column;align-items:center;gap:12px;flex:1;justify-content:center}
+.crossbox.on{display:flex}
+.item{width:min(460px,88vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;
+  font-size:27px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:70px;line-height:1.1;min-height:80px;display:flex;align-items:center;justify-content:center;gap:10px}
+.item .pic svg{width:min(180px,44vw);height:auto}
+.item .pic img{width:100%;max-width:170px;border-radius:14px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:25px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:8px 0;min-height:106px;display:flex;align-items:center;justify-content:center;gap:12px}
+.bigpic svg{width:min(240px,56vw);height:auto}
+.bigpic img{width:min(40vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:30px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px}
+  .ringbox{height:340px}
+  .slot{width:96px;height:84px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Two life stories <button class="say" data-say="This week's fable animal is the frog. A frog was once a tiny egg. What about the bean plant? Did it start small and change too? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The <b>frog</b> was once a tiny egg. What about the <b>bean plant</b> — did it start small and change too?</p>
+  <div class="choice2">
+    <div class="pick" data-guess="yes">
+      <img data-img="hook_seed" alt="" hidden><svg viewBox="0 0 220 130" aria-label="bean seed sprouting"><rect width="220" height="130" rx="16" fill="#f3e9d6"/><path d="M0 92 l220 0 l0 38 l-220 0z" fill="#8a6a44"/><ellipse cx="110" cy="100" rx="16" ry="11" fill="#c9a15f"/><path d="M110 92 q-2 -26 14 -36" stroke="#3f7d4e" stroke-width="6" fill="none"/><path d="M124 56 q14 -6 16 8 q-12 8 -16 -8z" fill="#3f7d4e"/></svg>
+      <span>Yes — it starts as a seed and changes</span>
+    </div>
+    <div class="pick" data-guess="no">
+      <img data-img="hook_sit" alt="" hidden><svg viewBox="0 0 220 130" aria-label="plant just sitting"><rect width="220" height="130" rx="16" fill="#f3e9d6"/><path d="M80 100 l60 0 l-8 24 l-44 0z" fill="#b5382f"/><path d="M110 100 l0 -44" stroke="#3f7d4e" stroke-width="6"/><path d="M110 66 q-16 -8 -14 -24 q18 2 14 24z" fill="#3f7d4e"/><path d="M110 78 q16 -8 14 -24 q-18 2 -14 24z" fill="#3f7d4e"/><text x="60" y="36" font-size="20" font-weight="800" fill="#6b5646">always the same?</text></svg>
+      <span>No — plants just sit there</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Life cycles go in order <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div class="beatart" id="a0"><svg viewBox="0 0 660 300">
+      <path d="M0 150 q160 -34 330 0 q170 34 330 0 l0 150 l-660 0 z" fill="#5aa3bf" opacity=".85"/>
+      <path d="M60 230 q0 -34 26 -34 q26 0 26 34" stroke="#3f7d4e" stroke-width="8" fill="none"/>
+      <g><circle cx="300" cy="210" r="17" fill="#dff0f5" stroke="#9fc7d6" stroke-width="3"/><circle cx="300" cy="210" r="6" fill="#3b2a1e"/><circle cx="338" cy="200" r="17" fill="#dff0f5" stroke="#9fc7d6" stroke-width="3"/><circle cx="338" cy="200" r="6" fill="#3b2a1e"/><circle cx="320" cy="232" r="17" fill="#dff0f5" stroke="#9fc7d6" stroke-width="3"/><circle cx="320" cy="232" r="6" fill="#3b2a1e"/></g>
+      <text x="390" y="216" font-size="26" font-weight="800" fill="#3b2a1e">frog eggs in the pond</text>
+    </svg></div>
+    <div class="beatart" id="a1"><svg viewBox="0 0 660 300">
+      <path d="M0 110 l660 0 l0 190 l-660 0 z" fill="#5aa3bf" opacity=".85"/>
+      <g class="swim"><use href="#tadshape" transform="translate(200,170) scale(1.6)"/></g>
+      <circle cx="180" cy="140" r="6" fill="#dff0f5"/><circle cx="164" cy="120" r="4" fill="#dff0f5"/>
+      <text x="330" y="90" font-size="26" font-weight="800" fill="#3b2a1e">a tadpole swims —</text>
+      <text x="330" y="122" font-size="24" font-weight="700" fill="#6b5646">it breathes under water</text>
+    </svg></div>
+    <div class="beatart" id="a2"><svg viewBox="0 0 660 300">
+      <path d="M0 200 q160 -30 330 0 q170 30 330 0 l0 100 l-660 0z" fill="#5aa3bf" opacity=".8"/>
+      <use href="#frogletshape" transform="translate(110,150)"/>
+      <text x="86" y="270" font-size="22" font-weight="800" fill="#3b2a1e">froglet: legs! tail shrinks</text>
+      <path d="M300 190 l70 0 m-16 -12 l16 12 l-16 12" stroke="#3b2a1e" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <g class="hopup"><use href="#frogshape" transform="translate(420,140)"/></g>
+      <text x="426" y="270" font-size="22" font-weight="800" fill="#3b2a1e">frog — breathes air,</text>
+      <text x="426" y="296" font-size="22" font-weight="800" fill="#3b2a1e">lays NEW eggs 🔁</text>
+    </svg></div>
+    <div class="beatart" id="a3"><svg viewBox="0 0 660 300">
+      <path d="M0 180 l660 0 l0 120 l-660 0z" fill="#8a6a44"/>
+      <ellipse cx="120" cy="220" rx="20" ry="13" fill="#c9a15f"/><path d="M120 220 q4 16 -6 30" stroke="#e9dfc8" stroke-width="4" fill="none"/>
+      <text x="86" y="280" font-size="22" font-weight="800" fill="#fbf5ea">seed wakes up</text>
+      <g class="sway" style="transform-origin:300px 180px"><path d="M300 180 q-2 -30 10 -48" stroke="#3f7d4e" stroke-width="6" fill="none"/><path d="M310 132 q14 -8 18 6 q-12 10 -18 -6z" fill="#3f7d4e"/><path d="M304 152 q-14 -6 -18 8 q12 8 18 -8z" fill="#3f7d4e"/></g>
+      <text x="256" y="280" font-size="22" font-weight="800" fill="#fbf5ea">sprout</text>
+      <g class="sway" style="transform-origin:480px 180px"><path d="M480 180 l0 -90" stroke="#3f7d4e" stroke-width="7"/><path d="M480 120 q-22 -10 -20 -32 q24 4 20 32z" fill="#3f7d4e"/><path d="M480 140 q22 -10 20 -32 q-24 4 -20 32z" fill="#3f7d4e"/><circle cx="480" cy="80" r="14" fill="#e0a93b"/><circle cx="480" cy="80" r="6" fill="#8a6a44"/></g>
+      <text x="430" y="280" font-size="22" font-weight="800" fill="#fbf5ea">plant → flower</text>
+    </svg></div>
+    <div class="beatart" id="a4"><svg viewBox="0 0 660 300">
+      <g class="spin" style="transform-origin:165px 150px"><circle cx="165" cy="150" r="92" fill="none" stroke="#9fc7d6" stroke-width="6" stroke-dasharray="10 12"/></g>
+      <g font-size="34"><text x="148" y="66">🥚</text><use href="#tadshape" transform="translate(238,140)"/><use href="#frogletshape" transform="translate(120,208) scale(.55)"/><use href="#frogshape" transform="translate(66,116) scale(.6)"/></g>
+      <text x="120" y="290" font-size="24" font-weight="800" fill="#3b2a1e">frog circle</text>
+      <g class="spin" style="transform-origin:495px 150px"><circle cx="495" cy="150" r="92" fill="none" stroke="#a9c98a" stroke-width="6" stroke-dasharray="10 12"/></g>
+      <g font-size="34"><text x="478" y="66">🫘</text><text x="572" y="130">🌱</text><text x="540" y="230">🪴</text><text x="428" y="230">🌼</text><text x="398" y="130">🫛</text></g>
+      <text x="446" y="290" font-size="24" font-weight="800" fill="#3b2a1e">bean circle</text>
+      <text x="282" y="150" font-size="30" font-weight="900" fill="#b5382f">BOTH</text>
+      <text x="270" y="182" font-size="22" font-weight="800" fill="#3b2a1e">in ORDER</text>
+    </svg></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🐸</span>Animal cycle</div>
+    <div class="badge" id="b1"><span class="em">🌱</span>Plant cycle</div>
+    <div class="badge" id="b2"><span class="em">🔁</span>A circle, in order</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pracTitle">Build the frog's circle <button class="say" id="pracSay" data-say="Build the frog's life circle! Tap the stage that goes in the glowing spot." data-voice="ring_intro">🔊</button></h2>
+  <p class="lead" id="pLead">Tap the stage that goes in the <b>glowing spot</b>.</p>
+  <div class="ringwrap" id="ringwrap">
+    <div class="ringbox" id="ringbox"></div>
+    <div class="tapbtns" id="rtaps"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="crossbox" id="crossbox">
+    <div class="item" id="xitem"><div class="pic" id="xitemPic"></div><div id="xitemQ"></div></div>
+    <div class="tapbtns" id="xtaps"></div>
+    <div class="counter" id="xcounter"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the two circles again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="tadshape">
+      <ellipse cx="0" cy="0" rx="22" ry="15" fill="#5c554b"/>
+      <path d="M20 0 q26 -4 40 -16 q-6 16 -40 22 z" fill="#6a6256"/>
+      <circle cx="-8" cy="-4" r="3.5" fill="#fbf5ea"/>
+    </g>
+    <g id="frogletshape">
+      <ellipse cx="60" cy="40" rx="42" ry="26" fill="#3f7d4e"/>
+      <circle cx="34" cy="16" r="10" fill="#3f7d4e"/><circle cx="56" cy="12" r="10" fill="#3f7d4e"/>
+      <circle cx="34" cy="14" r="4" fill="#2b2b2b"/><circle cx="56" cy="10" r="4" fill="#2b2b2b"/>
+      <path d="M98 44 q26 0 34 -12 q-2 18 -30 22z" fill="#6a6256"/>
+      <path d="M30 62 q-8 14 4 18 M84 62 q8 14 -4 18" stroke="#2f6a3e" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="frogshape">
+      <ellipse cx="60" cy="46" rx="46" ry="30" fill="#3f7d4e"/>
+      <circle cx="32" cy="16" r="12" fill="#3f7d4e"/><circle cx="60" cy="12" r="12" fill="#3f7d4e"/>
+      <circle cx="32" cy="14" r="5" fill="#2b2b2b"/><circle cx="60" cy="10" r="5" fill="#2b2b2b"/>
+      <path d="M18 66 q-14 12 2 20 q14 4 18 -8 M102 66 q14 12 -2 20 q-14 4 -18 -8" stroke="#2f6a3e" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M38 52 q22 12 44 0" stroke="#2f6a3e" stroke-width="4" fill="none"/>
+    </g>
+    <g id="eggshape">
+      <circle cx="0" cy="0" r="15" fill="#dff0f5" stroke="#9fc7d6" stroke-width="3"/><circle cx="0" cy="0" r="5" fill="#3b2a1e"/>
+      <circle cx="26" cy="-6" r="15" fill="#dff0f5" stroke="#9fc7d6" stroke-width="3"/><circle cx="26" cy="-6" r="5" fill="#3b2a1e"/>
+      <circle cx="14" cy="16" r="15" fill="#dff0f5" stroke="#9fc7d6" stroke-width="3"/><circle cx="14" cy="16" r="5" fill="#3b2a1e"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.cycles.02',version:1,quiz:'quiz.science.k2.cycles.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_frog'],['b1','badge_plant'],['b2','badge_cycle']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  const badges=[0,1,2].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const BEATS=[
+    {art:'a0',badge:0,media:'teach_egg',cap:'A life cycle goes in ORDER. The frog starts as an EGG.',vid:'t_cycle',
+     txt:'Every living thing has a life story that goes in order — a life cycle. Remember the frog? It starts as a tiny egg in the pond.',dur:7000},
+    {art:'a1',badge:0,media:'teach_tadpole',cap:'Egg → TADPOLE. It swims and breathes under water.',vid:'t_tadpole',
+     txt:'The egg hatches into a tadpole. It has a tail and swims. Under water, it breathes like a fish does.',dur:7000},
+    {art:'a2',badge:0,media:'teach_froglet',cap:'Tadpole → FROGLET → FROG. The frog lays NEW eggs!',vid:'t_froglet',
+     txt:'Then the tadpole grows legs and becomes a froglet. Its tail shrinks, and it starts to breathe air. Soon it is a grown frog — and the frog lays new eggs. The circle goes round!',dur:9600},
+    {art:'a3',badge:1,media:'teach_bean',cap:'Plants too! SEED → SPROUT → PLANT → FLOWER.',vid:'t_bean',
+     txt:'Plants have life cycles too! A bean seed wakes up in the soil and grows a sprout. The sprout becomes a plant, and the plant makes flowers.',dur:8600},
+    {art:'a4',badge:2,media:'teach_seeds',cap:'The flower makes NEW seeds. Both circles, both in ORDER.',vid:'t_seeds',
+     txt:'The flower makes new seeds — and the circle goes round again. Look at them side by side. Both are circles. Both go in order. Animal and plant alike — each starts from a little beginning that grows: an egg, or a seed.',dur:10400}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+    badges.forEach(b=>b.className='badge'); cap.textContent='';
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    let t=0;
+    BEATS.forEach(b=>{
+      later(()=>{
+        document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+        document.getElementById(b.art).classList.add('on');
+        cap.textContent=b.cap; say(b.txt,b.vid); showBeat(b.media);
+        badges[b.badge].classList.add('on');
+      },t);
+      t+=b.dur;
+    });
+    later(()=>{ document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: build the rings ---------- */
+  const sv=id=>'<svg viewBox="-20 -24 90 60"><use href="#'+id+'" transform="scale(1)"/></svg>';
+  const FROG=[
+    {id:'fegg',n:'Egg',pic:'<svg viewBox="-20 -24 66 60"><use href="#eggshape"/></svg>',k:'card_egg',why:'The frog\'s life starts as an egg in the pond.'},
+    {id:'ftad',n:'Tadpole',pic:'<svg viewBox="-30 -30 100 60"><use href="#tadshape"/></svg>',k:'card_tad',why:'The egg hatches into a swimming tadpole.'},
+    {id:'flet',n:'Froglet',pic:'<svg viewBox="0 0 140 90"><use href="#frogletshape"/></svg>',k:'card_froglet',why:'Legs grow, the tail shrinks — a froglet!'},
+    {id:'ffrog',n:'Frog',pic:'<svg viewBox="0 0 130 95"><use href="#frogshape"/></svg>',k:'card_frog',why:'A grown frog — and it lays new eggs. Round again!'}
+  ];
+  const BEAN=[
+    {id:'bseed',n:'Seed',pic:'🫘',k:'card_seed',why:'The bean\'s life starts as a seed — a little beginning, like the egg.'},
+    {id:'bsprout',n:'Sprout',pic:'🌱',k:'card_sprout',why:'The seed wakes up and grows a sprout.'},
+    {id:'bplant',n:'Plant',pic:'🪴',k:'card_plant',why:'The sprout grows into a leafy plant.'},
+    {id:'bflower',n:'Flower',pic:'🌼',k:'card_flower',why:'The plant makes flowers.'},
+    {id:'bpods',n:'New seeds',pic:'🫛',k:'card_pods',why:'The flower makes NEW seeds — and the circle goes round again!'}
+  ];
+  const POS={
+    4:[[50,10],[88,50],[50,90],[12,50]],
+    5:[[50,8],[90,37],[75,86],[25,86],[10,37]]
+  };
+  let cyc=null, slot=0, phase=0;
+  let tries=0,misses={},pass1correct=0;
+  const ringbox=document.getElementById('ringbox'),rtaps=document.getElementById('rtaps'),fb=document.getElementById('fb');
+  function startPrac(){
+    tries=0;misses={};pass1correct=0;phase=0;
+    fb.textContent=''; fb.className='fb'; document.getElementById('pracNext').disabled=true;
+    document.getElementById('ringwrap').style.display=''; document.getElementById('crossbox').classList.remove('on');
+    startRing(FROG,'Build the frog\'s circle','ring_intro','Build the frog\'s life circle! Tap the stage that goes in the glowing spot.');
+  }
+  function startRing(cycle,title,vid,intro){
+    cyc=cycle; slot=0;
+    document.getElementById('pracTitle').firstChild.textContent=title+' ';
+    const ps=document.getElementById('pracSay'); ps.dataset.say=intro; ps.dataset.voice=vid;
+    ringbox.innerHTML='<div class="ringcenter"><em>🔁</em>in order</div>';
+    const pos=POS[cyc.length];
+    cyc.forEach((st,i)=>{
+      const d=document.createElement('div'); d.className='slot'; d.id='slot'+i;
+      d.style.left=pos[i][0]+'%'; d.style.top=pos[i][1]+'%';
+      d.innerHTML='<div class="spic">?</div><div>'+(i+1)+'</div>';
+      ringbox.appendChild(d);
+    });
+    say(intro,vid);
+    askSlot();
+  }
+  function askSlot(){
+    document.querySelectorAll('.slot').forEach((s,i)=>s.classList.toggle('next',i===slot));
+    document.getElementById('counter').textContent=`${slot} of ${cyc.length} placed`;
+    const correct=cyc[slot];
+    const others=cyc.filter((s,i)=>i!==slot);
+    const opts=[correct, ...others.sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+    rtaps.innerHTML='';
+    opts.forEach(o=>{
+      const b=document.createElement('button'); b.className='btn ghost';
+      b.innerHTML='<span class="bp">'+(img(o.k)?'<img src="'+img(o.k)+'" alt="">':o.pic)+'</span>'+o.n;
+      b.onclick=()=>placeAnswer(o); rtaps.appendChild(b);
+    });
+    say(slot===0?'What comes first?':'What comes next?', slot===0?'ask_first':'ask_next');
+  }
+  function placeAnswer(o){
+    if(!cyc) return;
+    tries++;
+    const correct=cyc[slot];
+    if(o.id===correct.id){
+      if(!misses['order_'+correct.id]) pass1correct++;
+      const s=document.getElementById('slot'+slot);
+      s.className='slot filled';
+      s.innerHTML='<div class="spic">'+(img(correct.k)?'<img src="'+img(correct.k)+'" alt="">':correct.pic)+'</div><div>'+correct.n+'</div>';
+      fb.className='fb good'; fb.textContent='✓ '+correct.why; say(correct.why,'why_'+correct.id);
+      slot++;
+      if(slot<cyc.length){ setTimeout(askSlot,1400); }
+      else if(phase===0){ phase=1; document.getElementById('counter').textContent='Frog circle complete! 🐸';
+        setTimeout(()=>startRing(BEAN,'Build the bean\'s circle','ring2_intro','Now the bean plant! Tap the stage that goes in the glowing spot.'),1700); }
+      else { document.getElementById('counter').textContent='Bean circle complete! 🌼'; setTimeout(startCross,1700); }
+    } else {
+      misses['order_'+correct.id]=(misses['order_'+correct.id]||0)+1; misses.order=(misses.order||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. Stages always go in the SAME order. What grows from the stage before?';
+      say('Not quite. Stages always go in the same order. What grows from the stage before?','fb_order');
+    }
+  }
+  /* ---------- stage 2C: cross questions ---------- */
+  const CROSS=[
+    {id:'x1',pic:'🌼',k:'card_flower',q:'Which stage makes the NEW seeds?',
+     o:['The flower','The sprout','Seeds just appear on their own'],a:0,mis:'order',
+     why:'The flower makes the new seeds — that\'s how the circle starts again.'},
+    {id:'x2',pic:'',s:'<svg viewBox="-30 -30 100 60"><use href="#tadshape"/></svg>',k:'card_tad',q:'Which comes right after the tadpole?',
+     o:['Froglet','Egg','Flower'],a:0,mis:'order',
+     why:'After the tadpole comes the froglet — legs grow and the tail shrinks.'},
+    {id:'x3',pic:'🥚🫘',k:'card_both',q:'Frog and bean — how do both life stories begin?',
+     o:['With a little beginning that grows — an egg or a seed','They don\'t change — plants just sit there','With the grown-up frog or plant'],a:0,mis:'sit',
+     why:'Both begin small — an egg or a seed — a little beginning that grows and changes.'}
+  ];
+  const XFB={
+    order:'Think of the circle you built. Stages go in the same order every time.',
+    sit:'Plants are alive and always changing — seed to sprout to plant to flower to new seeds.'
+  };
+  let xqueue=[],xdone=0;
+  const xitem=document.getElementById('xitem'),xtaps=document.getElementById('xtaps');
+  function startCross(){
+    document.getElementById('ringwrap').style.display='none'; document.getElementById('crossbox').classList.add('on');
+    document.getElementById('pracTitle').firstChild.textContent='Both circles ';
+    document.getElementById('pLead').innerHTML='Think about <b>both</b> life stories.';
+    const ps=document.getElementById('pracSay'); ps.dataset.say='Now think about both circles at once, frog and bean!'; ps.dataset.voice='cross_intro';
+    fb.textContent=''; fb.className='fb'; xqueue=CROSS.slice(); xdone=0;
+    say('Now think about both circles at once, frog and bean!','cross_intro');
+    showCross();
+  }
+  function showCross(){
+    if(!xqueue.length){ xitem.style.visibility='hidden'; xtaps.innerHTML=''; document.getElementById('xcounter').textContent='All done! 🔁'; document.getElementById('pracNext').disabled=false; say('All done! Now show what you know.','prac_done'); return; }
+    const it=xqueue[0]; xitem.style.visibility='visible';
+    const ip=document.getElementById('xitemPic');
+    if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="">'; else if(it.s) ip.innerHTML=it.s; else ip.textContent=it.pic;
+    document.getElementById('xitemQ').textContent=it.q;
+    document.getElementById('xcounter').textContent=`${xdone} of ${CROSS.length} answered`;
+    xtaps.innerHTML='';
+    it.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='btn ghost'; b.textContent=t; b.onclick=()=>xanswer(i); xtaps.appendChild(b); });
+    say(it.q,'p_'+it.id);
+  }
+  function xanswer(i){
+    if(!xqueue.length) return;
+    const it=xqueue.shift(); tries++;
+    const ok=i===it.a;
+    if(ok){ xdone++; fb.className='fb good'; fb.textContent='✓ '+it.why; say(it.why,'why_'+it.id); }
+    else {
+      misses[it.mis]=(misses[it.mis]||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. '+XFB[it.mis]; say('Not quite. '+XFB[it.mis],'fb_'+it.mis);
+      xqueue.push(it);
+    }
+    setTimeout(showCross, ok?1500:2000);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🐸',k:'card_frog',q:'What comes FIRST in a frog\'s life?',
+     o:['Egg','Tadpole','Frog'],a:0},
+    {id:2,pic:'🌱',k:'card_sprout',q:'Which comes right after the sprout?',
+     o:['The young plant','The flower','New seeds'],a:0},
+    {id:3,pic:'🌼',k:'card_flower',q:'Which bean stage makes the new seeds?',
+     o:['The flower','The sprout','None — plants just sit, they don\'t make new plants'],a:0},
+    {id:4,pic:'🔁',k:'card_ring',q:'Can life-cycle stages happen in any order?',
+     o:['No — always the same order','Yes — any order'],a:0},
+    {id:5,pic:'🫘',k:'card_seed',q:'Is a bean seed alive?',
+     o:['Yes — give it water and it grows','No — it is like a little rock'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know both life stories! 🐸🌱' : 'Good try! Let\'s watch the two circles once more.';
+    document.getElementById('guessTxt').textContent = guess==='yes' ? 'At the start you guessed the bean starts small and changes — you were right!' : guess==='no' ? 'At the start you guessed plants just sit. Now you know: plants have a life circle too!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the two circles again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Read about real frogs — or check your seed cup. What stage is it in? 🌱'; say('Lesson done! Read about real frogs in research — or check your seed cup. What stage is it in?','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>
