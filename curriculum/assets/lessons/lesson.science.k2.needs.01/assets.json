@@ -1,0 +1,193 @@
+{
+  "lesson": "lesson.science.k2.needs.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "lion": {
+      "prompt": "a calm friendly lioness-colored lion with a modest tawny mane, full body, standing in profile facing left, warm golden fur, gentle expression, mouth closed, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    {
+      "id": "hook_lion",
+      "ref": "lion",
+      "prompt": "the same lion standing proudly on a low sunlit rock over golden savanna grass, soft blue sky",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_food",
+      "ref": "lion",
+      "prompt": "the same lion eating from a piece of meat on the savanna grass, calm and unhurried, no other animals present",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_water",
+      "ref": "lion",
+      "prompt": "the same lion lowering its head to drink from a calm blue waterhole ringed with grass, gentle ripples",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_shelter",
+      "ref": "lion",
+      "prompt": "the same lion resting in the cool shade beneath large smooth rocks and tall savanna grass, clearly a natural shelter, no buildings anywhere",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_air",
+      "ref": "lion",
+      "prompt": "the same lion sitting upright with eyes closed breathing calmly, a few soft curved breeze lines in the air around it, open savanna",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_space",
+      "ref": "lion",
+      "prompt": "the same lion small in the frame walking across a very wide open savanna stretching to the horizon, showing lots of open room",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_toy",
+      "ref": "lion",
+      "prompt": "the same lion sitting and looking neutrally at a striped rubber toy ball on the grass in front of it, clearly a human toy, no face on the ball, the lion not playing with it",
+      "kind": "scene"
+    },
+    {
+      "id": "card_meat",
+      "prompt": "a simple piece of meat on the bone, storybook style, on plain grass, no face on it",
+      "kind": "card"
+    },
+    {
+      "id": "card_waterhole",
+      "prompt": "a small blue waterhole ringed by savanna grass, gentle ripples, seen from a slight angle, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "card_rocks",
+      "prompt": "large smooth shade rocks with tall golden grass and a patch of cool shadow beneath, a natural animal shelter, no buildings, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "card_air",
+      "prompt": "soft pale-blue curved breeze lines drifting across a clear sky above savanna grass, showing moving air, nothing else",
+      "kind": "card"
+    },
+    {
+      "id": "card_grass",
+      "prompt": "a very wide open stretch of golden savanna reaching to the horizon under a big sky, showing open space, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "card_toy",
+      "prompt": "a striped rubber toy ball, clearly a human toy, on plain background, no face on it",
+      "kind": "card"
+    },
+    {
+      "id": "card_tv",
+      "prompt": "a small television set with a blank grey screen and two dials, clearly a human machine, no face on it",
+      "kind": "card"
+    },
+    {
+      "id": "card_candy",
+      "prompt": "three wrapped candies with twisted wrapper ends, clearly a human treat, no faces on them",
+      "kind": "card"
+    },
+    {
+      "id": "card_mouse",
+      "prompt": "a small friendly brown mouse sitting upright with big round ears, storybook style",
+      "kind": "card"
+    },
+    {
+      "id": "badge_food",
+      "prompt": "a simple piece of meat on the bone as a round emblem, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_water",
+      "prompt": "a single large blue water droplet, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_shelter",
+      "prompt": "a leafy shade tree beside a smooth rock casting shadow, simple emblem, no house",
+      "kind": "card"
+    },
+    {
+      "id": "badge_air",
+      "prompt": "three soft curved breeze lines, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_space",
+      "prompt": "a wide low horizon line under a big open sky with one small sun, simple emblem",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_food",
+      "from": "teach_food",
+      "seconds": 6,
+      "prompt": "the lion chews calmly, its tail tip flicks once, grass sways gently"
+    },
+    {
+      "id": "teach_water",
+      "from": "teach_water",
+      "seconds": 6,
+      "prompt": "the lion laps water, slow ripples spread across the waterhole"
+    },
+    {
+      "id": "teach_air",
+      "from": "teach_air",
+      "seconds": 6,
+      "prompt": "the lion's chest rises and falls slowly, the breeze lines drift past"
+    },
+    {
+      "id": "teach_space",
+      "from": "teach_space",
+      "seconds": 6,
+      "prompt": "the lion walks unhurried from left to right across the wide savanna, clouds drift"
+    },
+    {
+      "id": "teach_toy",
+      "from": "teach_toy",
+      "seconds": 6,
+      "prompt": "the toy ball rolls slowly to a stop in front of the lion, who watches without interest"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "The lion is the king of beasts! [pause] What does even a king need? [pause] Water, or a toy? Tap your guess." },
+    { "id": "t_food", "text": "<emphasis>Animals need food.</emphasis> [pause] The lion eats meat." },
+    { "id": "t_water", "text": "<emphasis>Animals need water.</emphasis> [pause] She drinks at the waterhole." },
+    { "id": "t_shelter", "text": "<emphasis>Animals need shelter</emphasis> — a safe place. [pause] For a lion, shade and rocks. [pause] Not a house!" },
+    { "id": "t_air", "text": "<emphasis>Animals need air.</emphasis> [pause] In… and out. [pause] You can't see it, but it is a need." },
+    { "id": "t_space", "text": "<emphasis>Animals need space</emphasis> — room to roam." },
+    { "id": "t_toy", "text": "A toy? [pause] It's not food. Not water. Not shelter. Not air. Not space. [pause] The lion does <emphasis>not</emphasis> need it." },
+    { "id": "sort_intro", "text": "Give the lion what it needs! [pause] Drag each card to Needs it, or Doesn't need it. Or tap a button." },
+    { "id": "mouse_intro", "text": "Here comes the mouse! [pause] Same five needs — but mouse-sized. Tap the right one." },
+    { "id": "sort_done", "text": "The lion has everything it needs! [pause] Now show what you know." },
+    { "id": "fb_fun", "text": "Not quite. That is people-fun. [pause] It is not one of the five needs." },
+    { "id": "fb_candy", "text": "Not quite. Candy is a people-treat. [pause] Lion food is meat." },
+    { "id": "fb_house", "text": "Not quite. A lion's shelter is not a house. [pause] Shade and rocks count!" },
+    { "id": "fb_air", "text": "Not quite. You can't see air — [pause] but every animal needs it." },
+    { "id": "fb_need", "text": "Not quite. That IS one of the five needs. [pause] Which badge is it?" },
+    { "id": "fb_same", "text": "Not quite. The mouse has the same need — [pause] just mouse-sized." },
+    { "id": "why_card_meat", "text": "Yes! [pause] Food. A lion eats meat." },
+    { "id": "why_card_waterhole", "text": "Yes! [pause] Water. Every animal drinks." },
+    { "id": "why_card_rocks", "text": "Yes! [pause] Shelter. Shade and rocks — a lion's safe place." },
+    { "id": "why_card_air", "text": "Yes! [pause] Air. In and out, all day long." },
+    { "id": "why_card_grass", "text": "Yes! [pause] Space. Room to roam." },
+    { "id": "why_card_toy", "text": "Yes! [pause] A toy is people-fun, not a need." },
+    { "id": "why_card_tv", "text": "Yes! [pause] A TV is people-fun, not a need." },
+    { "id": "why_card_candy", "text": "Yes! [pause] Candy is a people-treat, not lion food." },
+    { "id": "why_m1", "text": "Yes! [pause] Mouse food is seeds and crumbs — not a big meal of meat." },
+    { "id": "why_m2", "text": "Yes! [pause] A mouse's shelter is a snug little burrow." },
+    { "id": "why_m3", "text": "Yes! [pause] A mouse needs just a little space. Same needs, different amounts!" },
+    { "id": "q1", "text": "Which of these does the lion need to live? Water, a toy ball, or a TV?" },
+    { "id": "q2", "text": "What is the lion's shelter?" },
+    { "id": "q3", "text": "Which one is NOT a basic need? Food, candy, or air?" },
+    { "id": "q4", "text": "Who needs air and space?" },
+    { "id": "q5", "text": "A mouse and a lion both need food. What is different?" },
+    { "id": "pass", "text": "<soft>You know the five needs!</soft> [pause] Food, water, shelter, air, space. Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the five badges once more." },
+    { "id": "done", "text": "Lesson done! Now go find out what real lions eat." }
+  ]
+}

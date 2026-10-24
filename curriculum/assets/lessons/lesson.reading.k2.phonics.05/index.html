@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tricky teams — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{--cream:#fbf5ea;--cream2:#f3e9d6;--ink:#3b2a1e;--ink2:#6b5646;--red:#b5382f;--red2:#8e2a23;--green:#3f7d4e;--sky:#cfe6ee;--gold:#e0a93b;--radius:22px;--shadow:0 6px 0 rgba(59,42,30,.12)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid #9fc7d6;display:block}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex}
+@media (prefers-reduced-motion: no-preference){.stage.active{animation:fadein .35s}@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
+h1{font-size:38px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:24px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);font-size:26px;cursor:pointer;box-shadow:var(--shadow);margin-left:8px}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:160px;min-height:68px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn[disabled]{opacity:.45}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1;min-height:220px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:28px;font-weight:800;padding:16px;min-height:160px}
+.pick.sel{border-color:var(--gold)}
+.tiles{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:16px 0}
+.tile{min-width:72px;min-height:72px;padding:10px 16px;border:0;border-radius:16px;background:#fff;box-shadow:var(--shadow);font:inherit;font-weight:900;font-size:32px;cursor:pointer}
+.tile.on{background:var(--gold)}
+.tile.used{opacity:.35}
+.word{font-size:56px;font-weight:900;letter-spacing:2px;text-align:center;margin:10px 0}
+.fb{min-height:40px;font-size:22px;font-weight:800;text-align:center}
+.fb.good{color:var(--green)}.fb.bad{color:var(--red)}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1}
+.bin{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;min-height:180px}
+.bin h3{margin:0 0 10px;font-size:22px}
+.opt{min-height:68px;font:inherit;font-weight:800;font-size:24px;border:0;border-radius:16px;background:#fff;box-shadow:var(--shadow);padding:12px 18px;cursor:pointer;width:100%;text-align:left}
+.opt.right{background:#dcecdc}.opt.wrong{background:#fde8e6}
+#opts{display:flex;flex-direction:column;gap:12px;margin:12px 0}
+#result{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i> Goji</div>
+  <div class="dots"><b class="on"></b><b></b><b></b><b></b></div>
+</header>
+<main>
+  <section class="stage active" id="hook">
+    <h1>Tricky teams <button class="say" data-say="Moon and book both have o o. Same sound? Tap your guess." data-voice="hook" type="button">🔊</button></h1>
+    <p class="lead">moon and book both have oo. Same sound?</p>
+    <div class="choice2" id="hookPicks"><button type="button" class="pick" data-k="two" data-say="Yes. Moon-oo and book-oo." data-voice="hook_two">Two faces of oo</button><button type="button" class="pick" data-k="same" data-say="Not always. Two faces." data-voice="hook_same">Always the same</button></div>
+    <div class="row"><button class="btn" id="hookNext" disabled type="button">Next</button></div>
+  </section>
+  <section class="stage" id="teach">
+    <h2>Watch the code <button class="say" id="sayTeach" type="button">🔊</button></h2>
+    <p class="lead" id="teachCap">Listen first.</p>
+    <div class="tiles" id="teachTiles"></div>
+    <div class="row"><button class="btn ghost" type="button" onclick="go(1)">Replay</button><button class="btn" id="teachNext" disabled type="button">My turn</button></div>
+  </section>
+  <section class="stage" id="practice">
+    <h2>Your turn</h2>
+    <p class="lead" id="pracPrompt"></p>
+    <div id="pracBoard"></div>
+    <p class="fb" id="pracFb"></p>
+    <div class="row"><button class="btn" id="pracNext" disabled type="button">Show what I know</button></div>
+  </section>
+  <section class="stage" id="check">
+    <div id="qBox">
+      <h2 id="qText"></h2>
+      <button class="say" id="sayQ" type="button">🔊</button>
+      <div id="opts"></div>
+      <div class="row"><button class="btn" id="qNext" disabled type="button">Next</button></div>
+    </div>
+    <div id="result">
+      <h1 id="gateTxt"></h1>
+      <p class="lead" id="guessTxt"></p>
+      <p class="lead">Next: the same words on flashcards, then Aesop, then Kiwix.</p>
+    </div>
+  </section>
+</main>
+<script>window.GOJI_LESSON = {"id": "lesson.reading.k2.phonics.05", "version": 1, "quiz_id": "quiz.reading.k2.phonics.05", "pass": 4, "passText": "You can hear the noise-makers!", "retryText": "Try the two faces of oo again.", "teach": [{"text": "oi/oy and ou/ow are noise-makers: ahoy! ouch!", "tiles": ["oi", "oy", "ou", "ow"], "say": "O I and O Y say ahoy. O U and O W say ouch.", "voice": "t1", "ms": 3600}, {"text": "aw is the crow's caw. paw, straw.", "tiles": ["aw", "paw"], "say": "A W is the crow's caw. Paw. Straw.", "voice": "t2", "ms": 3000}, {"text": "oo has two faces: moon and book.", "tiles": ["moon", "book"], "say": "O O has two faces. Moon. Book.", "voice": "t3", "ms": 3000}], "practice": {"kind": "sort", "bins": [{"id": "moon", "label": "moon-oo"}, {"id": "book", "label": "book-oo"}], "done": "Two faces sorted. Now the check.", "items": [{"word": "moon", "bin": "moon", "why": "Long oo, like soon and food.", "hint": "Does it sound like moon or book?", "prompt": "Which face of oo?", "voice": "p1"}, {"word": "book", "bin": "book", "why": "Short oo, like look and good.", "hint": "Does it sound like moon or book?", "prompt": "Which face of oo?", "voice": "p2"}, {"word": "food", "bin": "moon", "why": "Food has moon-oo.", "hint": "Say food slowly.", "prompt": "Which face of oo?", "voice": "p3"}, {"word": "look", "bin": "book", "why": "Look has book-oo.", "hint": "Say look slowly.", "prompt": "Which face of oo?", "voice": "p4"}, {"word": "soon", "bin": "moon", "why": "Soon has moon-oo.", "hint": "Soon rhymes with moon.", "prompt": "Which face of oo?", "voice": "p5"}, {"word": "good", "bin": "book", "why": "Good has book-oo.", "hint": "Good rhymes with wood.", "prompt": "Which face of oo?", "voice": "p6"}, {"word": "wood", "bin": "book", "why": "Wood has book-oo.", "hint": "Wood, not wooed.", "prompt": "Which face of oo?", "voice": "p7"}, {"word": "too", "bin": "moon", "why": "Too has moon-oo.", "hint": "Too like moon.", "prompt": "Which face of oo?", "voice": "p8"}]}, "quiz": [{"id": 1, "q": "oi in coin says…", "o": ["/ō/", "ahoy!", "/oo/"], "a": 1}, {"id": 2, "q": "mouse (Town Mouse) has…", "o": ["magic e only", "the ou ouch-team", "short u"], "a": 1}, {"id": 3, "q": "moon and book show that oo…", "o": ["is always the same", "has two faces", "is silent"], "a": 1}, {"id": 4, "q": "paw (the lion's paw) has…", "o": ["aw like the crow's caw", "long a", "ou"], "a": 0}, {"id": 5, "q": "out vs oat — out is…", "o": ["a vowel team /ō/", "a noise-maker ouch", "magic e"], "a": 1}]};</script>
+
+<script>
+(function(){
+  const L = window.GOJI_LESSON;
+  const t0 = Date.now();
+  let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type, payload){
+    try{ if(window.parent!==window) window.parent.postMessage({type, lesson:L.id, ...payload}, '*'); }catch(e){}
+  }
+  addEventListener('message', e => {
+    const m = e.data || {};
+    if(m.type === 'player.config' && m.reduced_motion) reduced = true;
+  });
+  post('lesson.ready', {id:L.id, version:L.version||1});
+
+  let say = function(txt){
+    try{
+      if(!('speechSynthesis' in window)) return;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(txt);
+      u.rate = 0.92; u.pitch = 1.05;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  };
+  const M = window.GOJI_MEDIA || {img:{}, clip:{}, voice:{}};
+  const vo = id => M.voice && M.voice[id];
+  let audio = null;
+  const _say = say;
+  say = function(txt, id){
+    if(audio){ audio.pause(); audio = null; }
+    const f = id && vo(id);
+    if(f){ try{ audio = new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} }
+    _say(txt);
+  };
+  document.querySelectorAll('[data-say]').forEach(b => {
+    b.addEventListener('click', () => say(b.dataset.say, b.dataset.voice));
+  });
+
+  const stages = ['hook','teach','practice','check'];
+  let cur = 0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active', i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{ d.classList.toggle('on', i===n); d.classList.toggle('done', i<n); });
+    cur = n;
+    post('lesson.stage', {stage: stages[n]});
+    window.scrollTo(0,0);
+    if(n===1) playTeach();
+    if(n===2) startPractice();
+    if(n===3) startQuiz();
+  }
+  window.go = go;
+
+  /* ---- hook ---- */
+  let hookChoice = null;
+  document.querySelectorAll('#hookPicks .pick').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('#hookPicks .pick').forEach(x => x.classList.remove('sel'));
+      p.classList.add('sel');
+      hookChoice = p.dataset.k;
+      document.getElementById('hookNext').disabled = false;
+      say(p.dataset.say || p.textContent, p.dataset.voice);
+    });
+  });
+
+  /* ---- teach ---- */
+  let teachTimer = [];
+  function later(fn, ms){ const id = setTimeout(fn, reduced ? 80 : ms); teachTimer.push(id); }
+  function playTeach(){
+    teachTimer.forEach(clearTimeout); teachTimer = [];
+    const beats = L.teach || [];
+    const cap = document.getElementById('teachCap');
+    const tiles = document.getElementById('teachTiles');
+    function show(i){
+      const b = beats[i];
+      if(!b){ document.getElementById('teachNext').disabled = false; return; }
+      cap.textContent = b.text;
+      tiles.innerHTML = (b.tiles||[]).map(t => '<span class="tile on">'+t+'</span>').join('');
+      say(b.say || b.text, b.voice);
+      later(() => show(i+1), b.ms || 3200);
+    }
+    document.getElementById('teachNext').disabled = true;
+    show(0);
+  }
+  document.getElementById('sayTeach').onclick = () => {
+    say((L.teach||[]).map(b => b.say || b.text).join(' '));
+  };
+
+  /* ---- practice ---- */
+  const P = L.practice;
+  let pi = 0, pDone = 0;
+  function startPractice(){
+    pi = 0; pDone = 0;
+    document.getElementById('pracNext').disabled = true;
+    nextPractice();
+  }
+  function nextPractice(){
+    const fb = document.getElementById('pracFb');
+    fb.textContent = ''; fb.className = 'fb';
+    if(pi >= P.items.length){
+      document.getElementById('pracPrompt').textContent = P.done;
+      document.getElementById('pracBoard').innerHTML = '';
+      document.getElementById('pracNext').disabled = false;
+      say(P.done, 'prac_done');
+      return;
+    }
+    const it = P.items[pi];
+    document.getElementById('pracPrompt').textContent = it.prompt;
+    say(it.say || it.prompt, it.voice);
+    const board = document.getElementById('pracBoard');
+    board.innerHTML = '';
+    if(P.kind === 'blend'){
+      const built = document.createElement('div'); built.className = 'word'; built.id = 'built';
+      board.appendChild(built);
+      const row = document.createElement('div'); row.className = 'tiles';
+      it.tiles.forEach((t, i) => {
+        const b = document.createElement('button'); b.className = 'tile'; b.textContent = t; b.type = 'button';
+        b.onclick = () => {
+          if(t === it.want[document.getElementById('built').dataset.n|0]){
+            document.getElementById('built').textContent += t;
+            document.getElementById('built').dataset.n = (document.getElementById('built').dataset.n|0)+1;
+            b.classList.add('used');
+            if((document.getElementById('built').dataset.n|0) === it.want.length){
+              fb.className = 'fb good'; fb.textContent = 'Yes — '+it.word+'!';
+              say('Yes. '+it.word, 'yes');
+              pDone++; pi++; setTimeout(nextPractice, reduced?200:700);
+            }
+          } else {
+            fb.className = 'fb bad'; fb.textContent = 'Blend left to right.';
+            say('Blend left to right.','hint');
+          }
+        };
+        row.appendChild(b);
+      });
+      board.appendChild(row);
+    } else if(P.kind === 'sort'){
+      const word = document.createElement('div'); word.className = 'word'; word.textContent = it.word;
+      board.appendChild(word);
+      const bins = document.createElement('div'); bins.className = 'bins';
+      P.bins.forEach(bin => {
+        const el = document.createElement('button'); el.type='button'; el.className='pick'; el.textContent = bin.label;
+        el.onclick = () => {
+          if(bin.id === it.bin){
+            fb.className='fb good'; fb.textContent='Yes! '+it.why;
+            say('Yes. '+it.why,'yes'); pDone++; pi++; setTimeout(nextPractice, reduced?200:700);
+          } else {
+            fb.className='fb bad'; fb.textContent=it.hint; say(it.hint,'hint');
+          }
+        };
+        bins.appendChild(el);
+      });
+      board.appendChild(bins);
+    } else if(P.kind === 'toggle'){
+      const word = document.createElement('div'); word.className = 'word'; word.id='tog'; word.textContent = it.start;
+      board.appendChild(word);
+      const row = document.createElement('div'); row.className='row'; row.style.marginTop='8px';
+      const add = document.createElement('button'); add.type='button'; add.className='btn ghost'; add.textContent='Add magic e';
+      const rem = document.createElement('button'); rem.type='button'; rem.className='btn ghost'; rem.textContent='Take e away';
+      function check(val){
+        word.textContent = val;
+        if(val === it.want){
+          fb.className='fb good'; fb.textContent='Yes — '+it.why;
+          say('Yes. '+it.why,'yes'); pDone++; pi++; setTimeout(nextPractice, reduced?200:800);
+        }
+      }
+      add.onclick = () => check(it.start.endsWith('e') ? it.start : it.start+'e');
+      rem.onclick = () => check(it.start.endsWith('e') ? it.start.slice(0,-1) : it.start);
+      row.appendChild(add); row.appendChild(rem); board.appendChild(row);
+    } else if(P.kind === 'spot'){
+      const word = document.createElement('div'); word.className='tiles';
+      it.chunks.forEach((ch, i) => {
+        const b = document.createElement('button'); b.type='button'; b.className='tile'; b.textContent=ch;
+        b.onclick = () => {
+          if(i === it.team){
+            fb.className='fb good'; fb.textContent='That team says '+it.sound+'!';
+            say('Yes. That team says '+it.sound,'yes'); pDone++; pi++; setTimeout(nextPractice, reduced?200:700);
+          } else {
+            fb.className='fb bad'; fb.textContent='Find the two letters that share one sound.';
+            say('Find the two letters that share one sound.','hint');
+          }
+        };
+        word.appendChild(b);
+      });
+      board.appendChild(word);
+    } else if(P.kind === 'chop'){
+      const word = document.createElement('div'); word.className='tiles';
+      it.letters.forEach((ch, i) => {
+        const wrap = document.createElement('span');
+        const b = document.createElement('button'); b.type='button'; b.className='tile'; b.textContent=ch;
+        wrap.appendChild(b);
+        if(i < it.letters.length-1){
+          const cut = document.createElement('button'); cut.type='button'; cut.className='tile'; cut.textContent='|';
+          cut.onclick = () => {
+            if(i+1 === it.cut){
+              fb.className='fb good'; fb.textContent=it.parts.join(' · ');
+              say('Yes. '+it.parts.join(' then '),'yes'); pDone++; pi++; setTimeout(nextPractice, reduced?200:700);
+            } else {
+              fb.className='fb bad'; fb.textContent='Chop between the vowel chunks.';
+              say('Chop between the vowel chunks.','hint');
+            }
+          };
+          wrap.appendChild(cut);
+        }
+        word.appendChild(wrap);
+      });
+      board.appendChild(word);
+    }
+  }
+
+  /* ---- check ---- */
+  const QUIZ = L.quiz;
+  let qi = 0, score = 0, locked = false;
+  function startQuiz(){
+    qi = 0; score = 0;
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('qBox').style.display = 'block';
+    showQ();
+  }
+  function showQ(){
+    locked = false;
+    const q = QUIZ[qi];
+    document.getElementById('qText').textContent = q.q;
+    document.getElementById('qNext').disabled = true;
+    document.getElementById('sayQ').onclick = () => say(q.q+' '+q.o.join(', or '), 'q'+(q.id||qi));
+    const opts = document.getElementById('opts'); opts.innerHTML = '';
+    q.o.forEach((lab, i) => {
+      const b = document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=lab;
+      b.onclick = () => {
+        if(locked) return;
+        locked = true;
+        const ok = i === q.a;
+        b.classList.add(ok ? 'right' : 'wrong');
+        if(ok) score++;
+        else opts.children[q.a].classList.add('right');
+        document.getElementById('qNext').disabled = false;
+      };
+      opts.appendChild(b);
+    });
+    say(q.q, 'q'+(q.id||qi));
+  }
+  document.getElementById('qNext').onclick = () => {
+    qi++;
+    if(qi >= QUIZ.length) finish();
+    else showQ();
+  };
+  function finish(){
+    document.getElementById('qBox').style.display = 'none';
+    const box = document.getElementById('result');
+    box.style.display = 'flex';
+    const pass = score >= (L.pass||4);
+    document.getElementById('gateTxt').textContent = pass ? L.passText : L.retryText;
+    document.getElementById('guessTxt').textContent = score+' / '+QUIZ.length;
+    say((pass?L.passText:L.retryText)+' '+score+' out of '+QUIZ.length, pass?'pass':'retry');
+    post('lesson.check', {quiz_id:L.quiz_id, score, total:QUIZ.length, items:[]});
+    post('lesson.complete', {quiz_id:L.quiz_id, score, total:QUIZ.length, duration_s: Math.round((Date.now()-t0)/1000)});
+  }
+
+  window.GOJI_TEST = {
+    go,
+    quiz: () => QUIZ,
+    autoCheck: function(pass=true){
+      go(3);
+      return new Promise(res => {
+        const step = () => {
+          if(document.getElementById('result').style.display !== 'none'){
+            res({score}); return;
+          }
+          const q = QUIZ[qi];
+          const want = pass ? q.a : ((q.a+1)%q.o.length);
+          document.querySelectorAll('#opts .opt')[want].click();
+          setTimeout(() => { document.getElementById('qNext').click(); setTimeout(step, 50); }, 40);
+        };
+        setTimeout(step, 150);
+      });
+    }
+  };
+  document.getElementById('hookNext').onclick = () => go(1);
+  document.getElementById('teachNext').onclick = () => go(2);
+  document.getElementById('pracNext').onclick = () => go(3);
+})();
+</script>
+
+</body>
+</html>

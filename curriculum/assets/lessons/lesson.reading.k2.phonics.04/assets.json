@@ -1,0 +1,111 @@
+{
+  "lesson": "lesson.reading.k2.phonics.04",
+  "style": "../../../tools/lesson_assets/style.json",
+  "voice": [
+    {
+      "id": "hook",
+      "text": "Ship and sip look almost the same. What did s h do? Tap your guess."
+    },
+    {
+      "id": "prac_done",
+      "text": "Sorted! Digraphs melt. Blends keep both."
+    },
+    {
+      "id": "yes",
+      "text": "Yes!"
+    },
+    {
+      "id": "hint",
+      "text": "Try again."
+    },
+    {
+      "id": "pass",
+      "text": "You can hear melt vs hold-hands!"
+    },
+    {
+      "id": "retry",
+      "text": "Listen again: melt makes one new sound."
+    },
+    {
+      "id": "hook_melt",
+      "text": "Yes. s h melts into sh."
+    },
+    {
+      "id": "hook_two",
+      "text": "Not quite. They melt."
+    },
+    {
+      "id": "t1",
+      "text": "S H, C H, T H melt. One new sound."
+    },
+    {
+      "id": "t2",
+      "text": "S T, G R, F L hold hands. You still hear both."
+    },
+    {
+      "id": "t3",
+      "text": "Ship has sh. Sip has s."
+    },
+    {
+      "id": "p1",
+      "text": "Does ship melt or hold hands?"
+    },
+    {
+      "id": "p2",
+      "text": "Does stop melt or hold hands?"
+    },
+    {
+      "id": "p3",
+      "text": "Does chat melt or hold hands?"
+    },
+    {
+      "id": "p4",
+      "text": "Does frog melt or hold hands?"
+    },
+    {
+      "id": "p5",
+      "text": "Does this melt or hold hands?"
+    },
+    {
+      "id": "p6",
+      "text": "Does grass melt or hold hands?"
+    },
+    {
+      "id": "p7",
+      "text": "Does duck melt or hold hands?"
+    },
+    {
+      "id": "p8",
+      "text": "Does when melt or hold hands?"
+    },
+    {
+      "id": "q1",
+      "text": "sh in ship is\u2026 two sounds, or one new sound, or silent"
+    },
+    {
+      "id": "q2",
+      "text": "st in stop is\u2026 one melted sound, or both /s/ and /t/, or silent t"
+    },
+    {
+      "id": "q3",
+      "text": "Which word has a melt team? frog, or chip, or grass"
+    },
+    {
+      "id": "q4",
+      "text": "then vs ten \u2014 what did th do? Added a new melted sound, or Made it longer, or Nothing"
+    },
+    {
+      "id": "q5",
+      "text": "ck at the end of duck says\u2026 /s/, or /k/, or /ch/"
+    }
+  ],
+  "images": [
+    {
+      "id": "hook",
+      "prompt": "storybook scene for Sound teams, Aesop meadow, no letters",
+      "kind": "scene"
+    }
+  ],
+  "clips": [],
+  "notes": "House voice is luna (Grok TTS, British woman, 0.92). Packages run with speechSynthesis until media/ is generated."
+}

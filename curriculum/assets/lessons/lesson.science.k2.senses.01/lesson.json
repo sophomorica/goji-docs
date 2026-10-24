@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.senses.01",
+  "title": "Sense detective",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.senses.01"],
+  "va_sol": ["K.5"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "n/a — hand-off is a parent-led sense walk + journal sentence" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.senses.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.senses.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The jungle food web — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:24px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px;flex:none}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:170px;min-height:70px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:12px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:24px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(32vw,260px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(32vw,260px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(#dfe9c8 0 58%,#9db878 58% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.slide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s;pointer-events:none}
+.slide.on{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:25px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7);background:linear-gradient(rgba(251,245,234,.92),rgba(251,245,234,0))}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .slide{display:none}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
+/* ---- practice ---- */
+.webboard{position:relative;width:100%;max-width:760px;margin:0 auto;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:6px}
+.webboard svg{width:100%;height:auto;display:block}
+.arrowq{display:flex;flex-direction:column;align-items:center;gap:12px}
+.pairbtns{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:760px}
+.pairbtns .opt{min-height:80px;font-size:24px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:86px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.animalgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;width:100%;max-width:760px;margin:0 auto}
+.acard{font:inherit;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:14px;cursor:pointer;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;gap:6px;font-size:22px;font-weight:800;min-height:120px}
+.acard .pic{font-size:56px;line-height:1.1}
+.acard img{width:84px;height:84px;object-fit:cover;border-radius:12px}
+.acard.hit{border-color:var(--green);background:#eaf5ec}
+.acard.miss{border-color:var(--red);background:#fbe9e7}
+.sortwrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;min-height:210px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:12px;gap:8px;min-height:190px;transition:.2s;background:rgba(255,255,255,.5);cursor:pointer}
+.bin h3{margin:0;font-size:23px;text-align:center}
+.bin.p h3{color:var(--green)} .bin.c h3{color:var(--red)} .bin.d h3{color:#7a5a3a}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.bin .got span{font-size:32px}
+.bin .got img{width:46px;height:46px;object-fit:cover;border-radius:9px}
+.deckrow{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 0}
+.item{width:min(240px,42vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;text-align:center;cursor:grab;touch-action:none;
+  font-size:23px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:60px;line-height:1.1}
+.item img{width:100%;max-width:140px;border-radius:12px;display:block;margin:0 auto}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.fb{min-height:58px;font-size:22px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:20px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:27px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(40vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.gate{text-align:center;font-size:26px;font-weight:800}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .sortwrap{grid-template-columns:1fr} .bin{min-height:110px}
+  .scene{min-height:240px} .caption{font-size:20px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>The jungle food web <button class="say" data-say="Shere Khan the tiger is strong. Where did the energy in his muscles begin? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Shere Khan the tiger is strong. <b>Where did the energy in his muscles begin?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="tiger">
+      <img data-img="hook_tiger" alt="" hidden><svg viewBox="0 0 200 130" aria-label="tiger"><rect width="200" height="130" rx="16" fill="#dfe9c8"/><ellipse cx="100" cy="80" rx="58" ry="26" fill="#d98e32"/><path d="M60 66 q-6 -22 4 -30 l10 16z M78 60 q0 -20 10 -24 l6 18z" fill="#d98e32"/><circle cx="55" cy="58" r="20" fill="#e09a42"/><circle cx="48" cy="54" r="3" fill="#2b2b2b"/><path d="M70 70 h20 M85 84 h22 M120 62 v18 M140 66 v20 M158 72 v16" stroke="#3b2a1e" stroke-width="5" stroke-linecap="round"/><rect x="62" y="98" width="11" height="26" rx="5" fill="#c07f2a"/><rect x="128" y="98" width="11" height="26" rx="5" fill="#c07f2a"/></svg>
+      <span>In the tiger himself — he is the strongest</span>
+    </div>
+    <div class="pick" data-guess="sun">
+      <img data-img="hook_sun" alt="" hidden><svg viewBox="0 0 200 130" aria-label="sun over jungle"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><circle cx="100" cy="52" r="26" fill="#e0a93b"/><g stroke="#e0a93b" stroke-width="5" stroke-linecap="round"><path d="M100 12 v-8 M100 92 v8 M60 52 h-10 M140 52 h10 M72 24 l-7 -7 M128 24 l7 -7 M72 80 l-7 7 M128 80 l7 7"/></g><path d="M0 110 q30 -24 60 0 q30 -24 60 0 q30 -24 60 0 v20 H0z" fill="#3f7d4e"/></svg>
+      <span>At the sun, far above the jungle</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Follow the energy →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Energy on the move <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+
+    <!-- beat 1: sun -> producers -->
+    <svg class="slide" id="sl0" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <circle cx="150" cy="90" r="52" fill="#e0a93b" class="pulse"/>
+      <g stroke="#e0a93b" stroke-width="7" stroke-linecap="round"><path d="M150 10 v-0 M150 20 v-14 M78 90 h-20 M96 40 l-16 -16 M204 40 l16 -16"/></g>
+      <path d="M215 130 L360 220" stroke="#3b2a1e" stroke-width="10" stroke-linecap="round" marker-end="url(#arr)"/>
+      <text x="420" y="280" font-size="72" text-anchor="middle">🌿</text>
+      <text x="560" y="280" font-size="72" text-anchor="middle">🌳</text>
+      <text x="490" y="345" font-size="30" font-weight="800" fill="#fbf5ea" text-anchor="middle">PRODUCERS make the food</text>
+      <text x="150" y="190" font-size="26" font-weight="800" fill="#3b2a1e" text-anchor="middle">energy STARTS here</text>
+    </svg>
+
+    <!-- beat 2: consumers -->
+    <svg class="slide" id="sl1" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <text x="150" y="250" font-size="72" text-anchor="middle">🌿</text>
+      <path d="M210 230 L330 230" stroke="#3b2a1e" stroke-width="10" stroke-linecap="round" marker-end="url(#arr)"/>
+      <text x="410" y="250" font-size="72" text-anchor="middle">🦌</text>
+      <text x="410" y="315" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">herbivore — eats plants</text>
+      <path d="M470 230 L590 230" stroke="#3b2a1e" stroke-width="10" stroke-linecap="round" marker-end="url(#arr)"/>
+      <text x="670" y="250" font-size="72" text-anchor="middle">🐯</text>
+      <text x="680" y="315" font-size="24" font-weight="800" fill="#3b2a1e" text-anchor="middle">carnivore — eats animals</text>
+      <text x="500" y="80" font-size="30" font-weight="800" fill="#3b2a1e" text-anchor="middle">CONSUMERS eat to get energy</text>
+    </svg>
+
+    <!-- beat 3: arrow direction -->
+    <svg class="slide" id="sl2" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <text x="200" y="240" font-size="84" text-anchor="middle">🌿</text>
+      <path d="M270 215 L440 215" stroke="#b5382f" stroke-width="14" stroke-linecap="round" marker-end="url(#arrR)"/>
+      <text x="520" y="240" font-size="84" text-anchor="middle">🦌</text>
+      <path d="M600 215 L770 215" stroke="#b5382f" stroke-width="14" stroke-linecap="round" marker-end="url(#arrR)"/>
+      <text x="850" y="240" font-size="84" text-anchor="middle">🐯</text>
+      <text x="500" y="90" font-size="32" font-weight="800" fill="#b5382f" text-anchor="middle">The arrow follows the ENERGY</text>
+      <text x="500" y="130" font-size="26" font-weight="700" fill="#3b2a1e" text-anchor="middle">it points TO the eater — not at the food</text>
+      <text x="500" y="350" font-size="24" font-weight="700" fill="#3b2a1e" text-anchor="middle">grass gives energy to the deer… the deer gives energy to the tiger</text>
+    </svg>
+
+    <!-- beat 4: the web + niche -->
+    <svg class="slide" id="sl3" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <text x="500" y="360" font-size="60" text-anchor="middle">🌿</text>
+      <text x="300" y="250" font-size="60" text-anchor="middle">🦌</text>
+      <text x="700" y="250" font-size="60" text-anchor="middle">🐒</text>
+      <text x="180" y="110" font-size="60" text-anchor="middle">🐯</text>
+      <text x="420" y="110" font-size="60" text-anchor="middle">🐺</text>
+      <text x="820" y="110" font-size="60" text-anchor="middle">🐍</text>
+      <g stroke="#3b2a1e" stroke-width="7" stroke-linecap="round" fill="none">
+        <path d="M470 330 L330 275" marker-end="url(#arr)"/>
+        <path d="M540 330 L680 278" marker-end="url(#arr)"/>
+        <path d="M275 220 L200 145" marker-end="url(#arr)"/>
+        <path d="M330 220 L400 145" marker-end="url(#arr)"/>
+        <path d="M725 220 L800 145" marker-end="url(#arr)"/>
+      </g>
+      <text x="500" y="60" font-size="30" font-weight="800" fill="#3b2a1e" text-anchor="middle">A WEB: many chains crossing</text>
+      <text x="300" y="300" font-size="22" font-weight="700" fill="#3b2a1e" text-anchor="middle">the deer feeds MORE than one hunter</text>
+    </svg>
+
+    <!-- beat 5: decomposers + levels -->
+    <svg class="slide" id="sl4" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <text x="200" y="180" font-size="64" text-anchor="middle">🍂</text>
+      <path d="M240 190 L330 230" stroke="#7a5a3a" stroke-width="9" stroke-linecap="round" marker-end="url(#arr)"/>
+      <text x="390" y="260" font-size="64" text-anchor="middle">🍄</text>
+      <text x="500" y="260" font-size="64" text-anchor="middle">🪲</text>
+      <path d="M540 280 Q560 340 460 350" stroke="#7a5a3a" stroke-width="9" stroke-linecap="round" fill="none" marker-end="url(#arr)"/>
+      <text x="390" y="380" font-size="26" font-weight="800" fill="#fbf5ea" text-anchor="middle">back to the SOIL — loop closed</text>
+      <text x="330" y="80" font-size="28" font-weight="800" fill="#3b2a1e" text-anchor="middle">DECOMPOSERS: the cleanup crew</text>
+      <g transform="translate(700,60)">
+        <rect width="270" height="300" rx="18" fill="#fff" opacity=".9"/>
+        <circle cx="135" cy="150" r="120" fill="none" stroke="#5aa3bf" stroke-width="5"/>
+        <circle cx="135" cy="165" r="80" fill="none" stroke="#3f7d4e" stroke-width="5"/>
+        <circle cx="135" cy="185" r="42" fill="none" stroke="#b5382f" stroke-width="5"/>
+        <text x="135" y="192" font-size="18" font-weight="800" fill="#b5382f" text-anchor="middle">all the deer</text>
+        <text x="135" y="120" font-size="18" font-weight="800" fill="#3f7d4e" text-anchor="middle">+ every living thing</text>
+        <text x="135" y="55" font-size="18" font-weight="800" fill="#5aa3bf" text-anchor="middle">+ sun, rain, soil</text>
+        <text x="135" y="285" font-size="16" font-weight="700" fill="#3b2a1e" text-anchor="middle">population → community → ecosystem</text>
+      </g>
+    </svg>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <!-- phase A: point the arrow -->
+  <div id="phaseA" style="display:flex;flex-direction:column;flex:1;align-items:center">
+    <h2>Build the jungle web <button class="say" data-say="Who gives energy to whom? Tap the arrow that points the right way. The arrow follows the energy, to the eater." data-voice="arrows_intro">🔊</button></h2>
+    <p class="lead"><b>Who gives energy to whom?</b> Tap the arrow that points the right way.</p>
+    <div class="webboard"><svg id="webSvg" viewBox="0 0 760 300">
+      <text x="80" y="60" font-size="44" text-anchor="middle">☀️</text>
+      <text x="200" y="250" font-size="44" text-anchor="middle" id="n_grass">🌿</text>
+      <text x="600" y="250" font-size="44" text-anchor="middle" id="n_leaves">🍂</text>
+      <text x="330" y="170" font-size="44" text-anchor="middle" id="n_deer">🦌</text>
+      <text x="530" y="170" font-size="44" text-anchor="middle" id="n_monkey">🐒</text>
+      <text x="180" y="70" font-size="44" text-anchor="middle" id="n_tiger">🐯</text>
+      <text x="400" y="60" font-size="44" text-anchor="middle" id="n_wolf">🐺</text>
+      <text x="620" y="70" font-size="44" text-anchor="middle" id="n_python">🐍</text>
+      <text x="700" y="250" font-size="44" text-anchor="middle" id="n_beetle">🪲</text>
+      <g stroke="#3b2a1e" stroke-width="5" stroke-linecap="round" fill="none">
+        <path id="e0" d="M105 75 L170 215" opacity="0" marker-end="url(#arr)"/>
+        <path id="e1" d="M225 225 L305 190" opacity="0" marker-end="url(#arr)"/>
+        <path id="e2" d="M300 150 L210 90" opacity="0" marker-end="url(#arr)"/>
+        <path id="e3" d="M350 150 L385 85" opacity="0" marker-end="url(#arr)"/>
+        <path id="e4" d="M575 235 L555 195" opacity="0" marker-end="url(#arr)"/>
+        <path id="e5" d="M550 150 L600 95" opacity="0" marker-end="url(#arr)"/>
+        <path id="e6" d="M625 245 L672 245" opacity="0" marker-end="url(#arr)"/>
+      </g>
+    </svg></div>
+    <div class="arrowq" style="width:100%">
+      <div class="pairbtns" id="pairBtns"></div>
+      <div class="counter" id="counterA"></div>
+    </div>
+    <div class="fb" id="fbA"></div>
+  </div>
+
+  <!-- phase B: remove the deer -->
+  <div id="phaseB" style="display:none;flex-direction:column;flex:1;align-items:center">
+    <h2>Remove the deer — who goes hungry? <button class="say" data-say="Oh no — every deer has left the jungle. Tap each hunter that loses a meal. Follow the arrows." data-voice="ripple_intro">🔊</button></h2>
+    <p class="lead">Every deer has left the jungle. <b>Tap each hunter that loses a meal.</b></p>
+    <div class="animalgrid" id="rippleGrid"></div>
+    <div class="counter" id="counterB"></div>
+    <div class="fb" id="fbB"></div>
+  </div>
+
+  <!-- phase C: sort P/C/D -->
+  <div id="phaseC" style="display:none;flex-direction:column;flex:1">
+    <h2>Producer, consumer, or cleanup crew? <button class="say" data-say="Drag each living thing to its job: producer, consumer, or decomposer. Or tap a bin." data-voice="sort_intro">🔊</button></h2>
+    <div class="deckrow">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="counter" id="counterC"></div>
+    </div>
+    <div class="sortwrap">
+      <div class="bin p" data-bin="p"><h3>🌿 Producer<br><small>makes food</small></h3><div class="got" id="gotP"></div></div>
+      <div class="bin c" data-bin="c"><h3>🍖 Consumer<br><small>eats others</small></h3><div class="got" id="gotC"></div></div>
+      <div class="bin d" data-bin="d"><h3>🍂 Decomposer<br><small>cleanup crew</small></h3><div class="got" id="gotD"></div></div>
+    </div>
+    <div class="fb" id="fbC"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the web again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#3b2a1e"/></marker>
+    <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#b5382f"/></marker>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.foodwebs.01',version:1,quiz:'quiz.science.35.foodwebs.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  const slides=[0,1,2,3,4].map(i=>document.getElementById('sl'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  const teachScript=[
+    'Energy starts at the sun. Plants catch it and make food — they are the jungle’s producers.',
+    'Animals can’t make food — they eat to get it. The deer eats plants: a herbivore. The tiger and the wolves eat animals: carnivores. All of them are consumers.',
+    'Watch the arrows. An arrow follows the ENERGY — it points TO the eater. Grass gives energy to the deer. The deer gives energy to the tiger.',
+    'Chains cross, and that makes a WEB. The deer feeds more than one hunter — the tiger AND the wolf pack. Each animal has its own job in the web: its niche.',
+    'And when anything dies, the cleanup crew — mushrooms and beetles, the decomposers — return every scrap to the soil. The loop closes. All the deer are a population; all the living things, a community; add sun, rain and soil — an ecosystem.'
+  ];
+  const teachIds=['t_sun','t_eaters','t_arrow','t_web','t_loop'];
+  const teachMedia=['teach_sun','teach_eaters','teach_arrow','teach_web','teach_loop'];
+  const teachCaps=[
+    'Energy STARTS at the sun → plants (producers) make the food.',
+    'Consumers eat to get energy: deer = herbivore, tiger & wolf = carnivores.',
+    'The arrow follows the ENERGY — it points TO the eater.',
+    'Many chains crossing = a WEB. The deer feeds more than one hunter. Niche = an animal’s job.',
+    'Decomposers close the loop. Population → community → ecosystem.'
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function showSlide(i){ slides.forEach((s,j)=>s.classList.toggle('on',i===j)); cap.textContent=teachCaps[i]; say(teachScript[i],teachIds[i]); showBeat(teachMedia[i]); }
+  function playTeach(){
+    timers.forEach(clearTimeout); timers=[]; document.getElementById('teachNext').disabled=true;
+    showSlide(0);
+    later(()=>showSlide(1),8000);
+    later(()=>showSlide(2),17500);
+    later(()=>showSlide(3),26500);
+    later(()=>showSlide(4),35500);
+    later(()=>{ document.getElementById('teachNext').disabled=false; },47000);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const PAIRS=[
+    {a:'The sun',b:'the grass',e:'e0',why:'Sunlight’s energy flows into the grass.'},
+    {a:'The grass',b:'the deer',e:'e1',why:'The deer eats grass — energy flows to the deer.'},
+    {a:'The deer',b:'the tiger',e:'e2',why:'Shere Khan eats the deer — the arrow points at the eater.'},
+    {a:'The deer',b:'the wolf pack',e:'e3',why:'The same deer feeds the wolves too — chains cross!'},
+    {a:'The banyan fruit',b:'the monkeys',e:'e4',why:'The Bandar-log eat fruit — energy flows to the monkeys.'},
+    {a:'The monkeys',b:'Kaa the python',e:'e5',why:'Kaa hunts monkeys — the arrow points at the eater.'},
+    {a:'Dead leaves',b:'the beetles',e:'e6',why:'Decomposers eat the dead — and pass every scrap to the soil.'}
+  ];
+  let pi=0,tries=0,misses={},pass1correct=0,firstTry=true;
+  const fbA=document.getElementById('fbA'),fbB=document.getElementById('fbB'),fbC=document.getElementById('fbC');
+  function startPractice(){
+    pi=0;tries=0;misses={};pass1correct=0;
+    document.getElementById('phaseA').style.display='flex';document.getElementById('phaseB').style.display='none';document.getElementById('phaseC').style.display='none';
+    document.getElementById('pracNext').disabled=true;
+    PAIRS.forEach(p=>document.getElementById(p.e).style.opacity=0);
+    fbA.textContent='';fbB.textContent='';fbC.textContent='';
+    showPair();
+  }
+  function showPair(){
+    if(pi>=PAIRS.length){
+      document.getElementById('counterA').textContent='Web complete! 🕸️';
+      say('The web is built! Now — remove the deer.','arrows_done');
+      setTimeout(()=>{ document.getElementById('phaseA').style.display='none'; document.getElementById('phaseB').style.display='flex'; startRipple(); },1400);
+      return;
+    }
+    const p=PAIRS[pi]; firstTry=true;
+    document.getElementById('counterA').textContent=(pi)+' of '+PAIRS.length+' arrows placed';
+    const bb=document.getElementById('pairBtns'); bb.innerHTML='';
+    const opts=[{t:p.a+'  →  '+p.b,ok:true},{t:p.b.charAt(0).toUpperCase()+p.b.slice(1)+'  →  '+p.a.toLowerCase(),ok:false}];
+    if(Math.random()<.5) opts.reverse();
+    opts.forEach(o=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o.t; b.onclick=()=>pairPick(o.ok,b); bb.appendChild(b); });
+    say('Who gives energy to whom? '+p.a+', and '+p.b+'.');
+  }
+  function pairPick(ok,btn){
+    const p=PAIRS[pi]; tries++;
+    if(ok){
+      if(firstTry) pass1correct++;
+      document.getElementById(p.e).style.opacity=1;
+      fbA.className='fb good'; fbA.textContent='✓ '+p.why; say('Yes! '+p.why,'why_'+p.e);
+      pi++; setTimeout(showPair,1500);
+    } else {
+      firstTry=false; misses['arrow']=(misses['arrow']||0)+1;
+      fbA.className='fb bad'; fbA.textContent='Not quite. The arrow follows the ENERGY — it points TO the eater, not at its food.';
+      say('Not quite. The arrow follows the energy. It points to the eater, not at its food.','fb_arrow');
+      btn.disabled=true; btn.classList.add('wrong');
+    }
+  }
+  /* phase B: ripple */
+  const RIPPLE=[
+    {n:'Shere Khan (tiger)',p:'🐯',k:'card_tiger',hit:true,why:'The tiger loses a meal — his arrow came from the deer.'},
+    {n:'The wolf pack',p:'🐺',k:'card_wolf',hit:true,why:'The wolves hunted deer too — chains cross, so the loss spreads.'},
+    {n:'Kaa (python)',p:'🐍',k:'card_python',hit:false,why:'Kaa hunts monkeys, not deer.'},
+    {n:'The monkeys',p:'🐒',k:'card_monkey',hit:false,why:'Monkeys eat fruit — no arrow from the deer.'}
+  ];
+  let found=0;
+  function startRipple(){
+    found=0; const g=document.getElementById('rippleGrid'); g.innerHTML='';
+    RIPPLE.forEach((r,i)=>{ const b=document.createElement('button'); b.className='acard';
+      b.innerHTML=(img(r.k)?'<img src="'+img(r.k)+'" alt="">':'<div class="pic">'+r.p+'</div>')+'<span>'+r.n+'</span>';
+      b.onclick=()=>ripplePick(r,b); g.appendChild(b); });
+    document.getElementById('counterB').textContent='Found 0 of 2 hungry hunters';
+  }
+  function ripplePick(r,b){
+    if(b.disabled) return; tries++;
+    if(r.hit){ found++; b.classList.add('hit'); b.disabled=true;
+      fbB.className='fb good'; fbB.textContent='✓ '+r.why; say('Yes! '+r.why,'rip_'+r.k);
+      document.getElementById('counterB').textContent='Found '+found+' of 2 hungry hunters';
+      if(found===2){ setTimeout(()=>{ document.getElementById('phaseB').style.display='none'; document.getElementById('phaseC').style.display='flex'; startSort(); say('One change ripples through the whole web. Last job: sort the crew.','ripple_done'); },1500); }
+    } else { misses['ripple']=(misses['ripple']||0)+1; b.classList.add('miss'); setTimeout(()=>b.classList.remove('miss'),900);
+      fbB.className='fb bad'; fbB.textContent='Not quite. '+r.why+' Follow the arrows.'; say('Not quite. '+r.why+' Follow the arrows.','fb_ripple');
+    }
+  }
+  /* phase C: sort */
+  const ITEMS=[
+    {n:'Bamboo grass',p:'🌿',k:'card_grass',a:'p',why:'It makes its own food from sunlight — a producer.'},
+    {n:'Banyan tree',p:'🌳',k:'card_tree',a:'p',why:'Trees are producers — the jungle’s food factories.'},
+    {n:'Deer',p:'🦌',k:'card_deer',a:'c',why:'It eats plants — a consumer (herbivore).'},
+    {n:'Monkey',p:'🐒',k:'card_monkey',a:'c',why:'It eats fruit — a consumer.'},
+    {n:'Shere Khan (tiger)',p:'🐯',k:'card_tiger',a:'c',why:'He eats animals — a consumer (carnivore). Even he depends on the sun.'},
+    {n:'Mushroom',p:'🍄',k:'card_mushroom',a:'d',why:'It feeds on dead things and returns them to the soil — a decomposer.'},
+    {n:'Dung beetle',p:'🪲',k:'card_beetle',a:'d',why:'The cleanup crew — nothing in the jungle is wasted.'}
+  ];
+  let queue=[],doneC=0;
+  const item=document.getElementById('item');
+  function startSort(){ queue=ITEMS.slice(); doneC=0; document.getElementById('gotP').innerHTML='';document.getElementById('gotC').innerHTML='';document.getElementById('gotD').innerHTML=''; showItem(); }
+  function showItem(){
+    if(!queue.length){ item.style.visibility='hidden'; document.getElementById('counterC').textContent='All sorted! 🎉'; document.getElementById('pracNext').disabled=false; say('The web is complete, the crew is sorted. Show what you know!','prac_done'); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p;
+    document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counterC').textContent=doneC+' of '+ITEMS.length+' sorted';
+    say(it.n+'. Producer, consumer, or decomposer?');
+  }
+  function answerC(bin){
+    if(!queue.length||item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++;
+    if(bin===it.a){ doneC++;
+      fbC.className='fb good'; fbC.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n;
+      document.getElementById(bin==='p'?'gotP':bin==='c'?'gotC':'gotD').appendChild(s);
+    } else {
+      const mk = (it.a==='d') ? 'useless' : (bin==='p'&&it.a==='c') ? 'startlion' : 'role';
+      misses[mk]=(misses[mk]||0)+1;
+      const hint = mk==='useless' ? 'Don’t skip the cleanup crew! Decomposers feed on the dead and return every scrap to the soil — the web needs them.'
+                 : mk==='startlion' ? 'Can it make food from sunlight? No — only plants are producers. Energy never starts with an animal.'
+                 : 'Ask: does it MAKE food, EAT others, or CLEAN UP the dead?';
+      fbC.className='fb bad'; fbC.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+mk);
+      queue.push(it);
+    }
+    setTimeout(showItem, bin===it.a?1400:1900);
+  }
+  document.querySelectorAll('#phaseC .bin').forEach(b=>b.addEventListener('click',()=>{ if(!dragging) answerC(b.dataset.bin); }));
+  let drag=null,dragging=false;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; dragging=true; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('#phaseC .bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('#phaseC .bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('#phaseC .bin').forEach(b=>b.classList.remove('over')); drag=null; setTimeout(()=>dragging=false,50); if(over) answerC(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; dragging=false; });
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'☀️',k:'card_sun',q:'Where does the energy in the jungle food web START?',o:['With the tiger — the strongest hunter','At the sun','In the soil'],a:1},
+    {id:2,pic:'🦌',k:'card_deer',q:'Which arrow is drawn correctly between the deer and the tiger?',o:['deer → tiger, because energy flows TO the eater','tiger → deer, because the arrow points at the tiger’s food'],a:0},
+    {id:3,pic:'🐺',k:'card_wolf',q:'Every deer leaves the jungle. What happens to the tiger and the wolves?',o:['Nothing — top hunters don’t need anyone','They can start eating sunlight','They lose a food source and go hungry'],a:2},
+    {id:4,pic:'🍄',k:'card_mushroom',q:'What do the mushrooms and beetles on the jungle floor do?',o:['They return dead material to the soil — the web needs them','Nothing — they are gross and useless','They make food from sunlight'],a:0},
+    {id:5,pic:'🦌',k:'card_herd',q:'ALL the deer in the jungle, counted together, are called…',o:['a community','an ecosystem','a population'],a:2}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join('. Or, '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can follow the energy through the whole jungle! 🕸️' : 'Good try! Let’s follow the arrows once more.';
+    document.getElementById('guessTxt').textContent = guess==='sun' ? 'At the start you guessed the SUN — you were right. Even Shere Khan runs on sunlight!' : guess==='tiger' ? 'At the start you guessed the tiger. Now you know: even his power began at the sun!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the web again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,practice:{pairPick:ok=>pairPick(ok,document.querySelector('#pairBtns .opt')||document.createElement('button')),ripplePick:i=>{const b=document.querySelectorAll('#rippleGrid .acard')[i];if(b)b.click();},answerC:b=>answerC(b)},autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go read how real food webs work. 🕸️'; say('Lesson done! Now go read how real food webs work.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

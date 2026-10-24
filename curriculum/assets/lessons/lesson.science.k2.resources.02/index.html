@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Only so much — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;text-align:center}
+.pick .bigmoji{font-size:80px;line-height:1.1}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media .bigmoji{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:340px;background:linear-gradient(var(--sky) 0 62%,#a9c98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.tree{position:absolute;bottom:10%;width:13%;transition:opacity 1s}
+.tree svg{width:100%;height:auto;display:block}
+.tree.gone{opacity:0}
+.stump{position:absolute;bottom:10%;width:9%;opacity:0;transition:opacity 1s}
+.stump svg{width:100%;height:auto;display:block}
+.stump.show{opacity:1}
+#bird{position:absolute;top:16%;left:40%;width:9%;opacity:0;transition:opacity .8s,left 2s ease,top 2s ease}
+#bird.show{opacity:1}
+#sapling{position:absolute;bottom:10%;left:24%;width:7%;opacity:0;transform:scale(.5);transform-origin:bottom center;transition:opacity .8s,transform 1.6s ease}
+#sapling.show{opacity:1;transform:scale(1)}
+#stream{position:absolute;left:0;bottom:0;width:100%;opacity:.9}
+#rchip{position:absolute;z-index:2;left:50%;top:46%;transform:translate(-50%,-50%) scale(0);background:#fff;border-radius:26px;box-shadow:var(--shadow);
+  padding:18px 30px;font-size:34px;font-weight:900;text-align:center;transition:transform .4s cubic-bezier(.2,1.6,.4,1)}
+#rchip.show{transform:translate(-50%,-50%) scale(1)}
+#rchip small{display:block;font-size:22px;font-weight:700;color:var(--ink2)}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .tree,.scene.media .stump,.scene.media #bird,.scene.media #sapling,.scene.media #stream,.scene.media #rchip{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.pwrap{display:flex;flex-direction:column;gap:14px;flex:1}
+.pscene{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;align-items:center;justify-content:center;min-height:170px}
+.pscene .bigmoji{font-size:96px;line-height:1.1}
+.pscene img{width:min(40vw,260px);border-radius:16px;display:block}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.partbtn{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.partbtn.right{border-color:var(--green);background:#eaf5ec}
+.partbtn.wrong{border-color:var(--red);background:#fbe9e7}
+.partbtn[disabled]{cursor:default}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:4px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Only so much <button class="say" data-say="Imagine we cut down every tree in the forest today. Will new tall trees be there tomorrow? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">We cut down <b>every</b> tree in the forest today. Will new tall trees be there <b>tomorrow</b>?</p>
+  <div class="choice2">
+    <div class="pick" data-guess="refill">
+      <div class="bigmoji">🌲✨</div><img data-img="hook_refill" alt="" hidden>
+      <span>Yes — nature refills fast</span>
+    </div>
+    <div class="pick" data-guess="slow">
+      <div class="bigmoji">🌱🐢</div><img data-img="hook_slow" alt="" hidden>
+      <span>No — trees take years to grow</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Nature gives — but not endless <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="stream" viewBox="0 0 1000 90" preserveAspectRatio="none"><path d="M0 60 Q250 35 500 65 T1000 55 L1000 90 L0 90Z" fill="#5aa3bf"/><path d="M0 66 Q250 45 500 72 T1000 62" stroke="#fff" stroke-width="4" fill="none" opacity=".7"/></svg>
+    <div class="tree" id="t1" style="left:14%"><svg viewBox="0 0 100 150"><rect x="44" y="80" width="12" height="60" rx="5" fill="#7a5a35"/><circle cx="50" cy="56" r="34" fill="#4f7d43"/></svg></div>
+    <div class="tree" id="t2" style="left:34%"><svg viewBox="0 0 100 150"><rect x="44" y="80" width="12" height="60" rx="5" fill="#7a5a35"/><circle cx="50" cy="52" r="38" fill="#5c8a4f"/></svg></div>
+    <div class="tree" id="t3" style="left:56%"><svg viewBox="0 0 100 150"><rect x="44" y="80" width="12" height="60" rx="5" fill="#7a5a35"/><circle cx="50" cy="56" r="34" fill="#4f7d43"/></svg></div>
+    <div class="tree" id="t4" style="left:76%"><svg viewBox="0 0 100 150"><rect x="44" y="80" width="12" height="60" rx="5" fill="#7a5a35"/><circle cx="50" cy="52" r="38" fill="#5c8a4f"/></svg></div>
+    <div class="stump" style="left:16%"><svg viewBox="0 0 100 50"><ellipse cx="50" cy="34" rx="30" ry="12" fill="#8a6a42"/><ellipse cx="50" cy="28" rx="30" ry="12" fill="#c9a06a"/><ellipse cx="50" cy="28" rx="18" ry="7" fill="#e0c9a0"/></svg></div>
+    <div class="stump" style="left:36%"><svg viewBox="0 0 100 50"><ellipse cx="50" cy="34" rx="30" ry="12" fill="#8a6a42"/><ellipse cx="50" cy="28" rx="30" ry="12" fill="#c9a06a"/><ellipse cx="50" cy="28" rx="18" ry="7" fill="#e0c9a0"/></svg></div>
+    <div class="stump" style="left:58%"><svg viewBox="0 0 100 50"><ellipse cx="50" cy="34" rx="30" ry="12" fill="#8a6a42"/><ellipse cx="50" cy="28" rx="30" ry="12" fill="#c9a06a"/><ellipse cx="50" cy="28" rx="18" ry="7" fill="#e0c9a0"/></svg></div>
+    <div class="stump" style="left:78%"><svg viewBox="0 0 100 50"><ellipse cx="50" cy="34" rx="30" ry="12" fill="#8a6a42"/><ellipse cx="50" cy="28" rx="30" ry="12" fill="#c9a06a"/><ellipse cx="50" cy="28" rx="18" ry="7" fill="#e0c9a0"/></svg></div>
+    <svg id="bird" viewBox="0 0 100 70"><ellipse cx="50" cy="40" rx="24" ry="15" fill="#5a6b7d"/><circle cx="28" cy="32" r="10" fill="#5a6b7d"/><path d="M20 32 l-12 3 l12 4z" fill="#e0a93b"/><circle cx="25" cy="29" r="2" fill="#16222b"/><path d="M48 32 q18 -14 30 -4 q-12 12 -30 4z" fill="#46545f"/></svg>
+    <div id="sapling"><svg viewBox="0 0 60 90"><rect x="27" y="50" width="6" height="38" rx="3" fill="#7a5a35"/><path d="M30 52 q-18 -8 -16 -26 q18 2 16 26z" fill="#6da75c"/><path d="M30 46 q18 -10 14 -28 q-18 4 -14 28z" fill="#7db56a"/></svg></div>
+    <div id="rchip"></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌍</span>Limited</div>
+    <div class="badge" id="b1"><span class="em">📉</span>Reduce: use less</div>
+    <div class="badge" id="b2"><span class="em">🔁</span>Reuse: use again</div>
+    <div class="badge" id="b3"><span class="em">♻️</span>Recycle: make new</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Which help fits? <button class="say" data-say="Look at what is happening. Then tap the help that fits: reduce, reuse, or recycle." data-voice="prac_intro">🔊</button></h2>
+  <div class="pwrap">
+    <p class="lead" id="ptext" style="margin:0"></p>
+    <div class="pscene" id="pscene"></div>
+    <div class="parts" id="pbtns"></div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the forest again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.resources.02',version:1,quiz:'quiz.science.k2.resources.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_limited'],['b1','badge_reduce'],['b2','badge_reuse'],['b3','badge_recycle']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'),rchip=document.getElementById('rchip'),bird=document.getElementById('bird'),sapling=document.getElementById('sapling');
+  const trees=['t1','t2','t3','t4'].map(i=>document.getElementById(i));
+  const stumps=Array.from(document.querySelectorAll('.stump'));
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function chip(html){ if(html===null){ rchip.classList.remove('show'); } else { rchip.innerHTML=html; rchip.classList.add('show'); } }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    trees.forEach(t=>t.classList.remove('gone')); stumps.forEach(s=>s.classList.remove('show'));
+    bird.classList.remove('show'); bird.style.left='40%'; bird.style.top='16%'; sapling.classList.remove('show'); chip(null);
+    badges.forEach(b=>b.className='badge'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "Water, trees, soil, food — the things we use come from NATURE.",
+    "But nature is not endless. Take EVERY tree — and none are left. No wood for us. No home for the birds.",
+    "We can replant! But a little sapling takes many, many years to grow tall. Nature does NOT refill instantly.",
+    "So we help, three different ways. REDUCE means: use LESS. Turn the faucet off while you brush.",
+    "REUSE means: use a thing AGAIN. An empty jar becomes a crayon cup.",
+    "RECYCLE means: an old thing is made into a NEW thing. Old paper goes to a mill and comes back as fresh paper. Three words, three different helps!"
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: from nature
+    cap.textContent='Water, trees, soil — it all comes from NATURE.'; say(teachScript[0],'t_nature'); showBeat('teach_nature'); bird.classList.add('show');
+    later(()=>{ badges[0].classList.add('on'); },2800);
+    // beat 2: take every tree
+    later(()=>{ cap.textContent='Take EVERY tree… and none are left. The birds lose their home.'; say(teachScript[1],'t_limited'); showBeat('teach_limited');
+      trees.forEach(t=>t.classList.add('gone')); stumps.forEach(s=>s.classList.add('show')); bird.style.left='70%'; bird.style.top='30%'; },4400);
+    // beat 3: replant
+    later(()=>{ cap.textContent='Replant! But a tree takes MANY years to grow tall.'; say(teachScript[2],'t_replant'); showBeat('teach_replant'); sapling.classList.add('show'); },10200);
+    // beat 4: reduce
+    later(()=>{ cap.textContent='Help 1 — REDUCE: use less.'; say(teachScript[3],'t_reduce'); showBeat('teach_reduce'); chip('🚿 REDUCE<small>use less</small>'); },15200);
+    later(()=>{ badges[1].classList.add('on'); },17600);
+    // beat 5: reuse
+    later(()=>{ cap.textContent='Help 2 — REUSE: use it again.'; say(teachScript[4],'t_reuse'); showBeat('teach_reuse'); chip('🫙 REUSE<small>use it again</small>'); },19200);
+    later(()=>{ badges[2].classList.add('on'); },21600);
+    // beat 6: recycle
+    later(()=>{ cap.textContent='Help 3 — RECYCLE: old becomes NEW.'; say(teachScript[5],'t_recycle'); showBeat('teach_recycle'); chip('♻️ RECYCLE<small>old becomes new</small>'); },23200);
+    later(()=>{ badges[3].classList.add('on'); chip(null); },27600);
+    later(()=>{ document.getElementById('teachNext').disabled=false; },28400);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const RRR=[{t:'Reduce — use less',k:'reduce'},{t:'Reuse — use it again',k:'reuse'},{t:'Recycle — make it new',k:'recycle'}];
+  const PITEMS=[
+    {id:'r1',pic:'🚰🪥',k:'card_faucet',q:'The faucet keeps running while you brush your teeth. Which help fits?',o:RRR,a:'reduce',
+      why:'Turning it off is REDUCE — using less water.'},
+    {id:'r2',pic:'🫙🖍️',k:'card_jar',q:'The jam jar is empty. You wash it and keep crayons in it. Which help is that?',o:RRR,a:'reuse',
+      why:'Same jar, new use — that’s REUSE.'},
+    {id:'r3',pic:'📰',k:'card_paper',q:'The newspaper is all read. It goes to the mill to become NEW paper. Which help?',o:RRR,a:'recycle',
+      why:'Old paper made into new paper — that’s RECYCLE.'},
+    {id:'r4',pic:'📄✏️',k:'card_backside',q:'Your drawing paper has an empty back side. You draw on the back. Which help?',o:RRR,a:'reuse',
+      why:'Using the same sheet again — REUSE.'},
+    {id:'r5',pic:'💡🚪',k:'card_lights',q:'You leave the room and the lights are still on. You turn them off. Which help?',o:RRR,a:'reduce',
+      why:'Using less power — REDUCE.'},
+    {id:'r6',pic:'🥫',k:'card_can',q:'An empty metal can goes to the bin where metal is melted into new things. Which help?',o:RRR,a:'recycle',
+      why:'Melted and made new — RECYCLE.'},
+    {id:'r7',pic:'🫐🐦',k:'card_berries',q:'You find a berry bush in the woods. What is the kind choice?',
+      o:[{t:'Take some, leave some for the birds',k:'ok'},{t:'Take every berry — more grow by morning',k:'refill'},{t:'It doesn’t matter what we do',k:'nomatter'}],a:'ok',
+      why:'Wildlife needs nature’s food too — take some, leave some.'}
+  ];
+  const OPTFB={
+    reduce:'REDUCE means using LESS of something. Is that what happens here?',
+    reuse:'REUSE means using the SAME thing again, yourself. Is that what happens here?',
+    recycle:'RECYCLE means the old thing is made into a NEW thing, like at a mill. Is that what happens here?',
+    refill:'Berries don’t refill overnight — nature is limited, and the birds need them too.',
+    nomatter:'It DOES matter. Our choices change what is left for nature and for wildlife.'
+  };
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,plock=false;
+  const ptext=document.getElementById('ptext'),pscene=document.getElementById('pscene'),pbtns=document.getElementById('pbtns'),fb=document.getElementById('fb');
+  function startPractice(){ queue=PITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;plock=false; fb.textContent=''; fb.className='fb'; showP(); }
+  function showP(){
+    plock=false;
+    if(!queue.length){ ptext.textContent='Three helps — and you know which is which!'; pscene.innerHTML='<div class="bigmoji">🌍</div>'; pbtns.innerHTML='';
+      document.getElementById('counter').textContent='All done! 🎉'; document.getElementById('pracNext').disabled=false;
+      say('Three helps, and you know which is which! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    ptext.textContent=it.q;
+    if(img(it.k)) pscene.innerHTML='<img src="'+img(it.k)+'" alt="">'; else pscene.innerHTML='<div class="bigmoji">'+it.pic+'</div>';
+    pbtns.innerHTML='';
+    it.o.forEach((op,i)=>{ const b=document.createElement('button'); b.className='partbtn'; b.textContent=op.t; b.onclick=()=>answer(op.k,i,b); pbtns.appendChild(b); });
+    document.getElementById('counter').textContent=done+' of '+PITEMS.length+' answered';
+    say(it.q);
+  }
+  function answer(key,idx,btn){
+    if(plock||!queue.length) return; plock=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>PITEMS.length) pass1=false;
+    const ok=key===it.a;
+    document.querySelectorAll('#pbtns .partbtn').forEach((b,j)=>{b.disabled=true; if(it.o[j].k===it.a) b.classList.add('right'); else if(j===idx&&!ok) b.classList.add('wrong');});
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.id);
+    } else {
+      misses[key]=(misses[key]||0)+1;
+      const hint=OPTFB[key]||'Think about which help fits.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+key);
+      queue.push(it);
+    }
+    setTimeout(showP, ok?1500:2200);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌲🪓',k:'card_stumps',q:'We cut down every tree today. When will tall trees be back?',o:['After many, many years — trees grow slowly','Tomorrow — nature refills instantly','Never — so it doesn’t matter what we do'],a:0,mis:['','instant-refill','choices-dont-matter']},
+    {id:2,pic:'🚰',k:'card_faucet',q:'The faucet runs while you brush. Which help fits?',o:['Reduce — turn it off, use less','Recycle — put the water in the recycle bin','No help — water never runs out'],a:0,mis:['','three-Rs-one-word','unlimited-resource']},
+    {id:3,pic:'📄',k:'card_backside',q:'You draw on the BACK of used paper. Which help is that?',o:['Reuse','Recycle','Reduce'],a:0,mis:['','three-Rs-one-word','three-Rs-one-word']},
+    {id:4,pic:'♻️',k:'card_recycle_bin',q:'What does RECYCLE mean?',o:['An old thing is made into a NEW thing','Any kind of helping — all three words mean the same','Throwing things in any bin'],a:0,mis:['','three-Rs-one-word','bin-confusion']},
+    {id:5,pic:'🫐',k:'card_berries',q:'A berry bush in the woods. The kind choice is…',o:['Take some, leave some for the wildlife','Take them all — more grow by morning','Berries don’t matter to animals'],a:0,mis:['','instant-refill','wildlife-blind']}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know the three helps! 🌍' : 'Good try! Let\'s watch the forest once more.';
+    document.getElementById('guessTxt').textContent = guess==='slow' ? 'At the start you said trees take YEARS — right! Nature does not refill instantly.' : guess==='refill' ? 'At the start you guessed nature refills fast. Now you know: a tree takes many years — that’s why we reduce, reuse, and recycle!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the forest again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Pick ONE reduce habit with your family this week. 🌍'; say('Lesson done! With your family, pick one reduce habit for this week, and write it in your journal.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

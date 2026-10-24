@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The motion museum — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(36vw,300px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(36vw,300px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--cream2) 0 78%,#e6d9bf 78% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg.ex{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .5s}
+.scene>svg.ex.show{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media svg.ex{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* exhibit motions (only while shown) */
+.show .m-slide{animation:mslide 2.6s ease-in-out infinite}
+@keyframes mslide{0%{transform:translateX(0)}55%{transform:translateX(560px)}100%{transform:translateX(560px)}}
+.show .m-orbit{animation:morbit 4s linear infinite;transform-origin:500px 210px}
+@keyframes morbit{to{transform:rotate(360deg)}}
+.show .m-spin{animation:mspin 1s linear infinite;transform-origin:500px 205px}
+@keyframes mspin{to{transform:rotate(360deg)}}
+.show .m-swing{animation:mswing 1.8s ease-in-out infinite alternate;transform-origin:500px 60px}
+@keyframes mswing{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+.show .m-vib{animation:mvib .12s linear infinite alternate;transform-origin:500px 205px}
+@keyframes mvib{from{transform:translateY(-7px)}to{transform:translateY(7px)}}
+.show .m-wave{animation:mwave 1.6s ease-out infinite}
+@keyframes mwave{0%{opacity:0;transform:scale(.6)}30%{opacity:.9}100%{opacity:0;transform:scale(1.25)}}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.stamp{position:absolute;z-index:3;right:5%;top:22%;font-size:40px;font-weight:900;letter-spacing:2px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-12deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.88)}
+.stamp.show{transform:rotate(-12deg) scale(1)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+/* ---- practice ---- */
+.pstage{display:flex;flex-direction:column;flex:1;gap:10px}
+.pv{position:relative;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);min-height:230px;flex:1;overflow:hidden}
+.pv svg{position:absolute;inset:0;width:100%;height:100%}
+.pv img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.pv .m-slide{animation-name:pslide}
+@keyframes pslide{0%{transform:translateX(0)}55%{transform:translateX(420px)}100%{transform:translateX(420px)}}
+.pv .m-slide,.pv .m-orbit,.pv .m-spin,.pv .m-swing,.pv .m-vib{animation-duration:2.6s;animation-iteration-count:infinite}
+.pv .m-orbit{animation:morbitP 4s linear infinite;transform-origin:400px 150px}
+@keyframes morbitP{to{transform:rotate(360deg)}}
+.pv .m-spin{animation:mspinP 1s linear infinite;transform-origin:400px 150px}
+@keyframes mspinP{to{transform:rotate(360deg)}}
+.pv .m-swing{animation:mswingP 1.8s ease-in-out infinite alternate;transform-origin:400px 20px}
+@keyframes mswingP{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+.pv .m-vib{animation:mvibP .12s linear infinite alternate}
+@keyframes mvibP{from{transform:translateY(-6px)}to{transform:translateY(6px)}}
+.pv .m-wave{animation:mwave 1.6s ease-out infinite}
+.pname{font-size:28px;font-weight:800;text-align:center;margin:2px 0}
+.mbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.mbtn{font:inherit;font-weight:800;font-size:24px;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 10px;cursor:pointer;box-shadow:var(--shadow);min-height:78px}
+.mbtn:active{transform:translateY(3px);box-shadow:none}
+.mbtn .mi{font-size:30px;display:block}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px} .pv{min-height:170px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>How do things move? <button class="say" data-say="The swing moves. The top moves. Do they move the same way? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The swing moves. The top moves. <b>Do they move the SAME way?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="same">
+      <img data-img="hook_same" alt="" hidden><svg viewBox="0 0 200 130" aria-label="same"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><path d="M40 65 h120" stroke="#3f7d4e" stroke-width="10" stroke-linecap="round"/><path d="M148 51 L166 65 L148 79 Z" fill="#3f7d4e"/><path d="M52 79 L34 65 L52 51 Z" fill="#3f7d4e"/></svg>
+      <span>The same way</span>
+    </div>
+    <div class="pick" data-guess="diff">
+      <img data-img="hook_diff" alt="" hidden><svg viewBox="0 0 200 130" aria-label="different"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><path d="M35 90 q25 -55 60 -25" stroke="#b5382f" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="150" cy="65" r="30" fill="none" stroke="#b5382f" stroke-width="9" stroke-dasharray="10 9"/></svg>
+      <span>Different ways</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>To the museum →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The motion museum <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <!-- exhibit 1: straight -->
+    <svg class="ex" id="ex1" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <path d="M160 300 H840" stroke="#9fc7d6" stroke-width="8" stroke-dasharray="20 16" stroke-linecap="round"/>
+      <path d="M810 284 L852 300 L810 316 Z" fill="#9fc7d6"/>
+      <g class="m-slide"><circle cx="200" cy="262" r="38" fill="#b5382f"/><path d="M182 262 h36" stroke="#fbf5ea" stroke-width="7" stroke-linecap="round"/><path d="M206 250 l14 12 l-14 12" stroke="#fbf5ea" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+    </svg>
+    <!-- exhibit 2: circular path -->
+    <svg class="ex" id="ex2" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <circle cx="500" cy="210" r="130" fill="none" stroke="#9fc7d6" stroke-width="8" stroke-dasharray="18 15"/>
+      <circle cx="500" cy="210" r="12" fill="#e0a93b"/>
+      <g class="m-orbit"><g transform="translate(500,80)">
+        <rect x="-8" y="-42" width="16" height="46" rx="6" fill="#e0a93b"/>
+        <ellipse cx="0" cy="14" rx="44" ry="22" fill="#8a6fb3"/>
+        <rect x="-38" y="26" width="10" height="26" rx="4" fill="#6d5591"/><rect x="28" y="26" width="10" height="26" rx="4" fill="#6d5591"/>
+        <path d="M40 6 q22 -6 26 -24" stroke="#8a6fb3" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <ellipse cx="-46" cy="2" rx="16" ry="12" fill="#9a82c0"/>
+      </g></g>
+    </svg>
+    <!-- exhibit 3: spinning top -->
+    <svg class="ex" id="ex3" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <path d="M478 330 l44 0 M500 308 l0 44" stroke="#9fc7d6" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="760" cy="205 " r="90" fill="none" stroke="#e6d9bf" stroke-width="6" stroke-dasharray="14 12"/>
+      <text x="760" y="330" font-size="26" font-weight="800" fill="#8d8d8d" text-anchor="middle">the horse's path</text>
+      <g class="m-spin"><g transform="translate(500,205)">
+        <path d="M0 -85 L52 -30 L0 100 L-52 -30 Z" fill="#b5382f"/>
+        <path d="M-52 -30 Q0 -6 52 -30 L52 -30 Q0 6 -52 -30Z" fill="#e0a93b"/>
+        <rect x="-7" y="-112" width="14" height="30" rx="6" fill="#8e2a23"/>
+      </g></g>
+    </svg>
+    <!-- exhibit 4: swing -->
+    <svg class="ex" id="ex4" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <path d="M330 350 Q500 240 670 350" stroke="#9fc7d6" stroke-width="8" fill="none" stroke-dasharray="18 15" stroke-linecap="round"/>
+      <path d="M360 60 H640" stroke="#6b5646" stroke-width="14" stroke-linecap="round"/>
+      <g class="m-swing"><g transform="translate(500,60)">
+        <path d="M-46 0 L-40 220 M46 0 L40 220" stroke="#6b5646" stroke-width="8" stroke-linecap="round"/>
+        <rect x="-58" y="216" width="116" height="22" rx="10" fill="#b5382f"/>
+      </g></g>
+    </svg>
+    <!-- exhibit 5: rubber band vibrates -->
+    <svg class="ex" id="ex5" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <rect x="300" y="90" width="28" height="240" rx="10" fill="#6b5646"/>
+      <rect x="672" y="90" width="28" height="240" rx="10" fill="#6b5646"/>
+      <g class="m-vib"><path d="M328 205 Q500 185 672 205" stroke="#b5382f" stroke-width="10" fill="none" stroke-linecap="round"/></g>
+      <g id="waves">
+        <path class="m-wave" d="M720 165 q40 40 0 84" stroke="#3f7d4e" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path class="m-wave" style="animation-delay:.5s" d="M765 145 q60 62 0 124" stroke="#3f7d4e" stroke-width="8" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="stamp yes" id="stampSound">VIBRATES → SOUND</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">➡️</span>Straight</div>
+    <div class="badge" id="b1"><span class="em">🎠</span>Circular — around a path</div>
+    <div class="badge" id="b2"><span class="em">🌀</span>Spinning — one spot</div>
+    <div class="badge" id="b3"><span class="em">↔️</span>Back-and-forth</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Watch. How does it move? <button class="say" data-say="Watch each thing move. Then tap its motion: straight, circular, spinning, or back and forth." data-voice="prac_intro">🔊</button></h2>
+  <div class="pstage">
+    <div class="pv" id="pv"></div>
+    <div class="pname" id="pname"></div>
+    <div class="mbtns">
+      <button class="mbtn" data-m="straight"><span class="mi">➡️</span>Straight</button>
+      <button class="mbtn" data-m="circ"><span class="mi">🎠</span>Circular</button>
+      <button class="mbtn" data-m="spin"><span class="mi">🌀</span>Spinning</button>
+      <button class="mbtn" data-m="bf"><span class="mi">↔️</span>Back-and-forth</button>
+    </div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Visit the museum again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.motion.01',version:1,quiz:'quiz.science.k2.motion.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_straight'],['b1','badge_circular'],['b2','badge_spin'],['b3','badge_bf']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), stampSound=document.getElementById('stampSound');
+  const exs=[1,2,3,4,5].map(i=>document.getElementById('ex'+i));
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const teachScript=[
+    "Some things move straight. One line — there it goes!",
+    "Some things move in a circle. The horse travels around a path, around and around.",
+    "Some things spin. The top turns in one spot. It does not travel around a path like the horse. Spinning and circular are different!",
+    "Some things move back and forth. Forward, back, forward, back.",
+    "Pluck! The rubber band moves back and forth very fast. That is vibrating. Vibrating makes the sound you hear. Every sound comes from something moving!"
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function showEx(i){ exs.forEach((e,j)=>e.classList.toggle('show',j===i)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    exs.forEach(e=>e.classList.remove('show'));
+    badges.forEach(b=>b.className='badge'); stampSound.className='stamp yes'; cap.textContent='';
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    showEx(0); cap.textContent='Some things move STRAIGHT.'; say(teachScript[0],'t_straight'); showBeat('teach_straight');
+    later(()=>{ badges[0].classList.add('on'); },2200);
+    later(()=>{ showEx(1); cap.textContent='Some things move in a CIRCLE — around a path.'; say(teachScript[1],'t_circular'); showBeat('teach_circular'); },4200);
+    later(()=>{ badges[1].classList.add('on'); },7200);
+    later(()=>{ showEx(2); cap.textContent='Some things SPIN — they turn in ONE spot.'; say(teachScript[2],'t_spin'); showBeat('teach_spin'); },9000);
+    later(()=>{ cap.textContent='The top stays on its spot. The horse travels a path. Different!'; },13200);
+    later(()=>{ badges[2].classList.add('on'); },15000);
+    later(()=>{ showEx(3); cap.textContent='Some things move BACK AND FORTH.'; say(teachScript[3],'t_bf'); showBeat('teach_bf'); },16400);
+    later(()=>{ badges[3].classList.add('on'); },19400);
+    later(()=>{ showEx(4); cap.textContent='Pluck! The band VIBRATES — fast back-and-forth.'; say(teachScript[4],'t_sound'); showBeat('teach_sound'); badges[3].classList.add('on'); },21000);
+    later(()=>{ cap.textContent='Vibrating makes the SOUND you hear!'; stampSound.classList.add('show'); document.getElementById('teachNext').disabled=false; },26000);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (motion museum rounds) ---------- */
+  function sv(kind){
+    const path={
+      straight:'<path d="M120 230 H680" stroke="#9fc7d6" stroke-width="7" stroke-dasharray="18 14" stroke-linecap="round"/><path d="M654 216 L690 230 L654 244 Z" fill="#9fc7d6"/>',
+      circ:'<circle cx="400" cy="150" r="95" fill="none" stroke="#9fc7d6" stroke-width="7" stroke-dasharray="16 13"/>',
+      spin:'<path d="M382 262 l36 0 M400 244 l0 36" stroke="#9fc7d6" stroke-width="7" stroke-linecap="round"/>',
+      bf:'<path d="M250 258 Q400 180 550 258" stroke="#9fc7d6" stroke-width="7" fill="none" stroke-dasharray="16 13" stroke-linecap="round"/>'
+    };
+    const art={
+      ball:path.straight+'<g class="m-slide"><circle cx="160" cy="196" r="32" fill="#b5382f"/><path d="M146 196 h28" stroke="#fbf5ea" stroke-width="6" stroke-linecap="round"/></g>',
+      top:path.spin+'<g class="m-spin"><g transform="translate(400,150)"><path d="M0 -62 L38 -22 L0 74 L-38 -22 Z" fill="#b5382f"/><path d="M-38 -22 Q0 -4 38 -22 Q0 4 -38 -22Z" fill="#e0a93b"/><rect x="-5" y="-82" width="10" height="22" rx="5" fill="#8e2a23"/></g></g>',
+      merry:path.circ+'<circle cx="400" cy="150" r="9" fill="#e0a93b"/><g class="m-orbit"><g transform="translate(400,55)"><rect x="-6" y="-30" width="12" height="34" rx="5" fill="#e0a93b"/><ellipse cx="0" cy="12" rx="32" ry="16" fill="#8a6fb3"/><ellipse cx="-34" cy="2" rx="12" ry="9" fill="#9a82c0"/></g></g>',
+      swing:path.bf+'<path d="M300 22 H500" stroke="#6b5646" stroke-width="10" stroke-linecap="round"/><g class="m-swing"><g transform="translate(400,20)"><path d="M-32 0 L-28 158 M32 0 L28 158" stroke="#6b5646" stroke-width="6" stroke-linecap="round"/><rect x="-42" y="154" width="84" height="16" rx="8" fill="#b5382f"/></g></g>',
+      drum:'<ellipse cx="400" cy="220" rx="120" ry="34" fill="#8e2a23"/><rect x="280" y="130" width="240" height="92" fill="#b5382f"/><g class="m-vib"><ellipse cx="400" cy="130" rx="120" ry="30" fill="#f3e9d6" stroke="#e0a93b" stroke-width="6"/></g><path class="m-wave" d="M545 80 q34 34 0 70" stroke="#3f7d4e" stroke-width="7" fill="none" stroke-linecap="round"/><path class="m-wave" style="animation-delay:.5s" d="M585 62 q52 52 0 106" stroke="#3f7d4e" stroke-width="7" fill="none" stroke-linecap="round"/>',
+      sled:path.straight+'<g class="m-slide"><g transform="translate(120,170)"><path d="M0 44 q-16 12 0 20 h96 q18 -8 0 -20 Z" fill="#6b5646"/><rect x="12" y="10" width="72" height="34" rx="10" fill="#b5382f"/></g></g>',
+      guitar:'<rect x="240" y="86" width="22" height="180" rx="8" fill="#6b5646"/><rect x="538" y="86" width="22" height="180" rx="8" fill="#6b5646"/><g class="m-vib"><path d="M262 176 Q400 162 538 176" stroke="#e0a93b" stroke-width="8" fill="none" stroke-linecap="round"/></g><path class="m-wave" d="M580 140 q30 30 0 62" stroke="#3f7d4e" stroke-width="7" fill="none" stroke-linecap="round"/><path class="m-wave" style="animation-delay:.5s" d="M616 124 q46 46 0 94" stroke="#3f7d4e" stroke-width="7" fill="none" stroke-linecap="round"/>',
+      coin:path.spin+'<g class="m-spin"><g transform="translate(400,150)"><ellipse cx="0" cy="0" rx="26" ry="66" fill="#e0a93b" stroke="#c8912a" stroke-width="6"/></g></g>',
+      ferris:path.circ+'<circle cx="400" cy="150" r="9" fill="#6b5646"/><path d="M360 268 L400 150 L440 268" stroke="#6b5646" stroke-width="9" fill="none" stroke-linecap="round"/><g class="m-orbit"><g transform="translate(400,55)"><path d="M0 -8 V14" stroke="#6b5646" stroke-width="6"/><rect x="-26" y="14" width="52" height="34" rx="10" fill="#b5382f"/></g></g>'
+    };
+    return '<svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">'+art[kind]+'</svg>';
+  }
+  const ITEMS=[
+    {k:'ball',  n:'Rolling ball',        a:'straight',why:'It moves in one line — straight.'},
+    {k:'top',   n:'Top',                 a:'spin',    mis:'spincirc',why:'It turns in ONE spot — spinning.'},
+    {k:'merry', n:'Merry-go-round horse',a:'circ',    mis:'spincirc',why:'It travels around a path — circular.'},
+    {k:'swing', n:'Swing',              a:'bf',      mis:'repeat',why:'Forward, back, again — back-and-forth.'},
+    {k:'drum',  n:'Drum skin (boom!)',  a:'bf',      mis:'sound', why:'The skin vibrates — fast back-and-forth. That makes the sound!'},
+    {k:'sled',  n:'Sled on snow',       a:'straight',why:'Down the hill in one line — straight.'},
+    {k:'guitar',n:'Guitar string (twang!)',a:'bf',   mis:'sound', why:'The string vibrates — fast back-and-forth. That is the sound you hear!'},
+    {k:'coin',  n:'Coin on the table',  a:'spin',    mis:'spincirc',why:'It turns in one spot — spinning.'},
+    {k:'ferris',n:'Ferris wheel car',   a:'circ',    mis:'spincirc',why:'It travels around a big round path — circular.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0;
+  const pv=document.getElementById('pv'),fb=document.getElementById('fb');
+  function startPrac(){ queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; fb.textContent=''; document.getElementById('pracNext').disabled=true; showItem(); }
+  function showItem(){
+    if(!queue.length){ pv.innerHTML=''; document.getElementById('pname').textContent=''; document.getElementById('counter').textContent='All nine sorted! 🎉'; document.getElementById('pracNext').disabled=false; say('All nine sorted! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    pv.innerHTML = img('card_'+it.k) ? '<img src="'+img('card_'+it.k)+'" alt="">'+sv(it.k) : sv(it.k);
+    document.getElementById('pname').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} sorted`;
+    say(it.n+'. How does it move?');
+  }
+  function answer(m){
+    if(!queue.length) return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=m===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      let hint,vid;
+      if(it.a==='circ'&&m==='spin'){ hint='Spinning turns in ONE spot. This one travels around a path — that is circular.'; vid='fb_spincirc'; }
+      else if(it.a==='spin'&&m==='circ'){ hint='Look — it goes nowhere! It turns in one spot. That is spinning.'; vid='fb_circspin'; }
+      else if(it.mis==='sound'){ hint='Look closely — it moves back and forth very fast. That fast wiggle is vibrating, and vibrating makes the sound.'; vid='fb_sound'; }
+      else if(it.mis==='repeat'){ hint='It goes forward, then back, then again. The repeat means back-and-forth.'; vid='fb_repeat'; }
+      else { hint='Watch the path it makes, then try again.'; vid='fb_generic'; }
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,vid);
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:2000);
+  }
+  document.querySelectorAll('.mbtn').forEach(b=>b.onclick=()=>answer(b.dataset.m));
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'⚽',k:'card_ball',q:'A ball rolls across the floor in one line. How does it move?',o:['Straight','In a circle','Back and forth'],a:0},
+    {id:2,pic:'🪀',k:'card_top',q:'A top turns fast in ONE spot. How does it move?',o:['Around a path','Spinning','Straight'],a:1,mis:'spincirc'},
+    {id:3,pic:'🎠',k:'card_merry',q:'A horse on a merry-go-round travels around and around a path. How does it move?',o:['Spinning in one spot','Circular — around a path','Back and forth'],a:1,mis:'spincirc'},
+    {id:4,pic:'🛝',k:'card_swing',q:'A swing goes forward, then back, then forward again. How does it move?',o:['Back and forth','Straight','Spinning'],a:0,mis:'repeat'},
+    {id:5,pic:'🥁',k:'card_drum',q:'You hear a drum boom. What made the sound?',o:['The skin vibrates — fast back and forth','Sound just happens — nothing moves','The drum gets bigger'],a:0,mis:'sound'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic; document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can name all four motions! 🎠' : 'Good try! Let\'s visit the museum once more.';
+    document.getElementById('guessTxt').textContent = guess==='diff' ? 'At the start you guessed they move in DIFFERENT ways — you were right! The swing goes back and forth; the top spins.' : guess==='same' ? 'At the start you guessed they move the SAME way. Now you know: the swing goes back and forth, but the top spins in one spot!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Visit the museum again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go pluck a rubber band and FEEL a vibration. 🎸'; say('Lesson done! Now go pluck a rubber band and feel a vibration.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

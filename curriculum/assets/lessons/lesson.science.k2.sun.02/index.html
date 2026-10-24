@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The sun's day trip — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,260px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,260px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:340px;background:linear-gradient(var(--sky) 0 68%,#a9c98a 68% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:background 1s}
+.scene.night{background:linear-gradient(#2b3a52 0 68%,#3d4a3a 68% 100%)}
+.scene.night .caption{color:#fbf5ea;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+#sunEl{position:absolute;width:11%;left:4%;top:52%;transition:left 1.6s ease,top 1.6s ease,opacity .8s}
+#sunEl svg{width:100%;height:auto}
+.scene.night #sunEl{opacity:0}
+#stars{position:absolute;inset:0;opacity:0;transition:opacity 1s}
+.scene.night #stars{opacity:1}
+#treeWrap{position:absolute;left:44%;bottom:6%;width:14%}
+#treeWrap svg{width:100%;height:auto;display:block}
+#shadowEl{position:absolute;left:50%;bottom:5%;width:26%;height:8%;background:rgba(59,42,30,.32);border-radius:50%;
+  transform-origin:0 50%;transition:transform 1.6s ease,opacity .8s}
+.scene.night #shadowEl{opacity:0}
+#warmMarks{position:absolute;inset:0;opacity:0;transition:opacity .8s}
+#warmMarks.show{opacity:1}
+#pond{position:absolute;right:6%;bottom:4%;width:22%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:21px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media #sunEl,.scene.media #treeWrap,.scene.media #shadowEl,.scene.media #warmMarks,.scene.media #pond,.scene.media #stars{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.pwrap{display:flex;flex-direction:column;gap:14px;flex:1}
+.skyscene{position:relative;background:linear-gradient(var(--sky) 0 70%,#a9c98a 70% 100%);border-radius:var(--radius);box-shadow:var(--shadow);min-height:280px;overflow:hidden}
+.skyscene .tree{position:absolute;left:46%;bottom:6%;width:12%}
+.skyscene .tree svg{width:100%;height:auto;display:block}
+.sunspot{position:absolute;width:84px;height:84px;border-radius:50%;border:5px dashed var(--gold);background:rgba(255,255,255,.55);
+  font-size:40px;cursor:pointer;display:grid;place-items:center;box-shadow:var(--shadow)}
+.sunspot.right{border-style:solid;border-color:var(--green);background:#eaf5ec}
+.sunspot.wrong{border-style:solid;border-color:var(--red);background:#fbe9e7}
+.sunspot[disabled]{cursor:default}
+.sunspot[data-k="east"]{left:4%;bottom:26%}
+.sunspot[data-k="top"]{left:calc(50% - 42px);top:5%}
+.sunspot[data-k="west"]{right:4%;bottom:26%}
+.slabel{position:absolute;font-size:19px;font-weight:800;color:var(--ink2)}
+.slabel.e{left:3%;bottom:16%}
+.slabel.w{right:3%;bottom:16%}
+.pscene{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:none;align-items:center;justify-content:center;min-height:160px}
+.pscene .bigmoji{font-size:96px;line-height:1.1}
+.pscene img{width:min(40vw,260px);border-radius:16px;display:block}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.partbtn{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.partbtn.right{border-color:var(--green);background:#eaf5ec}
+.partbtn.wrong{border-color:var(--red);background:#fbe9e7}
+.partbtn[disabled]{cursor:default}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:4px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px}
+  .sunspot{width:70px;height:70px}
+  .sunspot[data-k="top"]{left:calc(50% - 35px)}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>The sun's day trip <button class="say" data-say="Good morning! You just woke up. Where is the sun right now? Low, near the hills? Or high overhead? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Good morning! You just woke up. <b>Where is the sun right now?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="low">
+      <svg viewBox="0 0 200 130" aria-label="sun low near the hills"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><path d="M0 100 Q60 70 120 100 T200 95 L200 130 L0 130Z" fill="#a9c98a"/><circle cx="40" cy="88" r="20" fill="#e0a93b"/><g stroke="#e0a93b" stroke-width="4" stroke-linecap="round"><path d="M40 60 v-10"/><path d="M14 74 l-8 -6"/><path d="M66 74 l8 -6"/></g></svg><img data-img="hook_low" alt="" hidden>
+      <span>Low, near the hills</span>
+    </div>
+    <div class="pick" data-guess="high">
+      <svg viewBox="0 0 200 130" aria-label="sun high overhead"><rect width="200" height="130" rx="16" fill="#cfe6ee"/><path d="M0 112 Q60 92 120 112 T200 108 L200 130 L0 130Z" fill="#a9c98a"/><circle cx="100" cy="34" r="20" fill="#e0a93b"/><g stroke="#e0a93b" stroke-width="4" stroke-linecap="round"><path d="M100 6 v-4"/><path d="M72 34 h-10"/><path d="M128 34 h10"/><path d="M80 14 l-7 -7"/><path d="M120 14 l7 -7"/></g></svg><img data-img="hook_high" alt="" hidden>
+      <span>High overhead</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Watch the sun cross the sky <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="stars" viewBox="0 0 1000 400" preserveAspectRatio="none"><g fill="#fbf5ea"><circle cx="120" cy="60" r="3"/><circle cx="300" cy="120" r="2.5"/><circle cx="520" cy="50" r="3"/><circle cx="700" cy="100" r="2.5"/><circle cx="880" cy="60" r="3"/><circle cx="420" cy="160" r="2"/><circle cx="820" cy="170" r="2"/></g></svg>
+    <div id="sunEl"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="26" fill="#e0a93b"/><g stroke="#e0a93b" stroke-width="6" stroke-linecap="round"><path d="M50 12 v-8"/><path d="M50 88 v8"/><path d="M12 50 h-8"/><path d="M88 50 h8"/><path d="M24 24 l-6 -6"/><path d="M76 24 l6 -6"/><path d="M24 76 l-6 6"/><path d="M76 76 l6 6"/></g></svg></div>
+    <div id="shadowEl"></div>
+    <div id="treeWrap"><svg viewBox="0 0 100 150"><rect x="44" y="80" width="12" height="64" rx="5" fill="#7a5a35"/><circle cx="50" cy="56" r="36" fill="#4f7d43"/><circle cx="28" cy="70" r="22" fill="#5c8a4f"/><circle cx="72" cy="70" r="22" fill="#5c8a4f"/></svg></div>
+    <div id="warmMarks">
+      <svg id="pond" viewBox="0 0 220 90"><ellipse cx="110" cy="50" rx="100" ry="32" fill="#7fb2c9"/><path d="M40 46 q20 -8 40 0 M120 56 q20 -8 40 0" stroke="#fff" stroke-width="4" fill="none" opacity=".7"/></svg>
+      <svg style="position:absolute;left:8%;bottom:10%;width:18%" viewBox="0 0 200 80"><path d="M10 60 q30 -24 60 0 q30 24 60 0 q20 -16 40 -4" stroke="#e0a93b" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/></svg>
+      <svg style="position:absolute;left:30%;top:24%;width:16%" viewBox="0 0 200 60"><path d="M10 40 q24 -20 48 0 t48 0 t48 0" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/></svg>
+    </div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌅</span>Morning: low</div>
+    <div class="badge" id="b1"><span class="em">☀️</span>Noon: high</div>
+    <div class="badge" id="b2"><span class="em">🌇</span>Evening: low</div>
+    <div class="badge" id="b3"><span class="em">🔥</span>Warms land, air, water</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Sun tracker <button class="say" data-say="Where is the sun? Tap a sun spot in the sky, or tap an answer button." data-voice="prac_intro">🔊</button></h2>
+  <div class="pwrap">
+    <p class="lead" id="ptext" style="margin:0"></p>
+    <div class="skyscene" id="skyscene">
+      <div class="tree"><svg viewBox="0 0 100 150"><rect x="44" y="80" width="12" height="64" rx="5" fill="#7a5a35"/><circle cx="50" cy="56" r="36" fill="#4f7d43"/><circle cx="28" cy="70" r="22" fill="#5c8a4f"/><circle cx="72" cy="70" r="22" fill="#5c8a4f"/></svg></div>
+      <span class="slabel e">where the sun rises</span>
+      <span class="slabel w">where the sun sets</span>
+      <button class="sunspot" data-k="east">☀️</button>
+      <button class="sunspot" data-k="top">☀️</button>
+      <button class="sunspot" data-k="west">☀️</button>
+    </div>
+    <div class="pscene" id="pscene"></div>
+    <div class="parts" id="pbtns"></div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the sun again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.sun.02',version:1,quiz:'quiz.science.k2.sun.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_morning'],['b1','badge_noon'],['b2','badge_evening'],['b3','badge_warm']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const sunEl=document.getElementById('sunEl'),shadowEl=document.getElementById('shadowEl'),warm=document.getElementById('warmMarks'),cap=document.getElementById('cap');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function sunTo(where){ // east | top | west
+    if(where==='east'){ sunEl.style.left='4%'; sunEl.style.top='52%'; shadowEl.style.transform='scaleX(1.6) translateX(2%)'; }
+    if(where==='top'){ sunEl.style.left='44.5%'; sunEl.style.top='4%'; shadowEl.style.transform='scaleX(.35) translateX(-40%)'; }
+    if(where==='west'){ sunEl.style.left='85%'; sunEl.style.top='52%'; shadowEl.style.transform='scaleX(1.6) translateX(-102%)'; }
+  }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    sceneEl.classList.remove('night'); warm.classList.remove('show'); sunTo('east');
+    badges.forEach(b=>b.className='badge'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "MORNING. The sun is LOW, over the side where it rises. The tree's shadow is long.",
+    "NOON — lunchtime. The sun is HIGH overhead. Now the shadow is at its shortest.",
+    "EVENING. The sun sinks LOW on the other side, where it sets. The shadow grows long again.",
+    "All day, the sun is the great warmer. It warms the LAND. It warms the AIR. It warms the WATER.",
+    "At night the sun is not gone, and it never turns off. The Earth slowly turns, so the sun shines on the other side of the world. The sun is not alive — it doesn't follow you. In the morning, there it is again: low, where it rises."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: morning
+    cap.textContent='MORNING: sun LOW where it rises. Long shadow.'; say(teachScript[0],'t_morning'); showBeat('teach_morning'); sunTo('east');
+    later(()=>{ badges[0].classList.add('on'); },2600);
+    // beat 2: noon
+    later(()=>{ cap.textContent='NOON: sun HIGH overhead. Shortest shadow.'; say(teachScript[1],'t_noon'); showBeat('teach_noon'); sunTo('top'); },4800);
+    later(()=>{ badges[1].classList.add('on'); },7200);
+    // beat 3: evening
+    later(()=>{ cap.textContent='EVENING: sun LOW where it sets. Long shadow again.'; say(teachScript[2],'t_evening'); showBeat('teach_evening'); sunTo('west'); },9200);
+    later(()=>{ badges[2].classList.add('on'); },11600);
+    // beat 4: the great warmer
+    later(()=>{ cap.textContent='The sun WARMS the land, the air, and the water.'; say(teachScript[3],'t_warms'); showBeat('teach_warms'); sunTo('top'); warm.classList.add('show'); },13600);
+    later(()=>{ badges[3].classList.add('on'); },16400);
+    // beat 5: night, gently
+    later(()=>{ warm.classList.remove('show'); cap.textContent='Night: the sun shines on the OTHER side of the Earth. It never turns off.'; say(teachScript[4],'t_night'); showBeat('teach_night'); sceneEl.classList.add('night'); },18400);
+    later(()=>{ sceneEl.classList.remove('night'); sunTo('east'); cap.textContent='Morning again! Low, where it rises.'; },25400);
+    later(()=>{ document.getElementById('teachNext').disabled=false; },26600);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const SPOTFB={
+    east:'That low spot is where the sun RISES — that’s morning. Think about the time again.',
+    top:'High overhead is the middle of the day — NOON. Think about the time again.',
+    west:'That low spot is where the sun SETS — that’s evening. Think about the time again.'
+  };
+  const PITEMS=[
+    {id:'s1',kind:'sky',q:'It’s MORNING — you just woke up. Tap where the sun is.',a:'east',why:'Morning sun sits low, over the side where it rises.'},
+    {id:'s2',kind:'sky',q:'It’s NOON — lunchtime. Tap where the sun is.',a:'top',why:'At noon the sun is high overhead.'},
+    {id:'s3',kind:'sky',q:'It’s EVENING — almost dinner. Tap where the sun is.',a:'west',why:'Evening sun sinks low on the sunset side.'},
+    {id:'s4',kind:'sky',q:'Tap the sun spot that makes the tree’s shadow SHORTEST.',a:'top',why:'When the sun is straight up, the shadow shrinks to its shortest.'},
+    {id:'o1',kind:'opts',pic:'🌳',k:'card_tree_noon',q:'When is the tree’s shadow the shortest?',
+      o:[{t:'At noon',k:'ok'},{t:'In the morning',k:'time'},{t:'Never — shadows stay the same all day',k:'same'}],a:0,
+      why:'Noon — high sun, short shadow.'},
+    {id:'o2',kind:'opts',pic:'🏖️',k:'card_sand',q:'Two patches of sand: one in the sun, one in the shade. Which is WARMER?',
+      o:[{t:'The sunny sand',k:'ok'},{t:'The shady sand',k:'shade'},{t:'They feel the same',k:'sametemp'}],a:0,
+      why:'The sun warms the land — sunny sand gets warm.'},
+    {id:'o3',kind:'opts',pic:'💧',k:'card_puddles',q:'Two puddles: one in the sun all day, one in the shade. Which is warmer?',
+      o:[{t:'The sunny puddle',k:'ok'},{t:'The shady puddle',k:'shade'},{t:'The sun can’t warm water',k:'nowater'}],a:0,
+      why:'The sun warms water too — land, air, AND water.'},
+    {id:'o4',kind:'opts',pic:'🌙',k:'card_night',q:'It’s night. Where is the sun?',
+      o:[{t:'Shining on the other side of the Earth',k:'ok'},{t:'It turned off and disappeared',k:'gone'},{t:'It went to sleep',k:'alive'}],a:0,
+      why:'The Earth turns — the sun keeps shining on the other side.'}
+  ];
+  const OPTFB={
+    time:'Morning sun is LOW — low sun makes LONG shadows.',
+    same:'Watch the tree: long, short, long. Shadows change all day.',
+    shade:'The shade blocks the sun’s warmth. The sunny spot is the warm one.',
+    sametemp:'Try it outside — the sunny spot always feels warmer. The sun warms the land.',
+    nowater:'The sun warms land, air, AND water. Sunny water turns warm.',
+    gone:'The sun never turns off. The Earth turns, so night is our side facing away.',
+    alive:'The sun isn’t alive — it doesn’t sleep or follow you. The Earth turns.'
+  };
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,plock=false;
+  const ptext=document.getElementById('ptext'),sky=document.getElementById('skyscene'),pscene=document.getElementById('pscene'),pbtns=document.getElementById('pbtns'),fb=document.getElementById('fb');
+  const spots=Array.from(document.querySelectorAll('.sunspot'));
+  function startPractice(){ queue=PITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;plock=false; fb.textContent=''; fb.className='fb'; showP(); }
+  function showP(){
+    plock=false;
+    spots.forEach(s=>{s.disabled=false;s.className='sunspot';});
+    if(!queue.length){ ptext.textContent='You tracked the sun all day!'; sky.style.display='none'; pscene.style.display='flex'; pscene.innerHTML='<div class="bigmoji">☀️</div>'; pbtns.innerHTML='';
+      document.getElementById('counter').textContent='All done! 🎉'; document.getElementById('pracNext').disabled=false;
+      say('You tracked the sun all day! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    ptext.textContent=it.q;
+    if(it.kind==='sky'){ sky.style.display='block'; pscene.style.display='none'; pbtns.innerHTML=''; }
+    else{
+      sky.style.display='none'; pscene.style.display='flex';
+      if(img(it.k)) pscene.innerHTML='<img src="'+img(it.k)+'" alt="">'; else pscene.innerHTML='<div class="bigmoji">'+it.pic+'</div>';
+      pbtns.innerHTML='';
+      it.o.forEach((op,i)=>{ const b=document.createElement('button'); b.className='partbtn'; b.textContent=op.t; b.onclick=()=>answer(i,b); pbtns.appendChild(b); });
+    }
+    document.getElementById('counter').textContent=done+' of '+PITEMS.length+' answered';
+    say(it.q);
+  }
+  function answer(choice,btn){
+    if(plock||!queue.length) return; plock=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>PITEMS.length) pass1=false;
+    let ok,misKey,hint,fbid;
+    if(it.kind==='sky'){ ok=choice===it.a; misKey=choice; hint=SPOTFB[choice]; fbid='fb_'+choice;
+      spots.forEach(s=>{s.disabled=true; if(s.dataset.k===it.a) s.classList.add('right'); else if(s.dataset.k===choice&&!ok) s.classList.add('wrong');});
+    } else { ok=choice===it.a; misKey=it.o[choice].k; hint=OPTFB[misKey]; fbid='fb_'+misKey;
+      document.querySelectorAll('#pbtns .partbtn').forEach((b,j)=>{b.disabled=true; if(j===it.a) b.classList.add('right'); else if(j===choice&&!ok) b.classList.add('wrong');});
+    }
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.id);
+    } else {
+      misses[misKey]=(misses[misKey]||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,fbid);
+      queue.push(it);
+    }
+    setTimeout(showP, ok?1500:2200);
+  }
+  spots.forEach(s=>s.addEventListener('click',()=>{ const it=queue[0]; if(!it||it.kind!=='sky') return; answer(s.dataset.k,s); }));
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌅',k:'card_morning',q:'It’s morning. Where is the sun?',o:['Low, on the side where it rises','Straight overhead','Nowhere — it went away'],a:0,mis:['','noon-swap','sun-disappears']},
+    {id:2,pic:'🌳',k:'card_tree_noon',q:'When is the tree’s shadow SHORTEST?',o:['At noon','In the morning','Shadows stay the same all day'],a:0,mis:['','time-swap','same-shadow']},
+    {id:3,pic:'🌙',k:'card_night',q:'At night, the sun…',o:['Shines on the other side of the Earth','Turns off and disappears','Comes down to sleep'],a:0,mis:['','sun-disappears','sun-alive']},
+    {id:4,pic:'☀️',k:'card_sky_arc',q:'Why does the sun seem to move across the sky?',o:['The Earth slowly turns','The sun is alive and follows you','It doesn’t move — it stays in one spot'],a:0,mis:['','sun-alive','static-sun']},
+    {id:5,pic:'🔥',k:'card_warms',q:'What does the sun warm?',o:['The land, the air, AND the water','Only the land','Nothing — it only gives light'],a:0,mis:['','land-only','no-warmth']}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can track the sun across the sky! ☀️' : 'Good try! Let\'s watch the sun\'s trip once more.';
+    document.getElementById('guessTxt').textContent = guess==='low' ? 'At the start you guessed LOW — right! Morning sun sits low where it rises.' : guess==='high' ? 'At the start you guessed HIGH overhead. Now you know: that’s noon — morning sun sits LOW where it rises!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the sun again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go check YOUR tree’s shadow — morning, noon, and evening. ☀️'; say('Lesson done! Now go outside with a grown-up and check your tree’s shadow — morning, noon, and evening.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

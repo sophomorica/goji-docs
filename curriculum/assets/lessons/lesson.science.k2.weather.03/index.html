@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Junior forecaster — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 70%,#dfeef4 70% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene .beat{position:absolute;inset:0}
+.scene .beat svg{width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .beat{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.windline{stroke-dasharray:22 16;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-38}}
+/* ---- practice / check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt,.popt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right,.popt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong,.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled],.popt[disabled]{cursor:default}
+.bigpic{font-size:100px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.bigpic svg{width:min(90vw,560px);height:auto;background:#fff;border-radius:18px;box-shadow:var(--shadow)}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Junior forecaster <button class="say" data-say="Will tomorrow be sunny or stormy? Can anyone know before it happens? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Will tomorrow be sunny or stormy? <b>Can anyone know before it happens?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="yes">
+      <img data-img="hook_clues" alt="" hidden><svg viewBox="0 0 200 130" aria-label="weather chart with a magnifying glass"><rect width="200" height="130" rx="16" fill="#fff"/><rect x="20" y="20" width="110" height="90" rx="8" fill="#f3e9d6"/><circle cx="45" cy="45" r="10" fill="#e0a93b"/><circle cx="72" cy="45" r="10" fill="#e0a93b"/><circle cx="45" cy="72" r="10" fill="#9fc7d6"/><circle cx="45" cy="97" r="10" fill="#e0a93b"/><circle cx="158" cy="80" r="26" fill="none" stroke="#3b2a1e" stroke-width="7"/><path d="M176 100 l16 16" stroke="#3b2a1e" stroke-width="9" stroke-linecap="round"/></svg>
+      <span>Yes — clues can tell us</span>
+    </div>
+    <div class="pick" data-guess="no">
+      <img data-img="hook_mystery" alt="" hidden><svg viewBox="0 0 200 130" aria-label="a big question mark over clouds"><rect width="200" height="130" rx="16" fill="#dfeef4"/><ellipse cx="60" cy="100" rx="40" ry="18" fill="#fff"/><ellipse cx="140" cy="104" rx="46" ry="20" fill="#fff"/><text x="100" y="80" text-anchor="middle" font-size="76" font-weight="900" fill="#8d8d8d">?</text></svg>
+      <span>No — nobody can know</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Measure, record, predict <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div class="beat" id="beatArt"></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌡️</span>Measure</div>
+    <div class="badge" id="b1"><span class="em">📒</span>Record</div>
+    <div class="badge" id="b2"><span class="em">🔍</span>See the pattern</div>
+    <div class="badge" id="b3"><span class="em">🔦</span>Predict &amp; prepare</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Forecaster training <button class="say" id="sayPrac" data-say="Time for forecaster training! Match each tool to its job, then read the weather chart. Tap your answer." data-voice="prac_intro">🔊</button></h2>
+  <p class="lead">Match the tools, then <b>read the chart</b>. Tap your answer.</p>
+  <div class="bigpic" id="ppic"></div>
+  <div class="q"><span id="ptext"></span><button class="say" id="sayP">🔊</button></div>
+  <div class="opts" id="popts"></div>
+  <div class="fb" id="pfb"></div>
+  <div class="counter" id="pcount"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the tools again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.weather.03',version:1,quiz:'quiz.science.k2.weather.03',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_measure'],['b1','badge_record'],['b2','badge_pattern'],['b3','badge_prepare']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- pictograph (shared SVG, drawn inline) ---------- */
+  function pictograph(){
+    const rows=[['Sunny','#e0a93b',4],['Rainy','#5aa3bf',2],['Cloudy','#8d8d8d',1]];
+    let s='<svg viewBox="0 0 560 240" role="img" aria-label="pictograph of one week of weather">';
+    s+='<text x="280" y="30" text-anchor="middle" font-size="24" font-weight="800" fill="#3b2a1e">Our week of weather</text>';
+    rows.forEach((r,i)=>{
+      const y=70+i*56;
+      s+=`<text x="16" y="${y+10}" font-size="22" font-weight="800" fill="#3b2a1e">${r[0]}</text>`;
+      for(let j=0;j<r[2];j++){
+        const x=130+j*66;
+        if(i===0) s+=`<g><circle cx="${x}" cy="${y}" r="18" fill="${r[1]}"/><g stroke="${r[1]}" stroke-width="4" stroke-linecap="round"><path d="M${x} ${y-30} v8"/><path d="M${x} ${y+22} v8"/><path d="M${x-30} ${y} h8"/><path d="M${x+22} ${y} h8"/></g></g>`;
+        else if(i===1) s+=`<g><ellipse cx="${x}" cy="${y-6}" rx="22" ry="12" fill="#9fc7d6"/><path d="M${x-10} ${y+10} l-4 10 M${x} ${y+10} l-4 10 M${x+10} ${y+10} l-4 10" stroke="${r[1]}" stroke-width="4" stroke-linecap="round"/></g>`;
+        else s+=`<ellipse cx="${x}" cy="${y}" rx="24" ry="13" fill="${r[1]}" opacity=".75"/>`;
+      }
+    });
+    s+='<text x="280" y="232" text-anchor="middle" font-size="18" fill="#6b5646">each picture = one day</text></svg>';
+    return s;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), beatArt=document.getElementById('beatArt');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const THERMO='<g transform="translate(180,40)"><rect x="30" y="0" width="26" height="180" rx="13" fill="#fff" stroke="#8d8d8d" stroke-width="4"/><circle cx="43" cy="200" r="30" fill="#b5382f"/><rect x="36" y="70" width="14" height="120" fill="#b5382f"/><g stroke="#8d8d8d" stroke-width="3">'+[0,1,2,3,4,5].map(i=>'<path d="M60 '+(20+i*30)+' h14"/>').join('')+'</g></g>',
+        GAUGE='<g transform="translate(430,60)"><rect x="0" y="0" width="70" height="180" rx="10" fill="#eaf4f8" stroke="#8d8d8d" stroke-width="4"/><rect x="4" y="110" width="62" height="66" rx="7" fill="#5aa3bf"/><g stroke="#8d8d8d" stroke-width="3">'+[0,1,2,3].map(i=>'<path d="M0 '+(40+i*36)+' h16"/>').join('')+'</g><path d="M20 -34 l-5 14 M40 -30 l-5 14 M58 -36 l-5 14" stroke="#5aa3bf" stroke-width="5" stroke-linecap="round"/></g>',
+        SOCK='<g transform="translate(650,50)"><rect x="0" y="0" width="10" height="220" fill="#8a7355"/><path d="M10 20 L150 34 L150 66 L10 60 Z" fill="#e0a93b"/><path d="M45 23 L45 61 M85 27 L85 64 M120 30 L120 65" stroke="#b5382f" stroke-width="12"/><g stroke="#9fc7d6" stroke-width="5" fill="none"><path class="windline" d="M170 30 q40 6 80 0"/><path class="windline" d="M165 60 q45 8 90 2"/></g></g>',
+        TABLE='<g transform="translate(160,60)"><rect x="0" y="0" width="680" height="180" rx="14" fill="#fff" stroke="#d9ccb4" stroke-width="4"/><text x="340" y="36" text-anchor="middle" font-size="26" font-weight="800" fill="#3b2a1e">Our week of weather</text><text x="20" y="82" font-size="22" font-weight="800" fill="#3b2a1e">Sunny</text>'+[0,1,2,3].map(i=>'<circle cx="'+(150+i*70)+'" cy="76" r="16" fill="#e0a93b"/>').join('')+'<text x="20" y="132" font-size="22" font-weight="800" fill="#3b2a1e">Rainy</text>'+[0,1].map(i=>'<ellipse cx="'+(150+i*70)+'" cy="124" rx="20" ry="11" fill="#5aa3bf"/>').join('')+'<text x="20" y="172" font-size="22" font-weight="800" fill="#3b2a1e">Cloudy</text><ellipse cx="150" cy="164" rx="20" ry="11" fill="#8d8d8d" opacity=".7"/></g>',
+        STORM='<g><rect width="1000" height="330" fill="#b9cdd6"/><ellipse cx="300" cy="70" rx="130" ry="46" fill="#6f8791"/><ellipse cx="430" cy="90" rx="100" ry="38" fill="#59707a"/><path d="M330 130 l-24 52 h26 l-20 48" stroke="#e0a93b" stroke-width="9" fill="none" stroke-linecap="round"/><g transform="translate(620,150)"><rect x="0" y="60" width="220" height="120" fill="#f3e9d6"/><path d="M-16 62 L110 -10 L236 62 Z" fill="#b5382f"/><rect x="92" y="110" width="44" height="70" fill="#8a7355"/></g><g transform="translate(560,236)"><rect x="0" y="0" width="26" height="56" rx="8" fill="#3b2a1e"/><circle cx="13" cy="-8" r="15" fill="#e0a93b"/></g></g>';
+  const BEATS=[
+    {media:'teach_thermo',cap:'The THERMOMETER measures how warm.',
+     svg:'<rect width="1000" height="330" fill="#cfe6ee"/>'+THERMO+'<text x="330" y="150" font-size="30" font-weight="800" fill="#3b2a1e">how warm?</text>',
+     voice:'t_thermo',txt:'Forecasters use tools. The thermometer measures how warm the air is. The red line climbs on a hot day. The tool only measures — it never makes the weather.',
+     fn(){ }},
+    {media:'teach_gauge',cap:'The RAIN GAUGE measures how much rain.',
+     svg:'<rect width="1000" height="330" fill="#cfe6ee"/>'+GAUGE+'<text x="540" y="150" font-size="30" font-weight="800" fill="#3b2a1e">how much rain?</text>',
+     voice:'t_gauge',txt:'The rain gauge is a measuring cup for the sky. Rain falls in, and the marks show how much rain fell.',
+     fn(){ }},
+    {media:'teach_sock',cap:'The WINDSOCK shows the wind.',
+     svg:'<rect width="1000" height="330" fill="#cfe6ee"/>'+SOCK+'<text x="330" y="200" font-size="30" font-weight="800" fill="#3b2a1e">which way? how hard?</text>',
+     voice:'t_sock',txt:'The windsock fills up and points. It shows which way the wind blows, and how hard.',
+     fn(){ badges[0].classList.add('on'); }},
+    {media:'teach_graph',cap:'Record every day — the chart shows a PATTERN.',
+     svg:'<rect width="1000" height="330" fill="#cfe6ee"/>'+TABLE,
+     voice:'t_graph',txt:'A junior forecaster measures every day, and records it. Each sunny day gets one sun picture. Stack the pictures — and the week becomes a pictograph! Now you can SEE the pattern: lots of sun, some rain.',
+     fn(){ badges[1].classList.add('on'); setTimeout(()=>badges[2].classList.add('on'),1200); }},
+    {media:'teach_storm',cap:'Patterns help you PREDICT — and PREPARE.',
+     svg:STORM,
+     voice:'t_predict',txt:'The pattern helps you predict: dark clouds piling up, wind rising — a storm is probably coming. So you prepare! Charge the flashlight. Bring toys inside. Stay in where it\'s safe. Knowing early keeps us ready.',
+     fn(){ badges[3].classList.add('on'); }}
+  ];
+  const teachScript=BEATS.map(b=>b.txt);
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function resetScene(){ timers.forEach(clearTimeout); timers=[]; badges.forEach(b=>b.className='badge'); cap.textContent=''; beatArt.innerHTML=''; layer.innerHTML=''; sceneEl.classList.remove('media'); document.getElementById('teachNext').disabled=true; }
+  function playTeach(){
+    resetScene();
+    let t=0;
+    BEATS.forEach((b,i)=>{
+      later(()=>{ cap.textContent=b.cap; say(b.txt,b.voice); beatArt.innerHTML='<svg viewBox="0 0 1000 330" preserveAspectRatio="xMidYMid meet">'+b.svg+'</svg>'; showBeat(b.media); b.fn(); },t);
+      t+= (i===3?9200 : i===4?9000 : 6800);
+    });
+    later(()=>{ cap.textContent='Measure → record → see the pattern → predict and prepare.'; document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (tool match + pictograph reading) ---------- */
+  const PRAC=[
+    {pic:'🌡️',k:'card_thermo',voice:'pm1',q:'Which job does the thermometer do?',
+     o:['Measures how warm it is','Makes the day hot','Measures the rain'],a:0,mis:['','toolmakes','mixup'],
+     why:'The thermometer measures how warm — it never makes the weather.'},
+    {pic:'🥛',k:'card_gauge',voice:'pm2',q:'Which job does the rain gauge do?',
+     o:['Measures how much rain fell','Measures how warm it is','Brings the rain'],a:0,mis:['','mixup','toolmakes'],
+     why:'The rain gauge catches rain and its marks show how much fell.'},
+    {pic:'🎏',k:'card_sock',voice:'pm3',q:'Which job does the windsock do?',
+     o:['Shows the wind\'s direction and strength','Measures the rain','Makes the wind blow'],a:0,mis:['','mixup','toolmakes'],
+     why:'The windsock fills and points — that is the wind talking.'},
+    {graph:true,voice:'pg1',q:'Look at the chart. Which kind of day happened MOST?',
+     o:['Sunny','Rainy','Cloudy'],a:0,mis:['','read','read'],
+     why:'The sunny row has the most pictures — four!'},
+    {graph:true,voice:'pg2',q:'How many rainy days were there?',
+     o:['2','4','7'],a:0,mis:['','read','read'],
+     why:'Two rain pictures — two rainy days.'},
+    {graph:true,voice:'pg3',q:'How many MORE sunny days than rainy days?',
+     o:['2 more','1 more','4 more'],a:0,mis:['','read','read'],
+     why:'Four sunny take away two rainy leaves two more.'},
+    {graph:true,voice:'pg4',q:'Which kind of day happened the FEWEST?',
+     o:['Cloudy','Sunny','The chart can\'t tell us — it\'s just decoration'],a:0,mis:['','read','decoration'],
+     why:'Cloudy has just one picture — the fewest. The chart tells us all of this!'},
+    {pic:'⛈️',k:'card_prep',voice:'ps1',q:'The chart shows storm clouds building. What is a smart way to get ready?',
+     o:['Charge the flashlight and plan to stay inside','Do nothing — you can\'t know anything about tomorrow','Go out to fly a kite in the storm'],a:0,mis:['','cantknow','unsafe'],
+     why:'Predicting lets you prepare — flashlight ready, safe inside.'}
+  ];
+  let pq=[],pdone=0,ptries=0,misses={},pass1correct=0,pass1=true,pseen=0;
+  function startPractice(){ pq=PRAC.slice(); pdone=0;ptries=0;misses={};pass1correct=0;pass1=true;pseen=0; document.getElementById('pfb').textContent=''; document.getElementById('pracNext').disabled=true; showPrac(); }
+  function showPrac(){
+    if(!pq.length){ document.getElementById('ppic').textContent='🌦️'; document.getElementById('ptext').textContent='Training complete, junior forecaster!'; document.getElementById('popts').innerHTML=''; document.getElementById('pcount').textContent='Practice done! 🎉'; document.getElementById('pfb').textContent=''; document.getElementById('pracNext').disabled=false; say('Training complete, junior forecaster! Now show what you know.','prac_done'); return; }
+    const s=pq[0]; const pp=document.getElementById('ppic');
+    if(s.graph) pp.innerHTML=pictograph();
+    else if(img(s.k)) pp.innerHTML='<img src="'+img(s.k)+'" alt="">';
+    else pp.textContent=s.pic;
+    document.getElementById('ptext').textContent=s.q; document.getElementById('pfb').textContent='';
+    document.getElementById('pcount').textContent=`${pdone} of ${PRAC.length} done`;
+    document.getElementById('sayP').onclick=()=>say(s.q,s.voice);
+    const o=document.getElementById('popts'); o.innerHTML='';
+    s.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t; b.onclick=()=>pickPrac(i); o.appendChild(b); });
+    say(s.q,s.voice);
+  }
+  function pickPrac(i){
+    const s=pq[0]; const ok=i===s.a; ptries++; pseen++;
+    if(pseen>PRAC.length) pass1=false;
+    document.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===s.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('pfb');
+    if(ok){ pq.shift(); pdone++; if(pass1) pass1correct++; f.className='fb good'; f.textContent='✓ '+s.why; say('Yes! '+s.why,'why_'+(s.voice)); }
+    else{ const m=s.mis[i]||'other'; misses[m]=(misses[m]||0)+1;
+      const hint = m==='toolmakes'?'Tools only MEASURE the weather. They never make it.'
+        : m==='cantknow'?'You CAN know — the recorded pattern gives clues about tomorrow.'
+        : m==='decoration'?'The pictures are data! Each picture counts one real day.'
+        : m==='read'?'Count the pictures in each row — each picture is one day.'
+        : m==='unsafe'?'A storm is coming — forecasters prepare and stay safe.'
+        : 'Look again at the tool\'s job.';
+      f.className='fb bad'; f.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+m); pq.push(pq.shift()); }
+    setTimeout(showPrac, ok?1600:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌡️',k:'card_thermo',q:'Which tool tells you how warm it is?',o:['Thermometer','Rain gauge','Windsock'],a:0},
+    {id:2,pic:'☀️',k:'card_hot',q:'The thermometer shows a hot day. Did the thermometer MAKE it hot?',o:['No — it only measures the heat','Yes — the tool makes the weather'],a:0,mis:'toolmakes'},
+    {id:3,graph:true,q:'Look at the chart. How many sunny days were in the week?',o:['4','2','You can\'t tell — the pictures are just decoration'],a:0,mis:'decoration'},
+    {id:4,pic:'📒',k:'card_journal',q:'Why record the weather every single day?',o:['The record shows patterns that help you predict','No reason — nobody can know anything about tomorrow'],a:0,mis:'cantknow'},
+    {id:5,pic:'⛈️',k:'card_prep',q:'The pattern says a storm is coming tonight. What do you do?',o:['Charge the flashlight and stay inside','Nothing — tomorrow is a total mystery','Ask the thermometer to make it sunny'],a:0,mis:'cantknow'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic');
+    if(q.graph) qp.innerHTML=pictograph();
+    else if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">';
+    else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries:ptries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You\'re a junior forecaster! 🌦️' : 'Good try! Let\'s watch the tools once more.';
+    document.getElementById('guessTxt').textContent = guess==='yes' ? 'At the start you guessed we CAN get clues about tomorrow — right! Measure, record, and the pattern tells you.' : guess==='no' ? 'At the start you guessed nobody can know. Now you know the secret: record the weather, and the pattern gives you clues!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the tools again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go make a paper pictograph of YOUR weather journal. 📊'; say('Lesson done! Now go make a paper pictograph of your own weather journal, with your parent.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

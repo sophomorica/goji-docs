@@ -1,0 +1,73 @@
+{
+  "lesson": "lesson.science.k2.weather.02",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "fox": {
+      "prompt": "a friendly red fox, full body, standing in profile facing left, russet-orange fur, white chest and tail tip, warm amber eyes, calm expression, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    { "id": "hook_one", "prompt": "a grey rainy day over a green summer meadow, heavy raindrops, puddles, no creatures", "kind": "card" },
+    { "id": "hook_many", "prompt": "a hand-drawn paper calendar week with small weather symbols marked on each day: suns, clouds, raindrops, no faces on the symbols", "kind": "card" },
+    { "id": "teach_spring", "ref": "fox", "prompt": "spring meadow with one big tree covered in pink-white buds, light rain, the same fox with two small kits beside her, a child in a yellow rain jacket at the meadow edge", "kind": "scene" },
+    { "id": "teach_summer", "ref": "fox", "prompt": "the same meadow in summer: the same tree in full green leaf, bright plain sun, the same fox with a sleek thin coat, the same child now in a sun hat, no face on the sun", "kind": "scene" },
+    { "id": "teach_fall", "ref": "fox", "prompt": "the same meadow in fall: the same tree with orange leaves falling, the same fox with a visibly thicker coat, the same child in a jacket, leaves drifting", "kind": "scene" },
+    { "id": "teach_winter", "ref": "fox", "prompt": "the same meadow in winter: the same tree bare, snow falling and covering the ground, the same fox in a thick fluffy winter coat, the same child in a big coat, scarf and mittens", "kind": "scene" },
+    { "id": "teach_inside", "ref": "fox", "prompt": "the same summer meadow with the tree in full green leaf — but under grey clouds and cool rain, the child in the sun hat holding a jacket, showing a rainy day inside summer", "kind": "scene" },
+    { "id": "teach_record", "prompt": "a child's weather strip pinned to a wall: seven paper squares in a row, each with one drawn symbol — sun, sun, raindrops, sun, cloud, sun, raindrops — no faces on the symbols", "kind": "scene" },
+    { "id": "card_bare", "prompt": "one bare leafless tree with snow falling around it, snowy ground, no creatures", "kind": "card" },
+    { "id": "card_fox_thick", "ref": "fox", "prompt": "the same fox with a thick fluffy winter coat, fur puffed out, first snowflakes in the air", "kind": "card" },
+    { "id": "card_buds", "prompt": "a tree branch close up with pink-white buds just opening, a small bird nest with eggs nearby", "kind": "card" },
+    { "id": "card_summer_tree", "prompt": "one tree in full green summer leaf under a bright plain sun, no face on the sun, no creatures", "kind": "card" },
+    { "id": "card_summer_rain", "prompt": "a green leafy summer tree under grey clouds and falling rain, puddles below, no creatures", "kind": "card" },
+    { "id": "card_strip", "prompt": "a paper weather strip of seven squares with drawn suns, clouds and raindrops, a pencil beside it, no faces on the symbols", "kind": "card" },
+    { "id": "card_hot_spring", "prompt": "a spring meadow with budding tree under a very bright plain sun, heat shimmer, no face on the sun, no creatures", "kind": "card" },
+    { "id": "card_fall_kid", "prompt": "a child pulling on a warm jacket among drifting orange fall leaves", "kind": "card" },
+    { "id": "badge_spring", "prompt": "a single pink blossom bud on a twig, simple emblem", "kind": "card" },
+    { "id": "badge_summer", "prompt": "a plain bright sun with short rays, simple emblem, no face", "kind": "card" },
+    { "id": "badge_fall", "prompt": "one orange maple leaf falling, simple emblem", "kind": "card" },
+    { "id": "badge_winter", "prompt": "a single snowflake, simple emblem", "kind": "card" }
+  ],
+  "clips": [
+    { "id": "teach_spring", "from": "teach_spring", "seconds": 6, "prompt": "light rain falls, buds tremble and one opens, the fox kits tumble gently beside their mother" },
+    { "id": "teach_summer", "from": "teach_summer", "seconds": 6, "prompt": "summer leaves flutter in a warm breeze, light shimmers, the fox flicks her tail lazily" },
+    { "id": "teach_fall", "from": "teach_fall", "seconds": 6, "prompt": "orange leaves detach and drift down one by one, the fox's thicker fur ruffles in the wind" },
+    { "id": "teach_winter", "from": "teach_winter", "seconds": 6, "prompt": "snow falls softly on the bare branches, the fox fluffs her thick coat, the child's scarf sways" },
+    { "id": "teach_inside", "from": "teach_inside", "seconds": 6, "prompt": "cool rain falls on the full green summer tree, the child swaps the sun hat for a jacket" }
+  ],
+  "voice": [
+    { "id": "hook", "text": "It rained all day today, and it's cold. [pause] Your friend says: it must be winter! [pause] Can ONE day tell you the season? Tap your guess." },
+    { "id": "t_spring", "text": "<emphasis>Spring.</emphasis> It warms up. Rain falls. Buds open on the tree. [pause] The fox has kits! And you wear a rain jacket." },
+    { "id": "t_summer", "text": "<emphasis>Summer.</emphasis> Hot and bright. The tree is full of green leaves. [pause] The fox wears her thin summer coat. You wear a sun hat." },
+    { "id": "t_fall", "text": "<emphasis>Fall.</emphasis> It cools down. Leaves turn orange and drop. [pause] The fox's coat grows thicker. You put a jacket on." },
+    { "id": "t_winter", "text": "<emphasis>Winter.</emphasis> Cold. The tree is bare. Snow falls. [pause] The fox wears her thickest coat. You bundle up warm." },
+    { "id": "t_inside", "text": "But listen. [pause] Inside a season, the weather still changes day by day. A cold rainy day can come in summer. [pause] It is STILL summer!" },
+    { "id": "t_record", "text": "How do we know the season for sure? [pause] We RECORD the weather, day after day. The pattern shows us." },
+    { "id": "prac_intro", "text": "Look at the clue. [pause] Then tap the best answer." },
+    { "id": "prac_done", "text": "You read every clue! [pause] Now show what you know." },
+    { "id": "fb_season_swap", "text": "Not quite. Check the clue again — what do the tree, the animals, and your clothes say?" },
+    { "id": "fb_feel_nothing", "text": "Not quite. Animals DO feel the seasons. Fur thickens, food is stored, some sleep the winter away." },
+    { "id": "fb_tree_static", "text": "Not quite. Trees change with the seasons: buds, green leaves, falling leaves, bare." },
+    { "id": "fb_one_day", "text": "Not quite. One day is not a season! Daily weather wiggles — the season is the big pattern." },
+    { "id": "fb_count", "text": "Not quite. Count on the strip, day by day. That's what records are for." },
+    { "id": "fb_random", "text": "Not quite. It only looks random day by day. Record it, and the pattern appears." },
+    { "id": "fb_magic", "text": "Not quite. Records don't change the weather — they help us SEE its pattern." },
+    { "id": "why_a1", "text": "Yes! [pause] Bare tree plus snow — that's winter." },
+    { "id": "why_a2", "text": "Yes! [pause] Animals feel the seasons. Thick coats get ready for winter cold." },
+    { "id": "why_a3", "text": "Yes! [pause] Spring — everything wakes up and starts growing." },
+    { "id": "why_a4", "text": "Yes! [pause] In summer the tree is full of green leaves. Bare comes in winter." },
+    { "id": "why_a5", "text": "Yes! [pause] Daily weather changes inside a season. One cold day doesn't change the season." },
+    { "id": "why_b1", "text": "Yes! [pause] Count the suns: Monday, Tuesday, Thursday, Saturday. Four sunny days." },
+    { "id": "why_b2", "text": "Yes! [pause] The strip shows it: four sunny, two rainy. Records let us compare!" },
+    { "id": "why_b3", "text": "Yes! [pause] Day by day looks jumbly — but the record shows the season's pattern." },
+    { "id": "q1", "text": "One hot day comes in spring. Is it summer now?" },
+    { "id": "q2", "text": "What does the fox do for winter?" },
+    { "id": "q3", "text": "The tree is bare. Which season is it, most likely?" },
+    { "id": "q4", "text": "Why do we record the weather every day?" },
+    { "id": "q5", "text": "It's fall, and getting cooler. What do people do?" },
+    { "id": "pass", "text": "<soft>You can read the seasons!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the meadow once more." },
+    { "id": "done", "text": "Lesson done! From today, write the season next to the weather in your journal." }
+  ]
+}

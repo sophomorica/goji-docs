@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Force-tricks: net force and simple machines — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 30px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:170px;min-height:68px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:12px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;min-height:120px}
+.pick.sel{border-color:var(--gold)}
+.hookart{width:100%;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:8px;margin-bottom:14px}
+.hookart svg{width:100%;height:auto;display:block}
+.hookart img{width:100%;border-radius:16px;display:none}
+.hookart.media img{display:block}.hookart.media svg{display:none}
+/* ---- teach ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 66%,#cfc39f 66% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:25px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.75)}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media>svg{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+#tsvg .beat{display:none}
+#tsvg.b1 #tb1,#tsvg.b2 #tb2,#tsvg.b3 #tb3,#tsvg.b4 #tb4,#tsvg.b5 #tb5,#tsvg.b6 #tb6{display:inline}
+#tsvg.b1 .ropegrp{animation:slideR 2.2s .8s forwards ease-in-out}
+@keyframes slideR{to{transform:translateX(90px)}}
+#tsvg.b3 .levarm{transform-origin:500px 300px;animation:tilt 2s 1s forwards ease-in-out}
+@keyframes tilt{to{transform:rotate(-14deg)}}
+#tsvg.b4 .barrel{animation:rollup 3s 1s forwards ease-in-out}
+@keyframes rollup{to{transform:translate(430px,-190px)}}
+#tsvg.b5 .flagup{animation:rise 2.5s 1s forwards ease-in-out}
+@keyframes rise{to{transform:translateY(-170px)}}
+#tsvg.b5 .handdn{animation:sink 2.5s 1s forwards ease-in-out}
+@keyframes sink{to{transform:translateY(120px)}}
+#tsvg.b6 .halfL{transform-origin:330px 330px;animation:splitL 2s 1.2s forwards ease-in-out}
+#tsvg.b6 .halfR{transform-origin:470px 330px;animation:splitR 2s 1.2s forwards ease-in-out}
+@keyframes splitL{to{transform:rotate(-16deg)}}
+@keyframes splitR{to{transform:rotate(16deg)}}
+.shelf{display:flex;gap:10px;margin:12px 0 0;justify-content:center;flex-wrap:wrap}
+.tool{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:6px 16px 6px 10px;
+  font-size:19px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.94)}
+.tool.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+/* ---- practice ---- */
+.pwrap{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;flex:1;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ppic{font-size:96px;line-height:1.1}
+.ppic img{width:min(34vw,220px);border-radius:16px;display:block}
+.pq{font-size:26px;font-weight:800;text-align:center;max-width:850px}
+.popts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;width:100%;max-width:900px}
+.popt{font:inherit;font-size:22px;font-weight:800;background:var(--cream);border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 12px;cursor:pointer;box-shadow:var(--shadow);min-height:72px}
+.popt.right{border-color:var(--green);background:#eaf5ec}
+.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.popt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:22px;font-weight:700;text-align:center;margin-top:4px;color:var(--ink2);max-width:900px}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:20px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:27px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:86px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.gate{text-align:center;font-size:27px;font-weight:800}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:20px} .choice2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Tug-of-war! <button class="say" data-say="Two kids pull the rope to the left. Three kids pull it to the right. Which team wins the rope? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead"><b>Two</b> kids pull the rope left. <b>Three</b> kids pull it right. Which team wins the rope? Tap your guess.</p>
+  <div class="hookart" id="hookart">
+    <img data-img="hook_tug" alt="">
+    <svg viewBox="0 0 1000 260" aria-label="tug of war">
+      <line x1="120" y1="150" x2="880" y2="150" stroke="#a5713c" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="500" cy="150" r="12" fill="#b5382f"/>
+      <g fill="#5b7a97"><circle cx="150" cy="105" r="18"/><rect x="136" y="123" width="28" height="52" rx="12"/></g>
+      <g fill="#5b7a97"><circle cx="215" cy="105" r="18"/><rect x="201" y="123" width="28" height="52" rx="12"/></g>
+      <g fill="#7d9a5e"><circle cx="785" cy="105" r="18"/><rect x="771" y="123" width="28" height="52" rx="12"/></g>
+      <g fill="#7d9a5e"><circle cx="850" cy="105" r="18"/><rect x="836" y="123" width="28" height="52" rx="12"/></g>
+      <g fill="#7d9a5e"><circle cx="915" cy="105" r="18"/><rect x="901" y="123" width="28" height="52" rx="12"/></g>
+      <path d="M300 215 L200 215 M215 200 L200 215 L215 230" stroke="#5b7a97" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M700 215 L840 215 M825 200 L840 215 L825 230" stroke="#3f7d4e" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <text x="250" y="250" font-size="26" font-weight="800" fill="#5b7a97">2 pull</text>
+      <text x="700" y="250" font-size="26" font-weight="800" fill="#3f7d4e">3 pull</text>
+    </svg>
+  </div>
+  <div class="choice2">
+    <div class="pick" data-guess="left"><span>The team of 2</span></div>
+    <div class="pick" data-guess="right"><span>The team of 3</span></div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Net force — and six force-tricks <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="tsvg" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid meet">
+      <!-- beat 1: net force -->
+      <g class="beat" id="tb1">
+        <g class="ropegrp">
+          <line x1="120" y1="230" x2="880" y2="230" stroke="#a5713c" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="500" cy="230" r="12" fill="#b5382f"/>
+        </g>
+        <g fill="#5b7a97"><circle cx="140" cy="180" r="20"/><rect x="125" y="200" width="30" height="60" rx="13"/><circle cx="205" cy="180" r="20"/><rect x="190" y="200" width="30" height="60" rx="13"/></g>
+        <g fill="#7d9a5e"><circle cx="795" cy="180" r="20"/><rect x="780" y="200" width="30" height="60" rx="13"/><circle cx="860" cy="180" r="20"/><rect x="845" y="200" width="30" height="60" rx="13"/><circle cx="925" cy="180" r="20"/><rect x="910" y="200" width="30" height="60" rx="13"/></g>
+        <path d="M330 320 L230 320 M245 305 L230 320 L245 335" stroke="#5b7a97" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <text x="270" y="360" font-size="30" font-weight="800" fill="#5b7a97">pull of 4</text>
+        <path d="M670 320 L820 320 M805 305 L820 320 L805 335" stroke="#3f7d4e" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <text x="660" y="360" font-size="30" font-weight="800" fill="#3f7d4e">pull of 6</text>
+      </g>
+      <!-- beat 2: balanced forces -->
+      <g class="beat" id="tb2">
+        <line x1="150" y1="230" x2="850" y2="230" stroke="#a5713c" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="500" cy="230" r="12" fill="#b5382f"/>
+        <g fill="#5b7a97"><circle cx="170" cy="180" r="20"/><rect x="155" y="200" width="30" height="60" rx="13"/><circle cx="235" cy="180" r="20"/><rect x="220" y="200" width="30" height="60" rx="13"/></g>
+        <g fill="#7d9a5e"><circle cx="765" cy="180" r="20"/><rect x="750" y="200" width="30" height="60" rx="13"/><circle cx="830" cy="180" r="20"/><rect x="815" y="200" width="30" height="60" rx="13"/></g>
+        <path d="M370 320 L250 320 M265 305 L250 320 L265 335" stroke="#5b7a97" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <text x="280" y="360" font-size="30" font-weight="800" fill="#5b7a97">5</text>
+        <path d="M630 320 L750 320 M735 305 L750 320 L735 335" stroke="#3f7d4e" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <text x="700" y="360" font-size="30" font-weight="800" fill="#3f7d4e">5</text>
+        <text x="415" y="120" font-size="34" font-weight="900" fill="#6b5646">5 = 5 → still</text>
+      </g>
+      <!-- beat 3: lever -->
+      <g class="beat" id="tb3">
+        <polygon points="470,300 530,300 500,340" fill="#8e2a23"/>
+        <g class="levarm">
+          <rect x="220" y="292" width="560" height="16" rx="8" fill="#a5713c"/>
+          <rect x="228" y="252" width="70" height="44" rx="8" fill="#8d8d8d"/>
+        </g>
+        <g fill="#5b7a97"><circle cx="820" cy="200" r="20"/><rect x="805" y="220" width="30" height="60" rx="13"/></g>
+        <path d="M760 220 L760 285 M745 270 L760 285 L775 270" stroke="#b5382f" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <text x="590" y="380" font-size="28" font-weight="800" fill="#6b5646">long arm = small push, big lift</text>
+      </g>
+      <!-- beat 4: ramp -->
+      <g class="beat" id="tb4">
+        <polygon points="180,340 760,340 760,150" fill="#d9ccb4" stroke="#a5713c" stroke-width="5"/>
+        <rect x="760" y="150" width="180" height="190" fill="#b9aa8b"/>
+        <g class="barrel"><circle cx="240" cy="310" r="34" fill="#a5713c"/><circle cx="240" cy="310" r="20" fill="none" stroke="#8e5b2e" stroke-width="6"/></g>
+        <path d="M880 330 L880 190 M865 205 L880 190 L895 205" stroke="#b5382f" stroke-width="14" fill="none" stroke-linecap="round"/>
+        <text x="800" y="370" font-size="26" font-weight="800" fill="#b5382f">lift: hard</text>
+        <path d="M260 370 L470 300 M450 302 L470 300 L462 320" stroke="#3f7d4e" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <text x="230" y="395" font-size="26" font-weight="800" fill="#3f7d4e">long slope: easier push</text>
+      </g>
+      <!-- beat 5: pulley + wheel-and-axle -->
+      <g class="beat" id="tb5">
+        <rect x="300" y="60" width="12" height="300" fill="#8d8d8d"/>
+        <circle cx="306" cy="70" r="26" fill="none" stroke="#6b5646" stroke-width="8"/>
+        <line x1="284" y1="70" x2="284" y2="330" stroke="#a5713c" stroke-width="6"/>
+        <line x1="328" y1="70" x2="328" y2="250" stroke="#a5713c" stroke-width="6"/>
+        <g class="flagup"><polygon points="328,250 328,290 400,270" fill="#b5382f"/></g>
+        <g class="handdn"><circle cx="284" cy="330" r="16" fill="#5b7a97"/><path d="M284 346 L284 390" stroke="#5b7a97" stroke-width="12" stroke-linecap="round"/></g>
+        <text x="140" y="395" font-size="26" font-weight="800" fill="#6b5646">pull DOWN…</text>
+        <text x="360" y="120" font-size="26" font-weight="800" fill="#3f7d4e">…flag goes UP</text>
+        <circle cx="770" cy="240" r="90" fill="none" stroke="#6b5646" stroke-width="10"/>
+        <circle cx="770" cy="240" r="26" fill="#a5713c"/>
+        <text x="640" y="380" font-size="26" font-weight="800" fill="#6b5646">wheel &amp; axle: big wheel, easy turn</text>
+      </g>
+      <!-- beat 6: wedge + screw -->
+      <g class="beat" id="tb6">
+        <g class="halfL"><rect x="230" y="250" width="100" height="90" rx="14" fill="#a5713c"/></g>
+        <g class="halfR"><rect x="470" y="250" width="100" height="90" rx="14" fill="#a5713c"/></g>
+        <polygon points="400,180 360,300 440,300" fill="#8d8d8d"/>
+        <text x="250" y="380" font-size="26" font-weight="800" fill="#6b5646">wedge: splits apart</text>
+        <rect x="770" y="120" width="24" height="230" rx="10" fill="#8d8d8d"/>
+        <path d="M770 140 q24 12 24 24 M770 176 q24 12 24 24 M770 212 q24 12 24 24 M770 248 q24 12 24 24 M770 284 q24 12 24 24" stroke="#6b5646" stroke-width="6" fill="none"/>
+        <text x="660" y="390" font-size="26" font-weight="800" fill="#6b5646">screw: a ramp round a pole</text>
+      </g>
+    </svg>
+  </div>
+  <div class="shelf">
+    <div class="tool" id="m0">🪵 Lever</div><div class="tool" id="m1">📐 Ramp</div><div class="tool" id="m2">🎡 Pulley</div>
+    <div class="tool" id="m3">🛞 Wheel &amp; axle</div><div class="tool" id="m4">🪓 Wedge</div><div class="tool" id="m5">🔩 Screw</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>The machine workshop <button class="say" data-say="A job appears. Tap the force-trick that fits it. Watch out — two questions are about the tug-of-war and the scissors!" data-voice="prac_intro">🔊</button></h2>
+  <p class="lead">A job appears — tap the <b>force-trick</b> that fits it.</p>
+  <div class="pwrap">
+    <div class="ppic" id="ppic"></div>
+    <div class="pq"><span id="pq"></span><button class="say" id="sayP">🔊</button></div>
+    <div class="popts" id="popts"></div>
+    <div class="fb" id="pfb"></div>
+    <div class="counter" id="pcount"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the force-tricks again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.machines.01',version:1,quiz:'quiz.science.35.machines.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.closest('.hookart')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const tsvg=document.getElementById('tsvg'), cap=document.getElementById('cap');
+  const tools=[0,1,2,3,4,5].map(i=>document.getElementById('m'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const BEATS=[
+    {k:'teach_net', v:'t_net', cls:'b1', cap:'Two forces pull ONE rope. Add each side up: the bigger TOTAL — the net force — wins.',
+     txt:'Two forces pull one rope. Add each side up: the bigger total, the net force, decides who wins.'},
+    {k:'teach_tie', v:'t_tie', cls:'b2', cap:'A tie: 5 against 5. The rope holds still — but TWO forces still act on it.',
+     txt:'A tie: five against five. The rope holds still. But careful: two forces still act on it, they just cancel out.'},
+    {k:'teach_lever', v:'t_lever', cls:'b3', cap:'The LEVER is a force-trick. Push down on the LONG arm — the rock lifts, though your hands alone never could.',
+     txt:'Now the force-tricks. The lever: push down on the long arm, and the rock lifts, though your hands alone never could.'},
+    {k:'teach_ramp', v:'t_ramp', cls:'b4', cap:'The RAMP: roll it up the long slope instead of lifting it straight. Longer path — smaller push.',
+     txt:'The ramp, or inclined plane: roll the barrel up the long slope instead of lifting it straight up. A longer path means a smaller push.'},
+    {k:'teach_pulley', v:'t_pulley', cls:'b5', cap:'The PULLEY turns your pull around: pull DOWN, the flag rides UP. The WHEEL-AND-AXLE lets one easy turn do a hard job.',
+     txt:'The pulley turns your pull around: pull down, and the flag rides up. And the wheel-and-axle: one easy turn of the big wheel does the axle’s hard job.'},
+    {k:'teach_wedge', v:'t_wedge', cls:'b6', cap:'The WEDGE pushes sideways to split. The SCREW is a ramp wrapped around a pole. No trick gives FREE force — less push always means a LONGER path.',
+     txt:'The wedge turns a chop into a sideways split. The screw is just a ramp wrapped around a pole. But remember: no machine gives free force. You push less, but over a longer path. Machines never do the work for you — they only make it easier to do.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    tsvg.setAttribute('class',''); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    tools.forEach(t=>t.className='tool');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    const gap= reduced? 2600 : 6500;
+    BEATS.forEach((b,i)=>{
+      later(()=>{
+        tsvg.setAttribute('class',b.cls); cap.textContent=b.cap; say(b.txt,b.v); showBeat(b.k);
+        if(i===2) tools[0].classList.add('on');
+        if(i===3) tools[1].classList.add('on');
+        if(i===4){ tools[2].classList.add('on'); tools[3].classList.add('on'); }
+        if(i===5){ tools[4].classList.add('on'); tools[5].classList.add('on'); }
+        if(i===BEATS.length-1) later(()=>{ document.getElementById('teachNext').disabled=false; }, reduced?800:5200);
+      }, i*gap+300);
+    });
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const MOPTS=['Lever','Ramp','Pulley','Wheel & axle','Wedge','Screw'];
+  const ITEMS=[
+    {key:'piano',pic:'🎹',k:'card_piano',q:'Move the heavy piano up into the truck. Which force-trick fits the job?',opts:MOPTS,a:1,mis:'job',
+     why:'The ramp: push it up the long slope — a smaller push over a longer path.',
+     hint:'No machine adds free force — you need a LONGER path so your push can be smaller. Which machine gives you a slope?'},
+    {key:'flag',pic:'🚩',k:'card_flag',q:'Raise the flag to the top of the tall pole. Which force-trick?',opts:MOPTS,a:2,mis:'job',
+     why:'The pulley: pull DOWN on the rope and the flag rides UP.',
+     hint:'You can’t climb the pole. Which machine turns a DOWN pull into an UP lift?'},
+    {key:'log',pic:'🪵',k:'card_log',q:'Split the big log for firewood. Which force-trick?',opts:MOPTS,a:4,mis:'job',
+     why:'The wedge: your downward chop becomes a sideways push that forces the halves apart.',
+     hint:'You need a machine that pushes the two halves APART as it goes in.'},
+    {key:'lid',pic:'🥫',k:'card_lid',q:'Pry open the stuck paint-can lid. Which force-trick?',opts:MOPTS,a:0,mis:'job',
+     why:'The lever: the long handle turns your small push into a big pry.',
+     hint:'A long arm resting on the can’s rim gives a small hand a big lift. Which machine is a long arm?'},
+    {key:'screw',pic:'🔩',k:'card_screw',q:'Hold two boards together so tight they never slip. Which force-trick?',opts:MOPTS,a:5,mis:'job',
+     why:'The screw: a ramp wrapped around a pole — many easy turns pull the boards together hard.',
+     hint:'Which machine is a ramp wrapped around a pole, so it bites in and holds on?'},
+    {key:'cart',pic:'🛒',k:'card_cart',q:'Move a heavy load down the long road. Which force-trick?',opts:MOPTS,a:3,mis:'job',
+     why:'The wheel-and-axle: rolling needs far less force than dragging.',
+     hint:'Dragging scrapes and fights friction the whole way. Which machine lets the load ROLL?'},
+    {key:'tug',pic:'🪢',k:'card_tug',q:'Tug-of-war: the left team pulls with a total of 4. The right team pulls with a total of 6. Which way does the rope move?',
+     opts:['Toward the LEFT team','Toward the RIGHT team','Nowhere — two pulls always cancel'],a:1,mis:'net',
+     why:'Add up each side: 6 beats 4, so the net force points right — the rope follows it.',
+     hint:'More than one force acts, so ADD each side up. Forces only cancel when the totals are EQUAL.'},
+    {key:'scissors',pic:'✂️',k:'card_scissors',q:'Scissors are a COMPOUND machine — two force-tricks working together. Which two?',
+     opts:['Lever + wedge','Pulley + ramp','Wheel & axle + screw'],a:0,mis:'compound',
+     why:'The handles pivot on the pin like levers, and the sharp blades are wedges pushing the paper apart.',
+     hint:'Look at the parts: handles that pivot on a pin, and thin sharp blades that push material apart.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,plock=false;
+  const pfb=document.getElementById('pfb');
+  function startPrac(){ queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;plock=false; pfb.textContent=''; pfb.className='fb'; showP(); }
+  function showP(){
+    plock=false;
+    if(!queue.length){ document.getElementById('pq').textContent='Workshop cleared!'; document.getElementById('popts').innerHTML=''; document.getElementById('ppic').textContent='🏅';
+      document.getElementById('pcount').textContent='All '+ITEMS.length+' jobs done'; document.getElementById('pracNext').disabled=false;
+      say('Workshop cleared! Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    const pp=document.getElementById('ppic'); if(img(it.k)) pp.innerHTML='<img src="'+img(it.k)+'" alt="">'; else pp.textContent=it.pic;
+    document.getElementById('pq').textContent=it.q;
+    document.getElementById('pcount').textContent=done+' of '+ITEMS.length+' jobs done';
+    document.getElementById('sayP').onclick=()=>say(it.q);
+    const o=document.getElementById('popts'); o.innerHTML='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t; b.onclick=()=>answer(i,b); o.appendChild(b); });
+    say(it.q);
+  }
+  function answer(i,btn){
+    if(plock||!queue.length) return; plock=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=i===it.a;
+    document.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===it.a&&ok) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ done++; if(pass1) pass1correct++;
+      pfb.className='fb good'; pfb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.key);
+    } else {
+      misses[it.mis]=(misses[it.mis]||0)+1;
+      pfb.className='fb bad'; pfb.textContent='Not quite. '+it.hint; say('Not quite. '+it.hint,'fb_'+it.mis);
+      queue.push(it);
+    }
+    setTimeout(showP, ok?1700:2300);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🎹',k:'card_piano',q:'A ramp helps you push the piano into the truck. Where does the help come from?',
+     o:['The ramp adds free force of its own','You push with LESS force over a LONGER path','The ramp does the work while you rest'],a:1},
+    {id:2,pic:'🛷',k:'card_sled',q:'A sled slides along at a steady speed. How many forces act on it?',
+     o:['Just one — the pull moving it','More than one — the pull forward AND friction rubbing back','Zero — it moves all on its own'],a:1},
+    {id:3,pic:'🪢',k:'card_tug',q:'Left team: total pull 5. Right team: total pull 8. What happens to the rope?',
+     o:['It moves toward the RIGHT team','It stands still — two teams always balance','It moves toward the LEFT team'],a:0},
+    {id:4,pic:'🚩',k:'card_flag',q:'You must lift the flag to the top of the pole. Which machine fits?',
+     o:['Pulley','Wedge','Screw'],a:0},
+    {id:5,pic:'✂️',k:'card_scissors',q:'Scissors cut paper. Which two simple machines make scissors?',
+     o:['Lever + wedge','Pulley + ramp','No machines — scissors cut for free'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know the six force-tricks — and who wins the rope! 🛠️' : 'Good try! Let’s watch the force-tricks once more.';
+    document.getElementById('guessTxt').textContent = guess==='right' ? 'At the start you picked the team of 3 — right! The bigger TOTAL pull wins.' : guess==='left' ? 'At the start you picked the team of 2. Now you know: the bigger TOTAL pull — the net force — wins.' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the force-tricks again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now find three simple machines hiding in your own house. 🔍'; say('Lesson done! Now find three simple machines hiding in your own house, and log them in notebooks.','done');
+    document.getElementById('finish').disabled=true;
+  };
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,practice:()=>({items:ITEMS,queue:queue.length,done,tries,misses}),answer,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+})();
+</script>
+</body>
+</html>

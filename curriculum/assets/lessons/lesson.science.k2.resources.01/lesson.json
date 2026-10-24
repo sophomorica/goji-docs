@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.resources.01",
+  "title": "Earth helpers",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.resources.01"],
+  "va_sol": ["K.11"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "n/a — hand-off = find 3 things at home to reuse with parent, journal them; Kiwix recycling article is the parent read" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.resources.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.resources.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

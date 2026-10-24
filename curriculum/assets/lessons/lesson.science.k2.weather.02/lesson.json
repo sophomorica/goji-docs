@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.weather.02",
+  "title": "One meadow, four seasons",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": ["obj.science.k2.weather.02"],
+  "va_sol": ["1.7"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off is the weather journal (K habit) now tagged with the season; one summary entry per season closes the pattern loop" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.weather.02", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.weather.02"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

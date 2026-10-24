@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank a plant — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 62%,#a9c98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene .beat{position:absolute;inset:0}
+.scene .beat svg{width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.rain path{stroke-dasharray:10 16;animation:flow 0.9s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .beat{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice: sort ---- */
+.sortwrap{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:18px;flex:1;min-height:360px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:14px;gap:10px;min-height:300px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:28px}
+.bin.live h3{color:var(--green)} .bin.dead h3{color:var(--grey)}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bin .got span{font-size:40px}
+.bin .got img{width:56px;height:56px;object-fit:cover;border-radius:14px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.item{width:min(260px,40vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:26px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:80px;line-height:1.1}
+.item img{width:100%;max-width:170px;border-radius:14px;display:block;margin:0 auto}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.tapbtns{display:flex;gap:12px}
+.tapbtns .btn{min-width:150px;font-size:22px;padding:14px 20px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- practice Q / check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt,.popt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right,.popt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong,.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled],.popt[disabled]{cursor:default}
+.bigpic{font-size:100px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.bigpic svg{width:min(90vw,560px);height:auto;background:#fff;border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+#scn{display:none;flex-direction:column;flex:1}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .sortwrap{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .bin{min-height:130px} .scene{min-height:240px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Thank a plant <button class="say" data-say="Two things from our kitchen. The wooden chair, and the glass cup. One of them needed a plant to exist. Which one? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Two things from the kitchen. <b>Which one needed a PLANT to exist?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="chair">
+      <img data-img="hook_chair" alt="" hidden><svg viewBox="0 0 200 130" aria-label="wooden chair"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><g fill="#a5744a"><rect x="70" y="18" width="12" height="86"/><rect x="120" y="18" width="12" height="86"/><rect x="70" y="26" width="62" height="10"/><rect x="70" y="44" width="62" height="10"/><rect x="62" y="62" width="78" height="12" rx="4"/><rect x="66" y="74" width="10" height="38"/><rect x="126" y="74" width="10" height="38"/></g><path d="M84 30 q4 8 0 16 M96 46 q4 8 0 14" stroke="#8a5a34" stroke-width="3" fill="none"/></svg>
+      <span>Wooden chair</span>
+    </div>
+    <div class="pick" data-guess="cup">
+      <img data-img="hook_cup" alt="" hidden><svg viewBox="0 0 200 130" aria-label="glass cup"><rect width="200" height="130" rx="16" fill="#f3e9d6"/><path d="M78 24 L122 24 L116 108 L84 108 Z" fill="#dfeef4" stroke="#9fc7d6" stroke-width="4"/><path d="M86 34 L92 98" stroke="#fff" stroke-width="6" opacity=".8"/></svg>
+      <span>Glass cup</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>What plants give us <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div class="beat" id="beatArt"></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🪑</span>Things we use</div>
+    <div class="badge" id="b1"><span class="em">🌬️</span>Fresh air</div>
+    <div class="badge" id="b2"><span class="em">🏠</span>Homes &amp; food</div>
+    <div class="badge" id="b3"><span class="em">🪢</span>Roots hold the soil</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">From a plant, or not? <button class="say" id="sayPrac" data-say="Look at each thing. Did it come from a plant, or not? Drag the card, or tap a button. Careful — some are tricky!" data-voice="sort_intro">🔊</button></h2>
+  <p class="lead" id="pLead">Did it come <b>from a plant</b>? Careful — some are tricky!</p>
+  <div id="srt">
+  <div class="sortwrap">
+    <div class="bin live" data-bin="live"><h3>🌱 From a plant</h3><div class="got" id="gotLive"></div></div>
+    <div class="deck">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="tapbtns"><button class="btn ghost" data-tap="live">Plant</button><button class="btn ghost" data-tap="dead">Not a plant</button></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="bin dead" data-bin="dead"><h3>🪨 Not from a plant</h3><div class="got" id="gotDead"></div></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  </div>
+  <div id="scn">
+    <div class="bigpic" id="ppic"></div>
+    <div class="q"><span id="ptext"></span><button class="say" id="sayP">🔊</button></div>
+    <div class="opts" id="popts"></div>
+    <div class="fb" id="pfb"></div>
+    <div class="counter" id="pcount"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the plants again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.plants.02',version:1,quiz:'quiz.science.k2.plants.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_things'],['b1','badge_air'],['b2','badge_homes'],['b3','badge_roots']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- two hills SVG (shared by teach + practice + check) ---------- */
+  function twoHills(washed){
+    return '<svg viewBox="0 0 560 260" role="img" aria-label="two hills in the rain: one planted, one bare">'
+      +'<rect width="560" height="260" fill="#cfe6ee"/>'
+      +'<g class="rain" stroke="#5aa3bf" stroke-width="3"><path d="M60 20 l-8 26 M140 14 l-8 26 M240 20 l-8 26 M340 14 l-8 26 M440 20 l-8 26 M510 16 l-8 26"/></g>'
+      +'<path d="M20 240 Q140 120 260 240 Z" fill="#7da55f"/>'
+      +'<g fill="#3f7d4e"><path d="M90 196 q6 -26 12 0z"/><path d="M130 172 q6 -26 12 0z"/><path d="M170 196 q6 -26 12 0z"/><path d="M120 210 q6 -22 12 0z"/><path d="M150 190 q6 -22 12 0z"/></g>'
+      +'<g stroke="#8a5a34" stroke-width="3" fill="none" opacity=".9"><path d="M136 178 q-6 22 -12 34 M136 178 q8 20 12 34"/></g>'
+      +'<text x="140" y="252" text-anchor="middle" font-size="20" font-weight="800" fill="#3b2a1e">planted hill</text>'
+      +(washed
+        ? '<path d="M300 240 Q400 150 520 240 Z" fill="#b08a5f"/><path d="M380 200 q30 24 60 40 q30 12 70 8 l0 12 l-130 0z" fill="#8a6a44"/><g stroke="#7a5a38" stroke-width="6" fill="none" opacity=".8"><path d="M400 190 q24 26 50 42"/><path d="M370 208 q20 20 44 34"/></g><text x="410" y="252" text-anchor="middle" font-size="20" font-weight="800" fill="#3b2a1e">bare hill — soil washing away</text>'
+        : '<path d="M300 240 Q400 140 520 240 Z" fill="#c9a87a"/><text x="410" y="252" text-anchor="middle" font-size="20" font-weight="800" fill="#3b2a1e">bare hill</text>')
+      +'</svg>';
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap'), beatArt=document.getElementById('beatArt');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const PRODUCTS='<rect width="1000" height="330" fill="#f3e9d6"/>'
+    +'<g fill="#a5744a"><rect x="80" y="150" width="180" height="16" rx="6"/><rect x="96" y="166" width="16" height="90"/><rect x="228" y="166" width="16" height="90"/></g>'
+    +'<g transform="translate(320,150)"><path d="M0 40 q0 -40 45 -40 q45 0 45 40 l-8 60 l-74 0z" fill="#fff" stroke="#9fc7d6" stroke-width="4"/><path d="M18 6 q26 -14 54 0" stroke="#9fc7d6" stroke-width="4" fill="none"/></g>'
+    +'<g transform="translate(480,160)"><ellipse cx="60" cy="50" rx="60" ry="34" fill="#d9a45a"/><ellipse cx="60" cy="40" rx="60" ry="30" fill="#e8bd7a"/><path d="M30 36 h60 M40 50 h40" stroke="#c98f45" stroke-width="4"/></g>'
+    +'<g transform="translate(650,140)"><circle cx="45" cy="55" r="42" fill="#b5382f"/><path d="M45 16 q4 -14 14 -16" stroke="#3f7d4e" stroke-width="6" fill="none"/><ellipse cx="66" cy="10" rx="14" ry="7" fill="#3f7d4e"/></g>'
+    +'<g transform="translate(790,150)"><rect x="0" y="0" width="90" height="110" rx="6" fill="#fff" stroke="#d9ccb4" stroke-width="4"/><path d="M14 24 h62 M14 46 h62 M14 68 h62 M14 90 h40" stroke="#9fc7d6" stroke-width="5"/></g>';
+  const AIRHOME='<rect width="1000" height="330" fill="#cfe6ee"/><rect y="250" width="1000" height="80" fill="#a9c98a"/>'
+    +'<g><path d="M300 250 v-130" stroke="#8a7355" stroke-width="22"/><circle cx="300" cy="90" r="75" fill="#3f7d4e"/><circle cx="245" cy="120" r="42" fill="#4a8a58"/><circle cx="355" cy="120" r="42" fill="#4a8a58"/></g>'
+    +'<g transform="translate(268,118)"><path d="M0 16 q32 -22 64 0 q-6 18 -32 18 q-26 0 -32 -18z" fill="#8a6a44"/><ellipse cx="32" cy="14" rx="20" ry="8" fill="#5c452c"/><circle cx="24" cy="6" r="6" fill="#cfe6ee"/><circle cx="40" cy="6" r="6" fill="#cfe6ee"/></g>'
+    +'<g stroke="#9fc7d6" stroke-width="6" fill="none" opacity=".9"><path d="M420 100 q40 -12 80 0 q40 12 80 0"/><path d="M430 150 q40 -12 80 0 q40 12 80 0"/></g>'
+    +'<g transform="translate(640,180)"><ellipse cx="60" cy="40" rx="46" ry="26" fill="#b99a72"/><circle cx="22" cy="24" r="16" fill="#b99a72"/><path d="M16 12 q-4 -14 6 -16 q8 4 4 16z" fill="#b99a72"/><circle cx="16" cy="22" r="3" fill="#2b2b2b"/><path d="M96 34 q14 -4 12 -18" stroke="#b99a72" stroke-width="9" fill="none" stroke-linecap="round"/></g>'
+    +'<path d="M700 170 q-20 -30 -60 -34" stroke="#3b2a1e" stroke-width="4" stroke-dasharray="8 8" fill="none" opacity=".5"/>';
+  const BEATS=[
+    {media:'teach_products',cap:'Plant things are EVERYWHERE.',
+     svg:PRODUCTS,
+     voice:'t_products',txt:'Look around the kitchen. The wooden table — that was a tree. Your cotton shirt — a fluffy cotton plant. Bread — made from wheat. The apple — straight off a tree. Even paper — a tree again! Plant things are everywhere.',
+     fn(){ badges[0].classList.add('on'); }},
+    {media:'teach_air',cap:'Plants make FRESH AIR to breathe.',
+     svg:AIRHOME,
+     voice:'t_air',txt:'Plants give a quieter gift too. Their green leaves freshen the air we breathe. Take a deep breath — thank a plant!',
+     fn(){ badges[1].classList.add('on'); }},
+    {media:'teach_homes',cap:'Plants give animals HOMES and FOOD.',
+     svg:AIRHOME,
+     voice:'t_homes',txt:'And the animals? The bird builds her nest in the oak. The squirrel eats its acorns. The caterpillar munches the leaves. Plants are home and dinner, both at once.',
+     fn(){ badges[2].classList.add('on'); }},
+    {media:'teach_hills',cap:'Roots HOLD the soil when rain comes.',
+     svg:'<svg-hills>',
+     voice:'t_hills',txt:'Here is a plant secret hiding underground: roots. Two hills in the rain. The planted hill — the roots grip the soil like tiny hands, and the hill stays. The bare hill — no roots, and the rain washes the soil away, down and gone.',
+     fn(){ badges[3].classList.add('on'); }},
+    {media:'teach_care',cap:'So we take care of plants.',
+     svg:PRODUCTS,
+     voice:'t_care',txt:'Things to use, fresh air, homes, food, and soil held tight. That is why we plant new trees when we cut, and keep plants growing on the land. If we cut every tree and planted nothing, we would lose all those gifts at once.',
+     fn(){ }}
+  ];
+  const teachScript=BEATS.map(b=>b.txt);
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function resetScene(){ timers.forEach(clearTimeout); timers=[]; badges.forEach(b=>b.className='badge'); cap.textContent=''; beatArt.innerHTML=''; layer.innerHTML=''; sceneEl.classList.remove('media'); document.getElementById('teachNext').disabled=true; }
+  function playTeach(){
+    resetScene();
+    let t=0;
+    BEATS.forEach((b,i)=>{
+      later(()=>{ cap.textContent=b.cap; say(b.txt,b.voice);
+        if(b.svg==='<svg-hills>') beatArt.innerHTML='<div style="display:grid;place-items:center;height:100%">'+twoHills(true)+'</div>';
+        else beatArt.innerHTML='<svg viewBox="0 0 1000 330" preserveAspectRatio="xMidYMid meet">'+b.svg+'</svg>';
+        showBeat(b.media); b.fn(); },t);
+      t+= (i===0?9600 : i===3?9800 : 7200);
+    });
+    later(()=>{ cap.textContent='Things, air, homes, food — and roots that hold the land.'; document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice — A) from-a-plant sort ---------- */
+  const ITEMS=[
+    {n:'Bread',p:'🍞',k:'card_bread',a:'live',mis:'notplant',why:'Bread is baked from wheat — a plant!'},
+    {n:'Wool mitten',p:'🧤',k:'card_wool',a:'dead',mis:'soft',why:'Wool is soft — but it comes from a sheep, not a plant.'},
+    {n:'Paper',p:'📄',k:'card_paper',a:'live',mis:'notplant',why:'Paper is made from trees.'},
+    {n:'Glass cup',p:'🥛',k:'card_glass',a:'dead',mis:'natural',why:'Glass is melted from sand — no plant needed.'},
+    {n:'Chocolate',p:'🍫',k:'card_choc',a:'live',mis:'notplant',why:'Chocolate comes from cacao tree seeds!'},
+    {n:'Wooden chair',p:'🪑',k:'card_chair',a:'live',why:'Wood comes from a tree.'},
+    {n:'Cotton shirt',p:'👕',k:'card_shirt',a:'live',why:'Cotton grows fluffy and white on a cotton plant.'},
+    {n:'Metal fork',p:'🍴',k:'card_fork',a:'dead',mis:'natural',why:'Metal comes from rock dug out of the ground.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0;
+  const item=document.getElementById('item'),fb=document.getElementById('fb');
+  function startPractice(){ document.getElementById('srt').style.display=''; document.getElementById('scn').style.display='none';
+    document.getElementById('pTitle').firstChild.textContent='From a plant, or not? ';
+    queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0; document.getElementById('gotLive').innerHTML='';document.getElementById('gotDead').innerHTML=''; fb.textContent=''; document.getElementById('pracNext').disabled=true; item.style.visibility='visible'; showItem(); }
+  function showItem(){
+    if(!queue.length){ item.style.visibility='hidden'; document.getElementById('counter').textContent='All sorted! 🎉'; say('All sorted! Now — rain is coming. Time for the two hills.','sort_done'); setTimeout(startScenario, reduced?400:1600); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p; document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} sorted`;
+    say(it.n+'. From a plant, or not?');
+  }
+  function answer(bin){
+    if(!queue.length || item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=bin===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.k);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n; document.getElementById(bin==='live'?'gotLive':'gotDead').appendChild(s);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint = it.mis==='soft' ? 'Soft doesn\'t mean plant. Think: did it grow on a plant, or on an animal?'
+        : it.mis==='natural' ? 'It comes from nature — but from sand or rock, not from a plant.'
+        : it.mis==='notplant' ? 'Surprise — follow it back: what was it made from at the very start?'
+        : 'Follow it back: what was it at the very start?';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+(it.mis||'other'));
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1400:1900);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+
+  /* ---------- stage 2: practice — B) two hills + who lives here ---------- */
+  const SCN=[
+    {hills:true,voice:'ph1',q:'Big rain is coming! Which hill will KEEP its soil?',
+     o:['The planted hill — roots hold the soil tight','The bare hill — plants don\'t change anything','Both hills will be exactly the same'],a:0,
+     mis:['','cutfine','cutfine'],why:'Roots grip the soil like tiny hands — the bare hill washes away.'},
+    {pic:'🐦',k:'card_nest',voice:'ph2',q:'Who makes a home in the old oak tree?',
+     o:['The bird — her nest sits in its branches','Nobody — trees aren\'t homes for animals'],a:0,
+     mis:['','cutfine'],why:'The oak is a home — nest above, acorns for the squirrel below.'}
+  ];
+  let sq=[];
+  function startScenario(){ document.getElementById('srt').style.display='none'; const sc=document.getElementById('scn'); sc.style.display='flex';
+    document.getElementById('pTitle').firstChild.textContent='The two hills ';
+    document.getElementById('pLead').innerHTML='Rain is coming. <b>Predict</b> what happens — then tap.';
+    say('Rain is coming! Predict what happens — then tap.','scn_intro');
+    sq=SCN.slice(); showScn(); }
+  function showScn(){
+    if(!sq.length){ document.getElementById('ppic').textContent='🌱'; document.getElementById('ptext').textContent='Practice done — thank a plant!'; document.getElementById('popts').innerHTML=''; document.getElementById('pcount').textContent='Practice done! 🎉'; document.getElementById('pfb').textContent=''; document.getElementById('pracNext').disabled=false; say('Practice done! Now show what you know.','scn_done'); return; }
+    const s=sq[0]; const pp=document.getElementById('ppic');
+    if(s.hills) pp.innerHTML=twoHills(false);
+    else if(img(s.k)) pp.innerHTML='<img src="'+img(s.k)+'" alt="">';
+    else pp.textContent=s.pic;
+    document.getElementById('ptext').textContent=s.q; document.getElementById('pfb').textContent='';
+    document.getElementById('pcount').textContent='';
+    document.getElementById('sayP').onclick=()=>say(s.q,s.voice);
+    const o=document.getElementById('popts'); o.innerHTML='';
+    s.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t; b.onclick=()=>pickScn(i); o.appendChild(b); });
+    say(s.q,s.voice);
+  }
+  function pickScn(i){
+    const s=sq[0]; const ok=i===s.a; tries++;
+    document.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===s.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('pfb');
+    if(ok){ sq.shift(); f.className='fb good'; f.textContent='✓ '+s.why; say('Yes! '+s.why,'why_'+s.voice);
+      if(s.hills) document.getElementById('ppic').innerHTML=twoHills(true); }
+    else{ const m=s.mis[i]||'other'; misses[m]=(misses[m]||0)+1;
+      const hint=m==='cutfine'?'Plants DO matter here — remember the roots gripping the soil, the nest in the branches.':'Think about what the roots and branches do.';
+      f.className='fb bad'; f.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+m); sq.push(sq.shift()); }
+    setTimeout(showScn, ok?2000:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🍞',k:'card_bread',q:'Is bread from a plant?',o:['Yes — it\'s baked from wheat','No — bread isn\'t from a plant'],a:0,mis:'notplant'},
+    {id:2,pic:'🧤',k:'card_wool',q:'Is a wool sweater from a plant?',o:['No — wool comes from sheep','Yes — everything soft is from plants'],a:0,mis:'soft'},
+    {id:3,pic:'🌳',k:'card_gifts',q:'What do plants give animals?',o:['Fresh air, homes, and food','Nothing — animals don\'t use plants'],a:0,mis:'cutfine'},
+    {id:4,pic:'🪓',k:'card_stumps',q:'What if we cut down ALL the trees and planted nothing?',o:['Animals lose homes and food, and rain washes the soil away','Nothing bad — cutting all trees hurts nothing'],a:0,mis:'cutfine'},
+    {id:5,hills:true,q:'Rain falls on both hills. Which hill keeps its soil?',o:['The planted hill — roots hold the soil','The bare hill','Both exactly the same'],a:0,mis:'cutfine'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic');
+    if(q.hills) qp.innerHTML=twoHills(false);
+    else if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">';
+    else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know what plants give us! 🌱' : 'Good try! Let\'s watch the plants once more.';
+    document.getElementById('guessTxt').textContent = guess==='chair' ? 'At the start you picked the WOODEN CHAIR — right! Wood was a tree. The glass cup came from sand.' : guess==='cup' ? 'At the start you picked the GLASS CUP. Surprise: glass is melted sand — the WOODEN chair is the plant one!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the plants again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go hunt for 5 plant things at home. 🔍'; say('Lesson done! Now go hunt for five plant things at home, and write them in your journal.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

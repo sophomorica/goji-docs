@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The water journey — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d; --blue:#4a7fb5; --blue2:#2f5a85;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.hookpic{display:flex;justify-content:center;margin:6px 0}
+.hookpic svg{width:min(60vw,420px);height:auto}
+.hookpic img{width:min(60vw,420px);border-radius:var(--radius);box-shadow:var(--shadow);display:block}
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;min-height:130px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:20px 14px;text-align:center}
+.pick.sel{border-color:var(--gold)}
+/* ---- scenes ---- */
+.scene{position:relative;flex:1;min-height:300px;background:linear-gradient(var(--sky) 0 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media>svg{display:none}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.mv{transition:transform 1.2s ease-out}
+.stamp{position:absolute;z-index:3;right:4%;bottom:12%;font-size:34px;font-weight:900;letter-spacing:1px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-8deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.9)}
+.stamp.show{transform:rotate(-8deg) scale(1)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+.stamp.no{color:var(--red);border-color:var(--red)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+/* ---- practice ---- */
+.bigpic{text-align:center;margin:8px 0}
+.bigpic svg{width:min(36vw,220px);height:auto}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.pq{font-size:28px;font-weight:800;margin:8px 0 4px;text-align:center}
+.popts{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.popt{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 22px;cursor:pointer;box-shadow:var(--shadow);min-height:72px;min-width:180px}
+.popt.sel{border-color:var(--gold)}
+.popt.right{border-color:var(--green);background:#eaf5ec}
+.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.popt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:24px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:220px} .caption{font-size:22px} .pq{font-size:24px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>The water journey <button class="say" data-say="An ice cube, and a puddle. Are they both water? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">An ice cube. A puddle. <b>Are they both water?</b> Tap your guess.</p>
+  <div class="hookpic">
+    <img data-img="hook_icepuddle" alt="" hidden>
+    <svg viewBox="0 0 320 160" aria-label="an ice cube and a puddle"><g transform="translate(30,20)"><use href="#sh_ice"/></g><g transform="translate(170,40)"><use href="#sh_puddle"/></g></svg>
+  </div>
+  <div class="choice2">
+    <div class="pick" data-guess="both">Yes — both<br>are water</div>
+    <div class="pick" data-guess="notice">No — ice is<br>not water</div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Water's journey <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 320" preserveAspectRatio="xMidYMid meet">
+      <g id="slotA" class="mv"></g>
+      <g id="slotB" class="mv"></g>
+      <g id="slotC" class="mv"></g>
+      <g id="wFound" style="display:none">
+        <rect x="0" y="150" width="1000" height="170" fill="#a9c98a"/>
+        <g transform="translate(70,20)"><use href="#sh_cloudrain"/></g>
+        <path d="M180 130 Q300 170 380 220 Q430 250 520 252" stroke="#4a7fb5" stroke-width="20" fill="none" stroke-linecap="round"/>
+        <ellipse cx="565" cy="258" rx="90" ry="26" fill="#4a7fb5"/>
+        <rect x="740" y="200" width="260" height="120" fill="#2f5a85"/>
+        <path d="M740 210 q30 -10 60 0 t60 0 t60 0 t60 0" stroke="#cfe6ee" stroke-width="5" fill="none"/>
+        <path d="M740 240 q30 -10 60 0 t60 0 t60 0 t60 0" stroke="#cfe6ee" stroke-width="4" fill="none" opacity=".7"/>
+      </g>
+      <g id="wHill" style="display:none">
+        <polygon points="0,80 1000,270 1000,320 0,320" fill="#a9c98a"/>
+        <g id="tDrop" class="mv"><use href="#sh_drop"/></g>
+      </g>
+    </svg>
+    <div class="stamp yes" id="stampYes">ALL THREE ARE WATER</div>
+    <div class="stamp no" id="stampNo">NEVER UPHILL</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🥤</span>We use it</div>
+    <div class="badge" id="b1"><span class="em">🌧️</span>We find it</div>
+    <div class="badge" id="b2"><span class="em">🧊</span>Three forms</div>
+    <div class="badge" id="b3"><span class="em">⬇️</span>Flows downhill</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Which form? Which way? <button class="say" data-say="Which form of water is this? And which way will it flow? Guess, then watch!" data-voice="prac_intro">🔊</button></h2>
+  <div class="pq"><span id="pqText"></span><button class="say" id="sayP" style="width:48px;height:48px;font-size:22px">🔊</button></div>
+  <div class="bigpic" id="fPic"></div>
+  <div class="scene" id="fSceneWrap" style="display:none;min-height:230px">
+    <div class="caption" id="pCap" style="font-size:24px"></div>
+    <svg id="fScene" viewBox="0 0 1000 320" preserveAspectRatio="xMidYMax meet">
+      <g id="hillR" style="display:none"><polygon points="0,70 1000,260 1000,320 0,320" fill="#a9c98a"/></g>
+      <g id="hillL" style="display:none"><polygon points="0,260 1000,70 1000,320 0,320" fill="#a9c98a"/></g>
+      <g id="hillV" style="display:none"><path d="M0,120 L430,255 Q470,268 510,252 L640,196 L1000,250 L1000,320 L0,320 Z" fill="#a9c98a"/></g>
+      <g id="pDrop" class="mv" style="display:none"><use href="#sh_drop"/></g>
+    </svg>
+  </div>
+  <div class="popts" id="pOpts"></div>
+  <div class="row" style="margin-top:4px;padding-top:4px"><button class="btn" id="testBtn" style="display:none">Test it! ▶</button></div>
+  <div class="fb" id="fb"></div>
+  <div class="counter" id="counter"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the water journey again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="sh_glass">
+      <path d="M30 12 L90 12 L82 108 L38 108 Z" fill="none" stroke="#9fc7d6" stroke-width="6"/>
+      <path d="M34 44 L86 44 L82 104 L38 104 Z" fill="#4a7fb5" opacity=".85"/>
+    </g>
+    <g id="sh_can">
+      <rect x="30" y="40" width="60" height="56" rx="10" fill="#7d9c74"/>
+      <path d="M30 56 L8 30 L16 24 L38 48" fill="#7d9c74"/>
+      <circle cx="10" cy="26" r="9" fill="#5e7d57"/>
+      <path d="M90 50 q20 8 0 34" stroke="#5e7d57" stroke-width="7" fill="none"/>
+      <path d="M6 34 l-3 10 M12 36 l-1 11 M18 34 l1 10" stroke="#4a7fb5" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <g id="sh_plant">
+      <path d="M40 96 L80 96 L72 118 L48 118 Z" fill="#b06f4f"/>
+      <path d="M60 96 L60 56" stroke="#3f7d4e" stroke-width="6"/>
+      <path d="M60 70 Q36 62 34 40 Q58 44 60 70Z" fill="#3f7d4e"/>
+      <path d="M60 62 Q84 54 86 32 Q62 36 60 62Z" fill="#54945f"/>
+    </g>
+    <g id="sh_cloudrain">
+      <ellipse cx="60" cy="40" rx="46" ry="26" fill="#e8eef1"/>
+      <ellipse cx="98" cy="46" rx="34" ry="20" fill="#dfe7ea"/>
+      <path d="M36 74 l-8 22 M66 74 l-8 22 M96 74 l-8 22 M120 74 l-8 22" stroke="#4a7fb5" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g id="sh_ice">
+      <rect x="14" y="14" width="92" height="92" rx="14" fill="#cfe6ee" stroke="#9fc7d6" stroke-width="6"/>
+      <path d="M34 34 L54 54 M86 30 L70 46" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    </g>
+    <g id="sh_puddle">
+      <ellipse cx="60" cy="60" rx="56" ry="22" fill="#4a7fb5"/>
+      <ellipse cx="44" cy="54" rx="16" ry="6" fill="#9fc7d6" opacity=".8"/>
+    </g>
+    <g id="sh_pot">
+      <rect x="20" y="58" width="80" height="50" rx="8" fill="#8d8d8d"/>
+      <rect x="12" y="52" width="96" height="10" rx="5" fill="#6f6f6f"/>
+      <path d="M40 44 q-8 -14 2 -26 M60 44 q-8 -14 2 -26 M80 44 q-8 -14 2 -26" stroke="#e8eef1" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="sh_icicle">
+      <rect x="10" y="10" width="100" height="14" rx="6" fill="#8a6b48"/>
+      <path d="M28 24 L36 24 L32 84 Z" fill="#cfe6ee" stroke="#9fc7d6" stroke-width="3"/>
+      <path d="M54 24 L64 24 L59 106 Z" fill="#cfe6ee" stroke="#9fc7d6" stroke-width="3"/>
+      <path d="M82 24 L90 24 L86 70 Z" fill="#cfe6ee" stroke="#9fc7d6" stroke-width="3"/>
+    </g>
+    <g id="sh_rainpic">
+      <ellipse cx="60" cy="30" rx="40" ry="20" fill="#e8eef1"/>
+      <path d="M36 56 l-6 18 M60 56 l-6 18 M84 56 l-6 18" stroke="#4a7fb5" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="60" cy="100" rx="40" ry="12" fill="#4a7fb5"/>
+    </g>
+    <g id="sh_drop">
+      <path d="M20 0 Q38 26 38 40 A18 18 0 1 1 2 40 Q2 26 20 0Z" fill="#4a7fb5"/>
+      <ellipse cx="14" cy="40" rx="5" ry="8" fill="#9fc7d6"/>
+    </g>
+    <g id="sh_hillpic">
+      <polygon points="0,30 120,96 120,120 0,120" fill="#a9c98a"/>
+      <g transform="translate(10,0) scale(.7)"><use href="#sh_drop"/></g>
+    </g>
+    <g id="sh_plastic">
+      <circle cx="60" cy="40" r="8" fill="#e0a93b"/>
+      <g stroke="none" fill="#d98a80">
+        <ellipse cx="60" cy="22" rx="9" ry="12"/><ellipse cx="78" cy="34" rx="12" ry="9"/>
+        <ellipse cx="72" cy="54" rx="10" ry="10"/><ellipse cx="48" cy="54" rx="10" ry="10"/><ellipse cx="42" cy="34" rx="12" ry="9"/>
+      </g>
+      <circle cx="60" cy="40" r="9" fill="#e0a93b"/>
+      <rect x="56" y="62" width="8" height="46" rx="4" fill="#8d8d8d"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.water.01',version:1,quiz:'quiz.science.k2.water.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_use'],['b1','badge_find'],['b2','badge_forms'],['b3','badge_down']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; if(el.nextElementSibling&&el.nextElementSibling.tagName==='svg') el.nextElementSibling.style.display='none'; } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- helpers ---------- */
+  function snap(el,tr){ el.style.transition='none'; el.style.transform=tr; el.getBoundingClientRect(); requestAnimationFrame(()=>{ el.style.transition=''; }); }
+  function slide(el,tr,dur){ el.style.transitionDuration=(reduced?0:(dur||1200))+'ms'; el.style.transform=tr; }
+  function use(sh,box){ return '<svg viewBox="0 0 '+(box||'120 120')+'"><use href="#sh_'+sh+'"/></svg>'; }
+
+  /* ---------- stage 1: teach ---------- */
+  const slots=['slotA','slotB','slotC'].map(id=>document.getElementById(id));
+  const wFound=document.getElementById('wFound'),wHill=document.getElementById('wHill'),tDrop=document.getElementById('tDrop'),
+        cap=document.getElementById('cap'),stampYes=document.getElementById('stampYes'),stampNo=document.getElementById('stampNo');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function setSlots(a,b,c){
+    const pos=[[190,110],[440,110],[690,110]];
+    [a,b,c].forEach((sh,i)=>{ const g=slots[i]; if(!sh){ g.innerHTML=''; return; }
+      g.innerHTML='<use href="#sh_'+sh+'"/>'; snap(g,'translate('+pos[i][0]+'px,'+pos[i][1]+'px)'); });
+  }
+  function popSlot(i){ const g=slots[i]; const m=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/.exec(g.style.transform)||[0,440,110];
+    slide(g,'translate('+m[1]+'px,'+m[2]+'px) scale(1.2)',500); setTimeout(()=>slide(g,'translate('+m[1]+'px,'+m[2]+'px) scale(1)',500),reduced?0:600); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    setSlots(null,null,null); wFound.style.display='none'; wHill.style.display='none';
+    badges.forEach(b=>b.className='badge'); stampYes.className='stamp yes'; stampNo.className='stamp no';
+    cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "We use water every day. We drink it. We wash with it. Plants drink it to grow.",
+    "Where do we find water? Rain falls from clouds. Rivers run into lakes, and into the big ocean.",
+    "Water has three forms. Cold freezes it into ice. Warm melts it back. Very hot makes steam!",
+    "Ice is water, frozen. Steam is water, floating up as a gas. Same water, three forms!",
+    "And water always flows downhill. It never climbs up. It finds the low path."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: uses
+    setSlots('glass','can','plant'); cap.textContent='We USE water every day.'; say(teachScript[0],'t_uses'); showBeat('teach_uses');
+    later(()=>{ cap.textContent='We DRINK it…'; popSlot(0); },1200);
+    later(()=>{ cap.textContent='We WASH and WATER…'; popSlot(1); },2400);
+    later(()=>{ cap.textContent='…and plants DRINK it to GROW.'; popSlot(2); },3600);
+    later(()=>{ badges[0].classList.add('on'); },4800);
+    // beat 2: where found
+    later(()=>{ setSlots(null,null,null); wFound.style.display=''; cap.textContent='Where do we FIND water?'; say(teachScript[1],'t_found'); showBeat('teach_found'); },5600);
+    later(()=>{ cap.textContent='RAIN falls… rivers run…'; },7400);
+    later(()=>{ cap.textContent='…into LAKES and the big OCEAN.'; },9200);
+    later(()=>{ badges[1].classList.add('on'); },10600);
+    // beat 3: three forms
+    later(()=>{ wFound.style.display='none'; setSlots('ice','puddle','pot'); cap.textContent='Water has THREE FORMS.'; say(teachScript[2],'t_forms'); showBeat('teach_forms'); },11400);
+    later(()=>{ cap.textContent='COLD freezes it → ICE.'; popSlot(0); },13000);
+    later(()=>{ cap.textContent='WARM melts it → liquid water.'; popSlot(1); },14600);
+    later(()=>{ cap.textContent='VERY HOT → STEAM!'; popSlot(2); },16200);
+    later(()=>{ badges[2].classList.add('on'); },17600);
+    // beat 4: still water
+    later(()=>{ cap.textContent='Ice is WATER. Steam is WATER. Same water — three forms!'; say(teachScript[3],'t_same'); showBeat('teach_same'); stampYes.classList.add('show'); },18400);
+    // beat 5: downhill
+    later(()=>{ stampYes.classList.remove('show'); setSlots(null,null,null); wHill.style.display='';
+      snap(tDrop,'translate(60px,40px)'); cap.textContent='Water always flows DOWNHILL.'; say(teachScript[4],'t_down'); showBeat('teach_down'); },21600);
+    later(()=>{ slide(tDrop,'translate(880px,208px)',2200); },22600);
+    later(()=>{ stampNo.classList.add('show'); cap.textContent='It never climbs up. It finds the LOW path.'; badges[3].classList.add('on');
+      document.getElementById('teachNext').disabled=false; },25200);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const ROUNDS=[
+    {id:'f1',t:'form',sh:'ice',k:'card_ice',q:'An ice cube. What is it?',o:['Ice — frozen water','Not water — its own cold thing','Liquid water'],a:0,
+     wr:{1:{fb:'fb_ice_not',mis:'icenot',text:'It IS water — frozen hard into ice.'},2:{fb:'fb_ice_liq',mis:'formmix',text:'Not liquid yet — it is frozen hard. Ice is frozen water.'}},why:'Ice is frozen water.'},
+    {id:'f2',t:'form',sh:'puddle',k:'card_puddle',q:'A puddle on the ground. Which form of water?',o:['Ice','Liquid water','Steam'],a:1,
+     wr:{0:{fb:'fb_liq_ice',mis:'formmix',text:'It is not frozen — you can splash it. Liquid water.'},2:{fb:'fb_liq_steam',mis:'formmix',text:'Steam floats up hot. A puddle is cool, wet, liquid water.'}},why:'A puddle is liquid water.'},
+    {id:'f3',t:'form',sh:'pot',k:'card_pot',q:'The white cloud over the hot pot. What is it?',o:['Just air','Steam — water as a gas','Liquid water'],a:1,
+     wr:{0:{fb:'fb_steam_air',mis:'steamair',text:'It looks like air, but steam is tiny bits of WATER floating up!'},2:{fb:'fb_steam_liq',mis:'formmix',text:'It is not in the pot any more — it floats. That is steam, water as a gas.'}},why:'Steam is water, floating up as a gas.'},
+    {id:'f4',t:'form',sh:'icicle',k:'card_icicle',q:'Icicles on a roof. What are they?',o:['Not water — just cold glass','Liquid water','Ice — frozen water'],a:2,
+     wr:{0:{fb:'fb_ice_not',mis:'icenot',text:'It IS water — frozen hard into ice.'},1:{fb:'fb_ice_liq',mis:'formmix',text:'Not liquid yet — it is frozen hard. Ice is frozen water.'}},why:'Icicles are frozen water — ice.'},
+    {id:'f5',t:'form',sh:'rainpic',k:'card_rain',q:'Rain falling from a cloud. Which form of water?',o:['Steam','Liquid water','Ice'],a:1,
+     wr:{0:{fb:'fb_liq_steam',mis:'formmix',text:'Steam floats UP hot. Rain falls DOWN — cool liquid water.'},2:{fb:'fb_liq_ice',mis:'formmix',text:'It is not frozen — it splashes. Liquid water.'}},why:'Raindrops are liquid water.'},
+    {id:'s1',t:'flow',hill:'hillR',q:'The rain drop lands at the TOP. Which way will it flow?',o:['Up the slope ⬆','Down the slope ⬇'],a:1,
+     wr:{0:{fb:'fb_uphill',mis:'uphill',text:'Watch — water never flows uphill. It always finds the LOW path.'}},why:'Down it goes — water always flows downhill.'},
+    {id:'s2',t:'flow',hill:'hillL',q:'Now the hill leans the other way. Which way will the drop flow?',o:['Down the slope ⬇','Up the slope ⬆'],a:0,
+     wr:{1:{fb:'fb_uphill',mis:'uphill',text:'Watch — water never flows uphill. It always finds the LOW path.'}},why:'Downhill again — it always finds the low path.'},
+    {id:'s3',t:'flow',hill:'hillV',q:'The water sits in the low dip. Can it climb over the little hill by itself?',o:['Yes — it can climb over','No — it stays in the dip'],a:1,
+     wr:{0:{fb:'fb_climb',mis:'uphill',text:'See? It cannot climb by itself. Water stays in the low place.'}},why:'It stays — water cannot climb uphill by itself.'}
+  ];
+  const fPic=document.getElementById('fPic'),fWrap=document.getElementById('fSceneWrap'),pDrop=document.getElementById('pDrop'),
+        pCap=document.getElementById('pCap'),fb=document.getElementById('fb'),pOpts=document.getElementById('pOpts'),
+        testBtn=document.getElementById('testBtn');
+  let pq=[],pdone=0,ptries=0,pmiss={},curR=null,predIdx=null,pLock=false;
+  function startPrac(){ pq=ROUNDS.slice(); pdone=0;ptries=0;pmiss={}; fb.textContent=''; fb.className='fb';
+    document.getElementById('pracNext').disabled=true; showRound(); }
+  function setupFlow(r){
+    ['hillR','hillL','hillV'].forEach(h=>document.getElementById(h).style.display= h===r.hill?'':'none');
+    pDrop.style.display='';
+    if(r.hill==='hillR') snap(pDrop,'translate(60px,30px)');
+    if(r.hill==='hillL') snap(pDrop,'translate(900px,30px)');
+    if(r.hill==='hillV') snap(pDrop,'translate(120px,90px)');
+    pCap.textContent='';
+  }
+  function runFlow(r,cb){
+    let wait=2400;
+    if(r.hill==='hillR'){ slide(pDrop,'translate(880px,208px)',2000); }
+    if(r.hill==='hillL'){ slide(pDrop,'translate(80px,208px)',2000); }
+    if(r.hill==='hillV'){ slide(pDrop,'translate(455px,200px)',1400);
+      setTimeout(()=>slide(pDrop,'translate(520px,190px)',500),reduced?0:1500);
+      setTimeout(()=>{slide(pDrop,'translate(465px,202px)',500); pCap.textContent='It slides back down into the dip.';},reduced?0:2100); wait=3200; }
+    setTimeout(cb, reduced?400:wait);
+  }
+  function showRound(){
+    if(!pq.length){ document.getElementById('counter').textContent='All done! 🎉'; document.getElementById('pracNext').disabled=false;
+      pOpts.innerHTML=''; testBtn.style.display='none'; fPic.innerHTML=''; fWrap.style.display='none';
+      say('All done! Now show what you know.','prac_done'); return; }
+    curR=pq[0]; predIdx=null; pLock=false;
+    document.getElementById('pqText').textContent=curR.q;
+    document.getElementById('sayP').onclick=()=>say(curR.q+' '+curR.o.join(', or '),'p_'+curR.id);
+    document.getElementById('counter').textContent=`${pdone} of ${ROUNDS.length} done`;
+    fb.textContent=''; fb.className='fb'; testBtn.style.display='none';
+    if(curR.t==='form'){
+      fWrap.style.display='none'; fPic.style.display='';
+      if(img(curR.k)) fPic.innerHTML='<img src="'+img(curR.k)+'" alt="">'; else fPic.innerHTML=use(curR.sh);
+    } else {
+      fPic.style.display='none'; fWrap.style.display=''; setupFlow(curR);
+    }
+    pOpts.innerHTML='';
+    curR.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t;
+      b.onclick=()=>pickP(i,b); pOpts.appendChild(b); });
+    say(curR.q,'p_'+curR.id);
+  }
+  function resolve(r,i){
+    const ok=i===r.a;
+    if(ok){ pdone++; fb.className='fb good'; fb.textContent='✓ '+r.why; say('Yes! '+r.why,'why_'+r.id); }
+    else{ const w=r.wr[i]||{fb:null,mis:'formmix',text:'Look again at the three forms.'};
+      pmiss[w.mis]=(pmiss[w.mis]||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. '+w.text; say('Not quite. '+w.text, w.fb); pq.push(r); }
+    setTimeout(showRound, ok?1700:2400);
+  }
+  function pickP(i,btn){
+    if(pLock) return;
+    if(curR.t==='form'){
+      pLock=true; ptries++;
+      const r=pq.shift();
+      pOpts.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===r.a&&i===r.a) b.classList.add('right'); if(j===i&&i!==r.a) b.classList.add('wrong'); });
+      resolve(r,i);
+    } else {
+      if(predIdx!==null) return; predIdx=i; btn.classList.add('sel');
+      pOpts.querySelectorAll('.popt').forEach(x=>x.disabled=true); testBtn.style.display=''; say('Now tap Test it!');
+    }
+  }
+  testBtn.onclick=()=>{
+    if(predIdx===null||!curR||curR.t!=='flow'||pLock) return; pLock=true; testBtn.style.display='none';
+    const r=pq.shift(); ptries++;
+    runFlow(r,()=>resolve(r,predIdx));
+  };
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,sh:'ice',k:'card_ice',q:'What is an ice cube?',o:['Frozen water','Not water — its own cold thing'],a:0,mis:'icenot'},
+    {id:2,sh:'pot',k:'card_pot',q:'What is the steam above hot soup?',o:['Just air','Water floating up as a gas','Smoke from a fire'],a:1,mis:'steamair'},
+    {id:3,sh:'hillpic',k:'card_hill',q:'Rain lands on top of a hill. Which way does it flow?',o:['Up the hill','Down the hill','It stays on top forever'],a:1,mis:'uphill'},
+    {id:4,sh:'plant',k:'card_plant',q:'Which one needs water to grow?',o:['A bean plant','A plastic flower','A rock'],a:0},
+    {id:5,sh:'hillpic',k:'card_hill',q:'Can water flow UP a hill all by itself?',o:['Yes — if the hill is small','No — water always finds the low path'],a:1,mis:'uphill'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic');
+    if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.innerHTML=use(q.sh);
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{done:pdone,tries:ptries,misses:pmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know water\'s three forms — and its low path! 💧' : 'Good try! Let\'s watch the water journey once more.';
+    document.getElementById('guessTxt').textContent = guess==='both' ? 'At the start you guessed ice and the puddle are BOTH water — you were right!' : guess==='notice' ? 'At the start you guessed ice is not water. Now you know: ice is water, frozen!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the water journey again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go watch an ice cube melt with your grown-up. 🧊'; say('Lesson done! Now go watch an ice cube melt with your grown-up.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

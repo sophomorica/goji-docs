@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our solar system — rotate, revolve, eight worlds — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --space:#1b2140; --space2:#2a3158;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:28px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 32px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;text-align:center;min-height:180px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:320px;background:radial-gradient(ellipse at 30% 30%,var(--space2),var(--space) 70%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:26px;font-weight:800;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.55)}
+.tg{display:none}
+.tg.cur{display:block}
+.scene.media .tg{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(27,33,64,.9),rgba(27,33,64,0));padding-bottom:34px}
+#spinEarth{animation:spin 8s linear infinite;transform-origin:500px 210px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#orbGrp{animation:orbit 10s linear infinite;transform-origin:500px 200px}
+@keyframes orbit{to{transform:rotate(360deg)}}
+/* ---- practice ---- */
+.track{display:flex;gap:8px;justify-content:center;align-items:flex-end;flex-wrap:wrap;background:var(--space);border-radius:var(--radius);
+  padding:14px 10px;box-shadow:var(--shadow);min-height:96px;margin-bottom:10px}
+.slot{width:76px;height:76px;border-radius:50%;border:3px dashed #6f7ab0;display:grid;place-items:center;color:#aab3e0;font-weight:800;font-size:20px;position:relative}
+.slot .pl{position:absolute;inset:0;display:grid;place-items:center}
+.slot.filled{border-style:solid;border-color:var(--gold)}
+.slot .nm{position:absolute;bottom:-4px;left:50%;transform:translate(-50%,100%);font-size:13px;color:#dfe4ff;white-space:nowrap}
+.track .sunend{width:34px;height:76px;border-radius:0 76px 76px 0;background:radial-gradient(circle at 0 50%,#ffdf8a,#e0a93b 70%);align-self:center}
+.q{font-size:27px;font-weight:800;margin:6px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:23px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:21px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.score{font-size:64px;font-weight:900;color:var(--red);text-align:center;margin:6px 0}
+.gate{text-align:center;font-size:27px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:20px}
+  .slot{width:56px;height:56px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Our solar system <button class="say" data-say="Every year, your birthday comes around again. What does Earth do to make one whole year go by? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Every year your birthday comes around again. <b>What does Earth do to make one whole YEAR go by?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="spin">
+      <svg viewBox="0 0 200 130" aria-label="Earth spinning like a top"><circle cx="100" cy="65" r="44" fill="#3f6db5"/><path d="M78 40 q20 -8 40 2 q-6 16 -30 14 q-16 -2 -10 -16z" fill="#5c9c53"/><path d="M96 88 q18 -6 26 6 q-10 12 -26 6 q-8 -4 0 -12z" fill="#5c9c53"/><path d="M156 30 a62 62 0 0 1 6 52" stroke="#e0a93b" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M166 74 l-4 14 l-12 -8z" fill="#e0a93b"/></svg><img data-img="hook_spin" alt="" hidden>
+      <span>Earth SPINS<br>like a top</span>
+    </div>
+    <div class="pick" data-guess="travel">
+      <svg viewBox="0 0 200 130" aria-label="Earth traveling around the sun"><circle cx="100" cy="65" r="24" fill="#f2c14e"/><circle cx="100" cy="65" r="30" fill="none" stroke="#ffdf8a" stroke-width="3" opacity=".5"/><ellipse cx="100" cy="65" rx="82" ry="46" fill="none" stroke="#9fc7d6" stroke-width="4" stroke-dasharray="10 8"/><circle cx="178" cy="52" r="10" fill="#3f6db5"/><path d="M168 26 a80 44 0 0 1 20 18" stroke="#9fc7d6" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M190 40 l0 12 l-11 -6z" fill="#9fc7d6"/></svg><img data-img="hook_travel" alt="" hidden>
+      <span>Earth TRAVELS<br>around the sun</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Spin, travel, and eight worlds <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <g fill="#cdd6ff" opacity=".8"><circle cx="60" cy="50" r="2"/><circle cx="180" cy="120" r="2"/><circle cx="320" cy="40" r="2"/><circle cx="700" cy="60" r="2"/><circle cx="880" cy="140" r="2"/><circle cx="940" cy="50" r="2"/><circle cx="120" cy="330" r="2"/><circle cx="820" cy="330" r="2"/><circle cx="520" cy="390" r="2"/></g>
+      <!-- ROTATE -->
+      <g class="tg" data-tg="rotate">
+        <circle cx="70" cy="210" r="90" fill="#f2c14e"/><circle cx="70" cy="210" r="104" fill="#ffdf8a" opacity=".25"/>
+        <g id="spinEarth">
+          <circle cx="500" cy="210" r="110" fill="#3f6db5"/>
+          <path d="M440 150 q50 -20 90 5 q-15 40 -70 32 q-38 -6 -20 -37z" fill="#5c9c53"/>
+          <path d="M492 268 q42 -14 60 14 q-24 28 -60 14 q-18 -8 0 -28z" fill="#5c9c53"/>
+          <circle cx="565" cy="185" r="14" fill="#5c9c53"/>
+        </g>
+        <ellipse cx="556" cy="210" rx="56" ry="112" fill="#101430" opacity=".55"/>
+        <line x1="500" y1="70" x2="500" y2="350" stroke="#ffdf8a" stroke-width="5" stroke-dasharray="12 10" transform="rotate(18 500 210)"/>
+        <path d="M600 120 a130 130 0 0 1 30 60" stroke="#e0a93b" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M638 172 l-6 22 l-18 -12z" fill="#e0a93b"/>
+        <text x="720" y="180" fill="#ffdf8a" font-size="34" font-weight="800">ROTATE = spin</text>
+        <text x="720" y="224" fill="#dfe4ff" font-size="26">1 spin = 1 day + night</text>
+      </g>
+      <!-- REVOLVE -->
+      <g class="tg" data-tg="revolve">
+        <circle cx="500" cy="200" r="58" fill="#f2c14e"/><circle cx="500" cy="200" r="70" fill="#ffdf8a" opacity=".25"/>
+        <circle cx="500" cy="200" r="150" fill="none" stroke="#9fc7d6" stroke-width="4" stroke-dasharray="12 10"/>
+        <g id="orbGrp"><circle cx="650" cy="200" r="20" fill="#3f6db5"/><path d="M655 187 q8 -4 12 2 q-4 8 -12 4z" fill="#5c9c53"/></g>
+        <path d="M614 78 a150 150 0 0 1 36 122" stroke="#e0a93b" stroke-width="0" fill="none"/>
+        <text x="60" y="140" fill="#ffdf8a" font-size="34" font-weight="800">REVOLVE = travel</text>
+        <text x="60" y="184" fill="#dfe4ff" font-size="26">1 full trip around the sun</text>
+        <text x="60" y="220" fill="#dfe4ff" font-size="26">= 1 whole YEAR</text>
+      </g>
+      <!-- ORDER -->
+      <g class="tg" data-tg="order">
+        <path d="M0 100 a160 160 0 0 1 0 220z" fill="#f2c14e"/>
+        <circle cx="120" cy="210" r="10" fill="#b8a08c"/><text x="120" y="260" fill="#dfe4ff" font-size="20" text-anchor="middle">Mercury</text>
+        <circle cx="205" cy="210" r="16" fill="#e0b96a"/><text x="205" y="260" fill="#dfe4ff" font-size="20" text-anchor="middle">Venus</text>
+        <circle cx="295" cy="210" r="17" fill="#3f6db5"/><path d="M286 200 q10 -5 16 2 q-6 9 -16 4z" fill="#5c9c53"/><text x="295" y="260" fill="#dfe4ff" font-size="20" text-anchor="middle">Earth</text>
+        <circle cx="380" cy="210" r="13" fill="#c1543b"/><text x="380" y="260" fill="#dfe4ff" font-size="20" text-anchor="middle">Mars</text>
+        <circle cx="500" cy="210" r="52" fill="#d8a56a"/><ellipse cx="500" cy="196" rx="52" ry="8" fill="#b97f4b" opacity=".7"/><ellipse cx="482" cy="226" rx="14" ry="9" fill="#c1543b" opacity=".8"/><text x="500" y="292" fill="#dfe4ff" font-size="20" text-anchor="middle">Jupiter</text>
+        <circle cx="645" cy="210" r="44" fill="#e8cf8f"/><ellipse cx="645" cy="210" rx="74" ry="16" fill="none" stroke="#cbb271" stroke-width="8"/><text x="645" y="292" fill="#dfe4ff" font-size="20" text-anchor="middle">Saturn</text>
+        <circle cx="775" cy="210" r="26" fill="#9fd6d6"/><text x="775" y="266" fill="#dfe4ff" font-size="20" text-anchor="middle">Uranus</text>
+        <circle cx="880" cy="210" r="25" fill="#4a6fd6"/><text x="880" y="266" fill="#dfe4ff" font-size="20" text-anchor="middle">Neptune</text>
+      </g>
+      <!-- ROCKY vs GAS -->
+      <g class="tg" data-tg="rocky">
+        <rect x="60" y="120" width="360" height="190" rx="20" fill="none" stroke="#c1543b" stroke-width="5"/>
+        <text x="240" y="105" fill="#ffb59f" font-size="26" font-weight="800" text-anchor="middle">Inner 4 — small &amp; ROCKY</text>
+        <circle cx="130" cy="210" r="12" fill="#b8a08c"/><circle cx="210" cy="210" r="18" fill="#e0b96a"/><circle cx="295" cy="210" r="19" fill="#3f6db5"/><circle cx="370" cy="210" r="15" fill="#c1543b"/>
+        <rect x="480" y="90" width="470" height="250" rx="20" fill="none" stroke="#9fd6d6" stroke-width="5"/>
+        <text x="715" y="75" fill="#b8ecec" font-size="26" font-weight="800" text-anchor="middle">Outer 4 — GAS GIANTS</text>
+        <circle cx="565" cy="215" r="58" fill="#d8a56a"/><circle cx="705" cy="215" r="48" fill="#e8cf8f"/><ellipse cx="705" cy="215" rx="78" ry="16" fill="none" stroke="#cbb271" stroke-width="7"/><circle cx="820" cy="215" r="30" fill="#9fd6d6"/><circle cx="898" cy="215" r="29" fill="#4a6fd6"/>
+      </g>
+      <!-- SIZE -->
+      <g class="tg" data-tg="size">
+        <circle cx="330" cy="215" r="150" fill="#f2c14e"/><circle cx="330" cy="215" r="164" fill="#ffdf8a" opacity=".22"/>
+        <text x="330" y="220" fill="#7a5b12" font-size="30" font-weight="800" text-anchor="middle">SUN = beach ball</text>
+        <circle cx="700" cy="215" r="4" fill="#3f6db5"/>
+        <path d="M700 200 v-40" stroke="#dfe4ff" stroke-width="3"/>
+        <text x="700" y="140" fill="#dfe4ff" font-size="28" font-weight="800" text-anchor="middle">Earth = a peppercorn</text>
+        <text x="700" y="290" fill="#aab3e0" font-size="24" text-anchor="middle">Over one MILLION Earths</text>
+        <text x="700" y="322" fill="#aab3e0" font-size="24" text-anchor="middle">could fit inside the sun</text>
+      </g>
+      <!-- FAR APART -->
+      <g class="tg" data-tg="far">
+        <path d="M0 140 a90 90 0 0 1 0 160z" fill="#f2c14e"/>
+        <circle cx="150" cy="220" r="5" fill="#b8a08c"/><circle cx="290" cy="220" r="7" fill="#e0b96a"/><circle cx="430" cy="220" r="7" fill="#3f6db5"/><circle cx="600" cy="220" r="6" fill="#c1543b"/>
+        <text x="800" y="228" fill="#aab3e0" font-size="34" font-weight="800">· · · →</text>
+        <text x="500" y="120" fill="#ffdf8a" font-size="30" font-weight="800" text-anchor="middle">Real space is mostly EMPTY</text>
+        <text x="500" y="330" fill="#dfe4ff" font-size="24" text-anchor="middle">Posters squeeze the planets together. In real life they are far, far apart.</text>
+      </g>
+    </svg>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Build the solar system <button class="say" id="sayPrac">🔊</button></h2>
+  <p class="lead" id="pLead"></p>
+  <div class="track" id="track">
+    <div class="sunend" title="Sun"></div>
+    <div class="slot" data-slot="0">1</div><div class="slot" data-slot="1">2</div><div class="slot" data-slot="2">3</div><div class="slot" data-slot="3">4</div>
+    <div class="slot" data-slot="4">5</div><div class="slot" data-slot="5">6</div><div class="slot" data-slot="6">7</div><div class="slot" data-slot="7">8</div>
+  </div>
+  <div class="q"><span id="pPrompt"></span></div>
+  <div class="opts" id="pOpts"></div>
+  <div class="fb" id="pfb"></div>
+  <div class="counter" id="pCount"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch spin &amp; travel again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.solar.01',version:1,quiz:'quiz.science.35.solar.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media (Grok Imagine / TTS via tools/lesson_assets) ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  function setScene(name){ document.querySelectorAll('.tg').forEach(g=>g.classList.toggle('cur',g.dataset.tg===name)); }
+  const TEACH=[
+    {vid:'t_rotate', media:'teach_rotate', scene:'rotate', dur:9000, cap:'Earth ROTATES — it spins like a top. One spin = one day and one night.',
+     txt:'Earth ROTATES. That means it spins, like a top. One full spin takes about twenty-four hours — one day and one night. The side facing the sun has day. The side facing away has night.'},
+    {vid:'t_revolve', media:'teach_revolve', scene:'revolve', dur:9000, cap:'Earth also REVOLVES — it travels all the way around the sun. One trip = one YEAR.',
+     txt:'Earth also REVOLVES. That means it travels, all the way around the sun. One full trip takes a whole year. Remember: rotate is spin. Revolve is travel. Two different words, two different motions.'},
+    {vid:'t_order', media:'teach_order', scene:'order', dur:11000, cap:'Eight planets circle the sun, in order: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.',
+     txt:'Eight planets revolve around the sun, always in the same order. Mercury, scorched and swift. Venus, hottest, wrapped in thick clouds. Earth, our blue home. Mars, the rusty red planet. Jupiter, the biggest of all. Saturn, with its shining rings. Uranus, tipped over on its side. And Neptune — far, blue, and windy.'},
+    {vid:'t_rocky', media:'teach_rocky', scene:'rocky', dur:8000, cap:'The inner four are small and ROCKY. The outer four are GAS GIANTS.',
+     txt:'The four planets near the sun are small and rocky — you could stand on them. The four outer planets are gas giants: huge balls of gas with no ground to stand on.'},
+    {vid:'t_size', media:'teach_size', scene:'size', dur:9000, cap:'The sun is a STAR — absurdly bigger. Sun = beach ball, Earth = peppercorn.',
+     txt:'And the sun? The sun is not a planet. It is a star — and it is absurdly bigger than everything else. If the sun were a beach ball, Earth would be a tiny peppercorn. More than one million Earths could fit inside the sun.'},
+    {vid:'t_far', media:'teach_far', scene:'far', dur:8000, cap:'Posters squeeze planets together. Real planets are far, FAR apart.',
+     txt:'One more secret: posters squeeze the planets together so they fit on the page. In real space the planets are far, far apart, with huge stretches of empty space between them.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(TEACH.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[]; cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media'); setScene('');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene(); let t=200;
+    TEACH.forEach(b=>{ later(()=>{ cap.textContent=b.cap; say(b.txt,b.vid); setScene(b.scene); showBeat(b.media); },t); t+=b.dur; });
+    later(()=>{ document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const PLANETS=[
+    {n:'Mercury',c:'#b8a08c',r:12,fact:'Mercury — scorched and swift, closest to the sun.'},
+    {n:'Venus',c:'#e0b96a',r:16,fact:'Venus — the hottest, wrapped in thick clouds.'},
+    {n:'Earth',c:'#3f6db5',r:17,fact:'Earth — our home, the blue planet.'},
+    {n:'Mars',c:'#c1543b',r:14,fact:'Mars — the rusty red planet.'},
+    {n:'Jupiter',c:'#d8a56a',r:26,fact:'Jupiter — the biggest planet of all.'},
+    {n:'Saturn',c:'#e8cf8f',r:23,fact:'Saturn — famous for its shining rings.'},
+    {n:'Uranus',c:'#9fd6d6',r:19,fact:'Uranus — tipped over, it rolls around the sun.'},
+    {n:'Neptune',c:'#4a6fd6',r:19,fact:'Neptune — far, blue, and the windiest.'}
+  ];
+  const MNEM='My Very Educated Mother Just Served Us Noodles';
+  const PHASE=[
+    {title:'Build the solar system', lead:'Tap the planet that goes in the next spot, starting closest to the sun. Hint: “'+MNEM+'.”', vid:'prac0',
+     txt:'Build the solar system! Tap the planet that goes in the next spot, starting closest to the sun. If you get stuck, remember: My Very Educated Mother Just Served Us Noodles.'},
+    {title:'Rotate or revolve?', lead:'Spin, or travel? Tap the motion that matches.', vid:'prac1',
+     txt:'Rotate, or revolve? Rotate means spin. Revolve means travel around the sun. Tap the motion that matches each clue.'},
+    {title:'How big? How far?', lead:'Think about real sizes and real distances.', vid:'prac2',
+     txt:'Last round! Think about real sizes and real distances in space.'}
+  ];
+  function orderItem(i){
+    const wrong=[(i+1)%8,(i+2)%8];
+    const opts=[PLANETS[i].n,PLANETS[wrong[0]].n,PLANETS[wrong[1]].n].map((t,j)=>({t,ok:j===0}));
+    for(let j=opts.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[opts[j],opts[k]]=[opts[k],opts[j]];}
+    return {ph:0,q:'Which planet is number '+(i+1)+' from the sun?',opts:opts.map(o=>o.t),a:opts.findIndex(o=>o.ok),
+      why:PLANETS[i].fact,mis:'order',hint:'Use the memory trick: “'+MNEM+'” — word '+(i+1)+' starts with the same letter.',slot:i,retry:true};
+  }
+  const PRAC=[
+    orderItem(0),orderItem(1),orderItem(2),orderItem(3),orderItem(4),orderItem(5),orderItem(6),orderItem(7),
+    {ph:1,q:'This motion makes DAY and NIGHT.',opts:['Rotate — spin','Revolve — travel'],a:0,mis:'rr',why:'Yes — one spin turns us toward the sun, then away. Day, then night.',hint:'Day and night come from spinning. Which word means spin?'},
+    {ph:1,q:'This motion makes your BIRTHDAY come around again.',opts:['Rotate — spin','Revolve — travel'],a:1,mis:'rr',why:'Yes — one full trip around the sun is one year. Happy birthday!',hint:'A year is a TRIP around the sun. Which word means travel?'},
+    {ph:1,q:'One of these takes about 24 hours.',opts:['One rotation (spin)','One revolution (trip)'],a:0,mis:'rr',why:'Yes — one spin is about 24 hours: one day and night.',hint:'24 hours is one day. Is a day a spin, or a trip around the sun?'},
+    {ph:1,q:'One of these takes a whole YEAR.',opts:['One rotation (spin)','One revolution (trip)'],a:1,mis:'rr',why:'Yes — one full revolution around the sun takes 365 days.',hint:'A year is much longer than a day. Spin is fast; the trip is long.'},
+    {ph:1,q:'The sun seems to “rise” each morning because Earth…',opts:['Rotates — spins us toward the sun','Revolves — finishes its trip'],a:0,mis:'rr',why:'Yes — the sun does not move up. WE spin toward it.',hint:'Every single morning! Which motion happens every day?'},
+    {ph:2,q:'If the sun were a BEACH BALL, Earth would be…',opts:['A peppercorn','Another beach ball','A basketball'],a:0,mis:'sunsmall',why:'Yes — a tiny peppercorn. Over a million Earths fit inside the sun.',hint:'The sun is not a little bigger. It is absurdly bigger.'},
+    {ph:2,q:'Which one is the biggest of all?',opts:['The sun','Jupiter','Earth'],a:0,mis:'sunsmall',why:'Yes — the sun is a star, far bigger than even Jupiter.',hint:'Jupiter is the biggest PLANET. But one thing here is not a planet…'},
+    {ph:2,q:'How are the planets really spaced?',opts:['Far apart — mostly empty space','Close together, like on a poster'],a:0,mis:'poster',why:'Yes — posters squeeze them in. Real space is huge and mostly empty.',hint:'Posters have to fit on a page. Real space does not.'}
+  ];
+  let pq=[],ptries=0,pdone=0,pmiss={},pfirstCorrect=0,pseen=0,plast=-1,pbusy=false;
+  const FBV={order:{v:'fb_order',t:'Not quite. '},rr:{v:'fb_rr',t:'Not quite. '},sunsmall:{v:'fb_sunsmall',t:'Not quite. '},poster:{v:'fb_poster',t:'Not quite. '}};
+  const pfb=document.getElementById('pfb');
+  function startPrac(){ pq=PRAC.slice(); ptries=0;pdone=0;pmiss={};pfirstCorrect=0;pseen=0;plast=-1;pbusy=false;
+    document.querySelectorAll('.slot').forEach((s,i)=>{s.classList.remove('filled');s.innerHTML=String(i+1);});
+    pfb.textContent=''; document.getElementById('pracNext').disabled=true; showP(); }
+  function showP(){
+    pbusy=false;
+    if(!pq.length){ document.getElementById('pPrompt').textContent='All done — great work, astronomer!'; document.getElementById('pOpts').innerHTML='';
+      document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+      document.getElementById('pracNext').disabled=false; say('All done, astronomer! Now show what you know.','prac_done'); return; }
+    const it=pq[0];
+    if(it.ph!==plast){ plast=it.ph; const ph=PHASE[it.ph];
+      document.getElementById('pTitle').childNodes[0].textContent=ph.title+' ';
+      document.getElementById('pLead').innerHTML=ph.lead;
+      document.getElementById('sayPrac').onclick=()=>say(ph.txt,ph.vid);
+      document.getElementById('track').style.display= it.ph===0? '' : 'none';
+      say(ph.txt,ph.vid);
+    }
+    document.getElementById('pPrompt').textContent=it.q;
+    document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+    const o=document.getElementById('pOpts'); o.innerHTML='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pAnswer(i,b); o.appendChild(b); });
+  }
+  function pAnswer(i,btn){
+    if(pbusy) return; pbusy=true;
+    const it=pq.shift(); ptries++; pseen++;
+    const ok=i===it.a;
+    document.querySelectorAll('#pOpts .opt').forEach((b,j)=>{ b.disabled=true; if(j===it.a&&ok) b.classList.add('right'); if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ pdone++; if(pseen<=PRAC.length) pfirstCorrect++;
+      pfb.className='fb good'; pfb.textContent='✓ '+it.why; say(it.why);
+      if(it.slot!==undefined){ const s=document.querySelector('.slot[data-slot="'+it.slot+'"]'); const p=PLANETS[it.slot];
+        s.classList.add('filled'); s.innerHTML='<span class="pl"><svg width="'+(p.r*2+8)+'" height="'+(p.r*2+8)+'" viewBox="0 0 '+(p.r*2+8)+' '+(p.r*2+8)+'"><circle cx="'+(p.r+4)+'" cy="'+(p.r+4)+'" r="'+p.r+'" fill="'+p.c+'"/></svg></span><span class="nm">'+p.n+'</span>'; }
+    } else {
+      pmiss[it.mis]=(pmiss[it.mis]||0)+1;
+      const f=FBV[it.mis]; pfb.className='fb bad'; pfb.textContent=f.t+it.hint; say(f.t+it.hint,f.v);
+      if(it.retry) pq.unshift(it); else pq.push(it);
+    }
+    setTimeout(showP, ok?1500:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌍',k:'card_earth',q:'Earth spins around once every day. What is that motion, and what does it make?',
+     o:['Rotate — it makes day and night','Revolve — it makes day and night','Rotate — it makes a whole year'],a:0},
+    {id:2,pic:'🎂',k:'card_year',q:'What gives us a whole YEAR?',
+     o:['Earth revolves — one full trip around the sun','Earth rotates — one full spin','The sun travels around Earth'],a:0},
+    {id:3,pic:'☀️',k:'card_sun',q:'The sun is…',
+     o:['A star, far bigger than every planet','A planet, like Earth','A star about the same size as Earth'],a:0},
+    {id:4,pic:'🪐',k:'card_order4',q:'Which shows the first four planets, in order from the sun?',
+     o:['Mercury, Venus, Earth, Mars','Venus, Mercury, Mars, Earth','Earth, Mercury, Venus, Mars'],a:0},
+    {id:5,pic:'✨',k:'card_far',q:'In real space, how are the planets spaced?',
+     o:['Far, far apart — mostly empty space','Close together, like on a poster'],a:0}
+  ];
+  const WHY={1:'Rotate means spin — one spin is one day and night.',2:'Revolve means travel — one trip around the sun is one year.',3:'The sun is a star, and over a million Earths would fit inside it.',4:'My Very Educated Mother — Mercury, Venus, Earth, Mars.',5:'Posters squeeze planets together; real space is mostly empty.'};
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes! '+WHY[q.id]:'The answer is "'+q.o[q.a]+'". '+WHY[q.id];
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pfirstCorrect,tries:ptries,misses:pmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know your solar system! 🔭' : 'Good try! Let\'s watch spin and travel once more.';
+    document.getElementById('guessTxt').textContent = guess==='travel' ? 'At the start you guessed Earth TRAVELS around the sun to make a year — you were right! That trip is called revolving.' : guess==='spin' ? 'At the start you guessed SPINNING makes a year. Now you know: spinning (rotating) makes day and night — the year comes from the TRIP around the sun (revolving).' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch spin & travel again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Pick one planet and go learn one amazing fact about it. 🪐'; say('Lesson done! Pick one planet and go learn one amazing fact about it.','done');
+    document.getElementById('finish').disabled=true;
+  };
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+})();
+</script>
+</body>
+</html>

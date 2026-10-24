@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Property detective — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d; --blue:#4a7fb5;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.hookpic{display:flex;justify-content:center;margin:6px 0}
+.hookpic svg{width:min(60vw,420px);height:auto}
+.hookpic img{width:min(60vw,420px);border-radius:var(--radius);box-shadow:var(--shadow);display:block}
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;min-height:130px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:20px 14px;text-align:center}
+.pick.sel{border-color:var(--gold)}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:300px;background:linear-gradient(#fdf9f0 0 100%);border:5px solid var(--cream2);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media>svg{display:none}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.mv{transition:transform 1.2s ease-out}
+.pivot{transform-box:fill-box;transform-origin:50% 50%}
+.stamp{position:absolute;z-index:3;right:4%;bottom:12%;font-size:32px;font-weight:900;letter-spacing:1px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-8deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.9)}
+.stamp.show{transform:rotate(-8deg) scale(1)}
+.stamp.no{color:var(--red);border-color:var(--red)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+/* ---- practice ---- */
+.bigpic{text-align:center;margin:8px 0}
+.bigpic svg{width:min(36vw,220px);height:auto}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.pq{font-size:28px;font-weight:800;margin:8px 0 4px;text-align:center}
+.popts{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.popt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 26px;cursor:pointer;box-shadow:var(--shadow);min-height:72px;min-width:160px}
+.popt.right{border-color:var(--green);background:#eaf5ec}
+.popt.wrong{border-color:var(--red);background:#fbe9e7}
+.popt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:24px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+.rulebar{text-align:center;font-size:28px;font-weight:900;margin:4px 0;padding:10px;border-radius:var(--radius);background:var(--cream2)}
+.sortwrap{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:18px;flex:1;min-height:340px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:14px;gap:10px;min-height:280px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:28px}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bin .got svg{width:52px;height:52px}
+.deck{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.item{width:min(240px,40vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;cursor:grab;touch-action:none;
+  font-size:26px;font-weight:800;border:5px solid var(--gold)}
+.item svg{width:120px;height:120px}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.tapbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:150px;font-size:22px;padding:14px 20px}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .sortwrap{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .bin{min-height:120px} .scene{min-height:220px} .caption{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Property detective <button class="say" data-say="A big balloon, and a little rock. Which one is heavier? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">A BIG balloon. A little rock. <b>Which one is heavier?</b> Tap your guess.</p>
+  <div class="hookpic">
+    <img data-img="hook_balloonrock" alt="" hidden>
+    <svg viewBox="0 0 320 170" aria-label="a big balloon and a little rock"><use href="#sh_balloonrock"/></svg>
+  </div>
+  <div class="choice2">
+    <div class="pick" data-guess="balloon">The BIG balloon</div>
+    <div class="pick" data-guess="rock">The little rock</div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Words that describe things <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 320" preserveAspectRatio="xMidYMid meet">
+      <g id="slotA" class="mv"></g>
+      <g id="slotB" class="mv"></g>
+      <g id="slotC" class="mv"></g>
+      <g id="seesaw" style="display:none">
+        <path d="M500 268 L470 300 L530 300 Z" fill="#8a6b48"/>
+        <g id="plank" class="mv pivot">
+          <rect x="270" y="258" width="460" height="14" rx="7" fill="#a9906b"/>
+          <g transform="translate(290,128) scale(.95)"><use href="#sh_balloon"/></g>
+          <g transform="translate(620,196) scale(.9)"><use href="#sh_rock"/></g>
+        </g>
+      </g>
+    </svg>
+    <div class="stamp no" id="stampNo">BIG IS NOT ALWAYS HEAVY</div>
+    <div class="stamp yes" id="stampYes">THE RULE DECIDES!</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🎨</span>Color</div>
+    <div class="badge" id="b1"><span class="em">🔷</span>Shape</div>
+    <div class="badge" id="b2"><span class="em">✋</span>How it feels</div>
+    <div class="badge" id="b3"><span class="em">⚖️</span>Size &amp; weight</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Be the detective! <button class="say" data-say="Look at each thing. Which word answers the question?" data-voice="prac_intro">🔊</button></h2>
+  <div id="pracA">
+    <div class="bigpic" id="dPic"></div>
+    <div class="pq"><span id="dText"></span><button class="say" id="sayD" style="width:48px;height:48px;font-size:22px">🔊</button></div>
+    <div class="popts" id="dOpts"></div>
+    <div class="fb" id="dfb"></div>
+    <div class="counter" id="dCount"></div>
+  </div>
+  <div id="pracB" style="display:none">
+    <div class="rulebar" id="ruleBar"></div>
+    <div class="sortwrap">
+      <div class="bin" data-bin="L"><h3 id="binLh"></h3><div class="got" id="gotL"></div></div>
+      <div class="deck">
+        <div class="item" id="item"><div id="itemPic"></div><div id="itemName"></div></div>
+        <div class="tapbtns"><button class="btn ghost" data-tap="L" id="tapL"></button><button class="btn ghost" data-tap="R" id="tapR"></button></div>
+        <div class="counter" id="counter"></div>
+      </div>
+      <div class="bin" data-bin="R"><h3 id="binRh"></h3><div class="got" id="gotR"></div></div>
+    </div>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the describing words again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="sh_ballr">
+      <circle cx="60" cy="60" r="48" fill="#c9503c"/>
+      <path d="M20 44 Q60 16 100 44" stroke="#f3e9d6" stroke-width="12" fill="none"/>
+      <path d="M22 80 Q60 106 98 80" stroke="#e0a93b" stroke-width="9" fill="none"/>
+    </g>
+    <g id="sh_button">
+      <circle cx="60" cy="60" r="22" fill="#b5382f"/>
+      <circle cx="60" cy="60" r="22" fill="none" stroke="#8e2a23" stroke-width="4"/>
+      <circle cx="53" cy="53" r="3" fill="#5e1712"/><circle cx="67" cy="53" r="3" fill="#5e1712"/>
+      <circle cx="53" cy="67" r="3" fill="#5e1712"/><circle cx="67" cy="67" r="3" fill="#5e1712"/>
+    </g>
+    <g id="sh_kite">
+      <polygon points="60,8 102,60 60,112 18,60" fill="#4a7fb5"/>
+      <line x1="60" y1="8" x2="60" y2="112" stroke="#2f5a85" stroke-width="4"/>
+      <line x1="18" y1="60" x2="102" y2="60" stroke="#2f5a85" stroke-width="4"/>
+      <path d="M60 112 q10 14 -4 22 q14 4 10 18" stroke="#8e2a23" stroke-width="4" fill="none"/>
+    </g>
+    <g id="sh_sock">
+      <path d="M48 22 L76 22 L76 62 Q76 88 52 88 Q30 88 30 70 Q30 58 48 56 Z" fill="#4a7fb5"/>
+      <rect x="46" y="16" width="32" height="14" rx="5" fill="#f3e9d6"/>
+    </g>
+    <g id="sh_plate">
+      <circle cx="60" cy="60" r="50" fill="#b5382f"/>
+      <circle cx="60" cy="60" r="34" fill="#f6efe0"/>
+    </g>
+    <g id="sh_mitten">
+      <path d="M42 32 Q42 16 56 16 Q72 16 72 34 L72 62 Q72 82 54 82 Q38 82 38 66 Z" fill="#4a7fb5"/>
+      <path d="M40 46 Q26 42 26 54 Q26 64 40 60 Z" fill="#4a7fb5"/>
+      <rect x="40" y="78" width="34" height="14" rx="5" fill="#f3e9d6"/>
+    </g>
+    <g id="sh_block">
+      <rect x="24" y="24" width="72" height="72" rx="8" fill="#e0a93b"/>
+      <rect x="24" y="24" width="72" height="16" rx="8" fill="#ecc06a"/>
+    </g>
+    <g id="sh_star">
+      <polygon points="60,12 74,46 110,46 82,68 92,104 60,82 28,104 38,68 10,46 46,46" fill="#e0a93b"/>
+    </g>
+    <g id="sh_spoon">
+      <ellipse cx="38" cy="42" rx="22" ry="30" fill="#aab2ba"/>
+      <rect x="46" y="60" width="14" height="52" rx="7" fill="#aab2ba" transform="rotate(-35 53 86)"/>
+    </g>
+    <g id="sh_rock">
+      <path d="M28 78 Q22 52 44 44 Q58 30 76 42 Q96 46 92 66 Q96 84 74 88 L38 88 Q26 88 28 78Z" fill="#8d8d8d"/>
+      <path d="M44 58 Q56 50 68 58" stroke="#6f6f6f" stroke-width="4" fill="none"/>
+    </g>
+    <g id="sh_balloon">
+      <ellipse cx="60" cy="58" rx="44" ry="52" fill="#d98a80"/>
+      <ellipse cx="44" cy="40" rx="12" ry="18" fill="#e8aca4"/>
+      <polygon points="54,108 66,108 60,118" fill="#c9705f"/>
+      <path d="M60 118 q-8 14 2 26 q10 12 0 24" stroke="#8e2a23" stroke-width="3" fill="none"/>
+    </g>
+    <g id="sh_balloonrock">
+      <g transform="translate(20,0)"><use href="#sh_balloon"/></g>
+      <g transform="translate(190,64) scale(.9)"><use href="#sh_rock"/></g>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.matter.01',version:1,quiz:'quiz.science.k2.matter.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_color'],['b1','badge_shape'],['b2','badge_feel'],['b3','badge_size']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; if(el.nextElementSibling&&el.nextElementSibling.tagName==='svg') el.nextElementSibling.style.display='none'; } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- helpers ---------- */
+  function snap(el,tr){ el.style.transition='none'; el.style.transform=tr; el.getBoundingClientRect(); requestAnimationFrame(()=>{ el.style.transition=''; }); }
+  function slide(el,tr,dur){ el.style.transitionDuration=(reduced?0:(dur||1200))+'ms'; el.style.transform=tr; }
+  function use(sh){ return '<use href="#sh_'+sh+'"/>'; }
+
+  /* ---------- stage 1: teach ---------- */
+  const slots=['slotA','slotB','slotC'].map(id=>document.getElementById(id));
+  const seesaw=document.getElementById('seesaw'),plank=document.getElementById('plank'),cap=document.getElementById('cap'),
+        stampNo=document.getElementById('stampNo'),stampYes=document.getElementById('stampYes');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function setSlots(a,b,c){
+    const pos=[[190,100],[440,100],[690,100]];
+    [a,b,c].forEach((sh,i)=>{ const g=slots[i]; if(!sh){ g.innerHTML=''; return; }
+      g.innerHTML=use(sh); snap(g,'translate('+pos[i][0]+'px,'+pos[i][1]+'px)'); });
+  }
+  function popSlot(i){ const g=slots[i]; const m=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/.exec(g.style.transform)||[0,440,100];
+    slide(g,'translate('+m[1]+'px,'+m[2]+'px) scale(1.2)',500); setTimeout(()=>slide(g,'translate('+m[1]+'px,'+m[2]+'px) scale(1)',500),reduced?0:600); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    setSlots(null,null,null); seesaw.style.display='none'; plank.style.transform='none';
+    badges.forEach(b=>b.className='badge'); stampNo.className='stamp no'; stampYes.className='stamp yes';
+    cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "Words can tell a thing's color. Red ball. Blue sock. Yellow star.",
+    "Words can tell its shape. Round ball. Square block. Pointy kite.",
+    "Words can tell how it feels. Smooth spoon. Rough rock. Soft sock.",
+    "Words can compare. Big or small. Heavy or light. The big balloon is light. The little rock is heavy! Big is not always heavy.",
+    "When we sort, the rule decides the group. Sort by color: the red ball and red button go together. Sort by size: now the ball goes with the big kite! Same toys, new groups."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: color
+    setSlots('ballr','sock','star'); cap.textContent='Words can tell COLOR.'; say(teachScript[0],'t_color'); showBeat('teach_color');
+    later(()=>{ cap.textContent='RED ball…'; popSlot(0); },1100);
+    later(()=>{ cap.textContent='BLUE sock…'; popSlot(1); },2200);
+    later(()=>{ cap.textContent='YELLOW star!'; popSlot(2); },3300);
+    later(()=>{ badges[0].classList.add('on'); },4400);
+    // beat 2: shape
+    later(()=>{ setSlots('ballr','block','kite'); cap.textContent='Words can tell SHAPE.'; say(teachScript[1],'t_shape'); showBeat('teach_shape'); },5200);
+    later(()=>{ cap.textContent='ROUND ball…'; popSlot(0); },6300);
+    later(()=>{ cap.textContent='SQUARE block…'; popSlot(1); },7400);
+    later(()=>{ cap.textContent='POINTY kite!'; popSlot(2); },8500);
+    later(()=>{ badges[1].classList.add('on'); },9600);
+    // beat 3: texture
+    later(()=>{ setSlots('spoon','rock','sock'); cap.textContent='Words can tell how it FEELS.'; say(teachScript[2],'t_feel'); showBeat('teach_feel'); },10400);
+    later(()=>{ cap.textContent='SMOOTH spoon…'; popSlot(0); },11500);
+    later(()=>{ cap.textContent='ROUGH rock…'; popSlot(1); },12600);
+    later(()=>{ cap.textContent='SOFT sock!'; popSlot(2); },13700);
+    later(()=>{ badges[2].classList.add('on'); },14800);
+    // beat 4: size & weight
+    later(()=>{ setSlots(null,null,null); seesaw.style.display=''; cap.textContent='BIG or small… HEAVY or light?'; say(teachScript[3],'t_weight'); showBeat('teach_weight'); },15600);
+    later(()=>{ slide(plank,'rotate(9deg)',1400); cap.textContent='The little rock is HEAVIER than the big balloon!'; },17600);
+    later(()=>{ stampNo.classList.add('show'); badges[3].classList.add('on'); },19400);
+    // beat 5: the rule decides
+    later(()=>{ stampNo.classList.remove('show'); seesaw.style.display='none';
+      setSlots('ballr','button','kite'); cap.textContent='Sort by COLOR: red things together.'; say(teachScript[4],'t_rule'); showBeat('teach_rule'); },21200);
+    later(()=>{ slide(slots[0],'translate(190px,100px)'); slide(slots[1],'translate(300px,120px)'); slide(slots[2],'translate(740px,100px)',1200); },22400);
+    later(()=>{ cap.textContent='Same toys — now sort by SIZE: big things together!'; },24400);
+    later(()=>{ slide(slots[2],'translate(320px,100px)',1200); slide(slots[1],'translate(760px,130px)',1200); },25400);
+    later(()=>{ stampYes.classList.add('show'); cap.textContent='The RULE decides the group!'; document.getElementById('teachNext').disabled=false; },27000);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2A: property detective ---------- */
+  const DET=[
+    {id:'d1',sh:'ballr',k:'card_ball',q:"Which word tells the ball's COLOR?",o:['Round','Red','Smooth'],a:1,
+     wrong:['Round tells its SHAPE, not its color.',null,'Smooth tells how it FEELS, not its color.'],why:'Red is its color.'},
+    {id:'d2',sh:'ballr',k:'card_ball',q:"Which word tells the ball's SHAPE?",o:['Round','Red','Big'],a:0,
+     wrong:[null,'Red tells its COLOR, not its shape.','Big tells its SIZE, not its shape.'],why:'Round is its shape.'},
+    {id:'d3',sh:'sock',k:'card_sock',q:'Which word tells how the sock FEELS?',o:['Blue','Small','Soft'],a:2,
+     wrong:['Blue tells its COLOR, not how it feels.','Small tells its SIZE, not how it feels.',null],why:'Soft is how it feels.'},
+    {id:'d4',sh:'button',k:'card_button',q:"Which word tells the button's SIZE?",o:['Little','Red','Round'],a:0,
+     wrong:[null,'Red tells its COLOR, not its size.','Round tells its SHAPE, not its size.'],why:'Little is its size.'},
+    {id:'d5',sh:'balloonrock',k:'hook_balloonrock',q:'Which one is HEAVIER?',o:['The big balloon','The little rock'],a:1,
+     wrong:['Big is not always heavy! The balloon is full of air.',null],why:'The little rock is heavier. Big is not always heavy!'}
+  ];
+  let dq=[],ddone=0,dtries=0,dmiss={},curD=null,dLock=false;
+  const dPic=document.getElementById('dPic'),dText=document.getElementById('dText'),dOpts=document.getElementById('dOpts'),
+        dfb=document.getElementById('dfb'),dCount=document.getElementById('dCount');
+  function showDet(){
+    if(!dq.length){ startSort(); return; }
+    curD=dq[0]; dLock=false;
+    if(img(curD.k)) dPic.innerHTML='<img src="'+img(curD.k)+'" alt="">';
+    else dPic.innerHTML='<svg viewBox="0 0 '+(curD.sh==='balloonrock'?'320 170':'120 120')+'">'+use(curD.sh)+'</svg>';
+    dText.textContent=curD.q; dfb.textContent=''; dfb.className='fb';
+    dCount.textContent=(ddone)+' of '+DET.length+' solved';
+    document.getElementById('sayD').onclick=()=>say(curD.q+' '+curD.o.join(', or '),'p_'+curD.id);
+    dOpts.innerHTML='';
+    curD.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t;
+      b.onclick=()=>detPick(i,b); dOpts.appendChild(b); });
+    say(curD.q,'p_'+curD.id);
+  }
+  function detPick(i,btn){
+    if(dLock) return; dLock=true; dtries++;
+    const d=dq.shift(); const ok=i===d.a;
+    dOpts.querySelectorAll('.popt').forEach((b,j)=>{ b.disabled=true; if(j===d.a&&ok) b.classList.add('right'); if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ ddone++; dfb.className='fb good'; dfb.textContent='✓ '+d.why; say('Yes! '+d.why,'why_'+d.id); }
+    else{ const mid=(d.id==='d5')?'bigheavy':'wrongprop'; dmiss[mid]=(dmiss[mid]||0)+1;
+      dfb.className='fb bad'; dfb.textContent='Not quite. '+d.wrong[i]; say('Not quite. '+d.wrong[i],'fb_'+d.id+'_'+i); dq.push(d); }
+    setTimeout(showDet, ok?1500:2200);
+  }
+
+  /* ---------- stage 2B: sort, then re-sort ---------- */
+  const THINGS=[
+    {n:'Ball',sh:'ballr',k:'card_ball',color:'red',size:'big'},
+    {n:'Button',sh:'button',k:'card_button',color:'red',size:'small'},
+    {n:'Kite',sh:'kite',k:'card_kite',color:'blue',size:'big'},
+    {n:'Sock',sh:'sock',k:'card_sock',color:'blue',size:'small'},
+    {n:'Plate',sh:'plate',k:'card_plate',color:'red',size:'big'},
+    {n:'Mitten',sh:'mitten',k:'card_mitten',color:'blue',size:'small'}
+  ];
+  const PHASES=[
+    {rule:'color',bar:'Rule: sort by COLOR 🎨',L:{key:'red',label:'🔴 Red things'},R:{key:'blue',label:'🔵 Blue things'},vid:'sort_color'},
+    {rule:'size',bar:'NEW RULE: same toys — sort by SIZE 📏',L:{key:'big',label:'🐘 Big things'},R:{key:'small',label:'🐭 Small things'},vid:'sort_size'}
+  ];
+  let phase=0,queue=[],sdone=0,stries=0,smiss={},sLock=false;
+  const item=document.getElementById('item'),fb=document.getElementById('fb');
+  function startPrac(){ dq=DET.slice(); ddone=0;dtries=0;dmiss={}; phase=0; sdone=0;stries=0;smiss={};
+    document.getElementById('pracA').style.display=''; document.getElementById('pracB').style.display='none';
+    document.getElementById('pracNext').disabled=true; showDet(); }
+  function startSort(){
+    document.getElementById('pracA').style.display='none'; document.getElementById('pracB').style.display='';
+    phase=0; beginPhase();
+  }
+  function beginPhase(){
+    const P=PHASES[phase]; queue=THINGS.slice(); sdone=0; sLock=false;
+    document.getElementById('ruleBar').textContent=P.bar;
+    document.getElementById('binLh').textContent=P.L.label; document.getElementById('binRh').textContent=P.R.label;
+    document.getElementById('tapL').textContent=P.L.label; document.getElementById('tapR').textContent=P.R.label;
+    document.getElementById('gotL').innerHTML=''; document.getElementById('gotR').innerHTML='';
+    fb.textContent=''; fb.className='fb';
+    const intro= phase===0? 'Sort each thing by its COLOR. Drag it to a bin, or tap a button.'
+                          : 'New rule! Sort the SAME things again — this time by SIZE.';
+    say(intro,P.vid);
+    showItem();
+  }
+  function showItem(){
+    if(!queue.length){
+      if(phase===0){ phase=1; setTimeout(beginPhase, reduced?400:1400); document.getElementById('counter').textContent='Sorted by color! ✓'; return; }
+      item.style.visibility='hidden'; document.getElementById('counter').textContent='Sorted twice! 🎉';
+      document.getElementById('pracNext').disabled=false; say('Same toys, two ways! The rule decides the group. Now show what you know.','sort_done'); return;
+    }
+    const it=queue[0]; item.style.visibility='visible'; sLock=false;
+    const ip=document.getElementById('itemPic');
+    if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false" style="width:120px">';
+    else ip.innerHTML='<svg viewBox="0 0 120 120">'+use(it.sh)+'</svg>';
+    document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${sdone} of ${THINGS.length} sorted`;
+    const P=PHASES[phase];
+    say(it.n+'. '+(P.rule==='color'?'Which color bin?':'Which size bin?'));
+  }
+  function answer(bin){
+    if(sLock||!queue.length||item.style.visibility==='hidden') return; sLock=true;
+    const P=PHASES[phase]; const it=queue.shift(); stries++;
+    const attr= P.rule==='color'? it.color : it.size;
+    const want= attr===P.L.key? 'L':'R';
+    const ok=bin===want;
+    if(ok){ sdone++;
+      const word=attr.toUpperCase();
+      fb.className='fb good'; fb.textContent='✓ '+it.n+' is '+word+'.';
+      say('Yes! It is '+attr+'. The rule is '+P.rule+'.','why_'+P.rule+'_'+attr);
+      const s=document.createElement('span');
+      if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="" style="width:52px;border-radius:10px">';
+      else s.innerHTML='<svg viewBox="0 0 120 120">'+use(it.sh)+'</svg>';
+      s.title=it.n; document.getElementById(bin==='L'?'gotL':'gotR').appendChild(s);
+    } else {
+      smiss['rulemix']=(smiss['rulemix']||0)+1;
+      const msg= P.rule==='color'? ('We are sorting by COLOR now. The '+it.n.toLowerCase()+' is '+it.color.toUpperCase()+'.')
+                                 : ('New rule — SIZE now, not color! The '+it.n.toLowerCase()+' is '+it.size.toUpperCase()+'.');
+      fb.className='fb bad'; fb.textContent='Check the rule! '+msg;
+      say('Check the rule! '+msg,'fb_'+P.rule+'_'+attr);
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1300:2000);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,sh:'ballr',k:'card_ball',q:"Which word tells the ball's COLOR?",o:['Round','Red','Smooth'],a:1,mis:'wrongprop'},
+    {id:2,sh:'sock',k:'card_sock',q:'Which word tells how the sock FEELS?',o:['Soft','Blue','Little'],a:0,mis:'wrongprop'},
+    {id:3,sh:'ballr',k:'card_ball',q:'We are sorting by SHAPE. Where does the ball go?',o:['With the red things','With the round things','With the big things'],a:1,mis:'rulemix'},
+    {id:4,sh:'balloonrock',k:'hook_balloonrock',q:'A big balloon and a little rock. Which one is heavier?',o:['The big balloon','The little rock'],a:1,mis:'bigheavy'},
+    {id:5,sh:'button',k:'card_button',q:'We sorted by color. Now the rule is SIZE. Where does the little red button go now?',o:['With the red things — it always stays there','With the small things'],a:1,mis:'rulemix'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic');
+    if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">';
+    else qp.innerHTML='<svg viewBox="0 0 '+(q.sh==='balloonrock'?'320 170':'120 120')+'">'+use(q.sh)+'</svg>';
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{detective:{solved:ddone,tries:dtries,misses:dmiss},sort:{sorted:sdone,tries:stries,misses:smiss}}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You are a property detective! 🔎' : 'Good try! Let\'s look at the describing words once more.';
+    document.getElementById('guessTxt').textContent = guess==='rock' ? 'At the start you guessed the little rock was heavier — you were right. Big is not always heavy!' : guess==='balloon' ? 'At the start you guessed the big balloon. Now you know: big is not always heavy!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the describing words again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go sort real spoons and socks with your grown-up. 🥄🧦'; say('Lesson done! Now go sort real spoons and socks with your grown-up.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shape-shifter: solid, liquid, gas — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d; --blue:#3c6e9f;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:38px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.beatart{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:56px 12px 10px}
+.beatart.on{display:flex}
+.beatart svg{width:min(92%,660px);height:auto;max-height:100%}
+.scene.media .beatart{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+/* gentle beat motion */
+.pourrock{animation:pourrock 2.6s ease-in-out infinite alternate;transform-origin:120px 60px}
+@keyframes pourrock{from{transform:rotate(0)}to{transform:rotate(-14deg)}}
+.bob{animation:bob 3s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+.steamup{animation:steamup 2.6s linear infinite}
+@keyframes steamup{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-46px);opacity:0}}
+.melt{animation:melt 3.4s ease-in-out infinite alternate}
+@keyframes melt{from{transform:scaleY(1)}to{transform:scaleY(.55)}}
+/* ---- practice: sort ---- */
+.deck{display:flex;flex-direction:column;align-items:center;gap:12px}
+.item{width:min(340px,80vw);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;text-align:center;cursor:grab;touch-action:none;
+  font-size:27px;font-weight:800;border:5px solid var(--gold)}
+.item .pic{font-size:76px;line-height:1.1;min-height:84px;display:flex;align-items:center;justify-content:center}
+.item .pic svg{width:min(200px,50vw);height:auto}
+.item .pic img{width:100%;max-width:170px;border-radius:14px;display:block;margin:0 auto}
+.item.dragging{opacity:.85;position:fixed;z-index:10;pointer-events:none;transform:scale(1.05)}
+.bins{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px}
+.bin{border:5px dashed var(--sky2);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;padding:10px;gap:8px;min-height:150px;transition:.2s;background:rgba(255,255,255,.5)}
+.bin h3{margin:0;font-size:26px}
+.bin[data-bin="solid"] h3{color:var(--red)} .bin[data-bin="liquid"] h3{color:var(--blue)} .bin[data-bin="gas"] h3{color:var(--green)}
+.bin.over{background:#fff;border-style:solid;transform:scale(1.02)}
+.bin .got{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.bin .got span{font-size:34px}
+.bin .got img{width:44px;height:44px;object-fit:cover;border-radius:10px}
+.tapbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.tapbtns .btn{min-width:140px;font-size:22px;padding:12px 18px;min-height:68px}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* heat lab */
+.lab{display:none;flex-direction:column;align-items:center;gap:12px;flex:1;justify-content:center}
+.lab.on{display:flex}
+.sortpane{display:flex;flex-direction:column;flex:1}
+.sortpane.off{display:none}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:25px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:100px;text-align:center;line-height:1.1;margin:8px 0;min-height:110px;display:flex;align-items:center;justify-content:center}
+.bigpic svg{width:min(280px,66vw);height:auto}
+.bigpic img{width:min(40vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:30px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:250px} .caption{font-size:22px}
+  .bins{grid-template-columns:1fr;gap:10px} .bin{min-height:96px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Shape-shifter <button class="say" data-say="We pour the same juice into a tall cup, a round bowl, and a wide dish. Does the juice keep one shape of its own? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The <b>same juice</b> goes into a tall cup, a round bowl, a wide dish. Does the juice keep one shape?</p>
+  <div class="choice2">
+    <div class="pick" data-guess="keeps">
+      <img data-img="hook_keeps" alt="" hidden><svg viewBox="0 0 220 130" aria-label="juice keeping one shape"><rect width="220" height="130" rx="16" fill="#f3e9d6"/><path d="M60 40 l40 0 l-6 60 l-28 0 z" fill="#e0a93b" opacity=".9"/><path d="M130 45 l40 0 l-6 55 l-28 0 z" fill="none" stroke="#8d8d8d" stroke-width="4"/><text x="120" y="120" font-size="18" font-weight="700" fill="#6b5646">same shape?</text></svg>
+      <span>It keeps its own shape</span>
+    </div>
+    <div class="pick" data-guess="takes">
+      <img data-img="hook_takes" alt="" hidden><svg viewBox="0 0 220 130" aria-label="juice taking each container's shape"><rect width="220" height="130" rx="16" fill="#f3e9d6"/><path d="M30 40 l24 0 l0 62 l-24 0 z" fill="none" stroke="#8d8d8d" stroke-width="4"/><rect x="33" y="62" width="18" height="37" fill="#e0a93b"/><path d="M84 70 q0 -22 26 -22 q26 0 26 22 l0 32 l-52 0 z" fill="none" stroke="#8d8d8d" stroke-width="4"/><path d="M87 78 q0 -12 23 -12 q23 0 23 12 l0 21 l-46 0 z" fill="#e0a93b"/><path d="M160 84 l52 0 l-8 18 l-36 0 z" fill="none" stroke="#8d8d8d" stroke-width="4"/><path d="M163 90 l46 0 l-5 9 l-36 0 z" fill="#e0a93b"/></svg>
+      <span>It takes each cup's shape</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Solid, liquid, gas <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <div class="beatart" id="a0"><svg viewBox="0 0 660 300">
+      <path d="M330 60 l0 24" stroke="#6b5646" stroke-width="8"/>
+      <path d="M180 84 l300 0" stroke="#6b5646" stroke-width="10" stroke-linecap="round"/>
+      <path d="M180 84 l0 30 m-40 0 l80 0" stroke="#6b5646" stroke-width="7"/>
+      <path d="M480 84 l0 42 m-40 0 l80 0" stroke="#6b5646" stroke-width="7"/>
+      <path d="M140 114 q40 26 80 0" stroke="#6b5646" stroke-width="6" fill="none"/>
+      <path d="M440 126 q40 26 80 0" stroke="#6b5646" stroke-width="6" fill="none"/>
+      <circle cx="180" cy="128" r="20" fill="#b5382f"/>
+      <rect x="458" y="122" width="44" height="30" rx="5" fill="#8a6a44"/>
+      <path d="M300 230 l60 0" stroke="#6b5646" stroke-width="8" stroke-linecap="round"/>
+      <rect x="316" y="52" width="28" height="12" rx="5" fill="#6b5646"/>
+      <text x="150" y="212" font-size="26" font-weight="800" fill="#3b2a1e">matter has mass…</text>
+      <text x="150" y="248" font-size="26" font-weight="800" fill="#3b2a1e">…and takes up space</text>
+    </svg></div>
+    <div class="beatart" id="a1"><svg viewBox="0 0 660 300">
+      <rect x="120" y="60" width="70" height="70" rx="10" fill="#b5382f"/>
+      <text x="106" y="170" font-size="24" font-weight="800" fill="#3b2a1e">a block…</text>
+      <path d="M250 95 l80 0 m-16 -12 l16 12 l-16 12" stroke="#6b5646" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M400 50 l24 130 l90 0 l24 -130" fill="none" stroke="#8d8d8d" stroke-width="6"/>
+      <rect x="436" y="104" width="64" height="64" rx="9" fill="#b5382f"/>
+      <text x="392" y="230" font-size="24" font-weight="800" fill="#3b2a1e">…still a block!</text>
+      <text x="392" y="262" font-size="22" font-weight="700" fill="#6b5646">solids KEEP their shape</text>
+    </svg></div>
+    <div class="beatart" id="a2"><svg viewBox="0 0 660 300">
+      <g class="pourrock"><path d="M60 40 l70 0 l-8 46 l-54 0 z" fill="#fff" stroke="#8d8d8d" stroke-width="5"/><path d="M66 52 l58 0 l-6 28 l-46 0 z" fill="#e0a93b"/></g>
+      <path d="M150 80 q30 30 30 66" stroke="#e0a93b" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M170 150 l26 0 l0 82 l-26 0 z" fill="none" stroke="#8d8d8d" stroke-width="5"/><rect x="173" y="182" width="20" height="47" fill="#e0a93b"/>
+      <path d="M270 190 q0 -26 32 -26 q32 0 32 26 l0 42 l-64 0 z" fill="none" stroke="#8d8d8d" stroke-width="5"/><path d="M274 200 q0 -14 28 -14 q28 0 28 14 l0 28 l-56 0 z" fill="#e0a93b"/>
+      <path d="M410 204 l72 0 l-10 28 l-52 0 z" fill="none" stroke="#8d8d8d" stroke-width="5"/><path d="M414 210 l64 0 l-7 16 l-50 0 z" fill="#e0a93b"/>
+      <text x="180" y="272" font-size="24" font-weight="800" fill="#3b2a1e">three shapes — SAME juice</text>
+      <text x="410" y="120" font-size="24" font-weight="800" fill="#3b2a1e">liquids take the</text>
+      <text x="410" y="150" font-size="24" font-weight="800" fill="#3b2a1e">container's shape</text>
+    </svg></div>
+    <div class="beatart" id="a3"><svg viewBox="0 0 660 300">
+      <g class="bob"><path d="M330 40 q90 0 90 92 q0 84 -90 92 q-90 -8 -90 -92 q0 -92 90 -92z" fill="#cfe6ee" stroke="#9fc7d6" stroke-width="6"/><path d="M322 226 l16 0 l6 16 l-28 0 z" fill="#9fc7d6"/></g>
+      <g fill="#3c6e9f"><circle cx="300" cy="90" r="7"/><circle cx="366" cy="80" r="7"/><circle cx="270" cy="140" r="7"/><circle cx="330" cy="128" r="7"/><circle cx="392" cy="140" r="7"/><circle cx="290" cy="190" r="7"/><circle cx="356" cy="186" r="7"/><circle cx="330" cy="70" r="7"/></g>
+      <text x="60" y="90" font-size="26" font-weight="800" fill="#3b2a1e">a gas spreads out</text>
+      <text x="60" y="122" font-size="26" font-weight="800" fill="#3b2a1e">to fill ALL the space</text>
+      <text x="440" y="240" font-size="24" font-weight="700" fill="#6b5646">air is real stuff!</text>
+    </svg></div>
+    <div class="beatart" id="a4"><svg viewBox="0 0 660 300">
+      <g class="melt" style="transform-origin:120px 120px"><rect x="70" y="60" width="100" height="60" rx="8" fill="#6b4226"/><path d="M70 80 l100 0 M70 100 l100 0 M103 60 l0 60 M137 60 l0 60" stroke="#59371f" stroke-width="4"/></g>
+      <path d="M60 140 q60 24 120 0 l0 14 q-60 20 -120 0 z" fill="#7a4a28"/>
+      <path d="M100 190 q20 -28 40 0 q-20 16 -40 0z" fill="#e0a93b"/>
+      <text x="52" y="240" font-size="22" font-weight="800" fill="#b5382f">heat melts 🔥</text>
+      <path d="M280 100 l90 0 l0 70 q-45 14 -90 0 z" fill="none" stroke="#8d8d8d" stroke-width="6"/>
+      <path d="M286 130 l78 0 l0 38 q-39 10 -78 0 z" fill="#9fc7d6"/>
+      <circle cx="305" cy="150" r="5" fill="#fff"/><circle cx="335" cy="158" r="5" fill="#fff"/><circle cx="350" cy="142" r="5" fill="#fff"/>
+      <g class="steamup"><path d="M310 84 q8 -12 0 -22 M336 86 q-8 -12 0 -24" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+      <text x="266" y="240" font-size="22" font-weight="800" fill="#b5382f">heat boils → gas</text>
+      <rect x="480" y="110" width="70" height="66" rx="12" fill="#dff0f5" stroke="#9fc7d6" stroke-width="5"/>
+      <path d="M497 128 l10 10 m0 -10 l-10 10 M530 150 l10 10 m0 -10 l-10 10" stroke="#9fc7d6" stroke-width="4"/>
+      <text x="462" y="240" font-size="22" font-weight="800" fill="#3c6e9f">cold freezes ❄</text>
+      <text x="150" y="290" font-size="24" font-weight="800" fill="#3b2a1e">…and it is the SAME stuff every time</text>
+    </svg></div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🧱</span>Solid — keeps shape</div>
+    <div class="badge" id="b1"><span class="em">💧</span>Liquid — takes shape</div>
+    <div class="badge" id="b2"><span class="em">💨</span>Gas — fills all space</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pracTitle">Sort the stuff! <button class="say" id="pracSay" data-say="Drag each card to Solid, Liquid, or Gas. Or tap a button." data-voice="sort_intro">🔊</button></h2>
+  <p class="lead" id="pLead">Drag each card to <b>Solid</b>, <b>Liquid</b>, or <b>Gas</b> — or tap a button.</p>
+  <div class="sortpane" id="sortpane">
+    <div class="deck">
+      <div class="item" id="item"><div class="pic" id="itemPic"></div><div id="itemName"></div></div>
+      <div class="tapbtns"><button class="btn ghost" data-tap="solid">Solid</button><button class="btn ghost" data-tap="liquid">Liquid</button><button class="btn ghost" data-tap="gas">Gas</button></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="bins">
+      <div class="bin" data-bin="solid"><h3>🧱 Solid</h3><div class="got" id="gotSolid"></div></div>
+      <div class="bin" data-bin="liquid"><h3>💧 Liquid</h3><div class="got" id="gotLiquid"></div></div>
+      <div class="bin" data-bin="gas"><h3>💨 Gas</h3><div class="got" id="gotGas"></div></div>
+    </div>
+  </div>
+  <div class="lab" id="heatlab">
+    <div class="item" id="hitem"><div class="pic" id="hitemPic"></div><div id="hitemQ"></div></div>
+    <div class="tapbtns" id="htaps"></div>
+    <div class="counter" id="hcounter"></div>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch solid, liquid, gas again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.matter.02',version:1,quiz:'quiz.science.k2.matter.02',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_solid'],['b1','badge_liquid'],['b2','badge_gas']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  const badges=[0,1,2].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  const BEATS=[
+    {art:'a0',badge:null,media:'teach_matter',cap:'Everything is MATTER: it has mass and takes up space.',vid:'t_matter',
+     txt:'Everything around you is stuff called matter. All matter has mass — you can weigh it — and it takes up space. Even air!',dur:7000},
+    {art:'a1',badge:0,media:'teach_solid',cap:'SOLIDS keep their shape.',vid:'t_solid',
+     txt:'Solids keep their own shape. Put a block in a cup — it is still a block.',dur:6000},
+    {art:'a2',badge:1,media:'teach_liquid',cap:'LIQUIDS take the container\'s shape.',vid:'t_liquid',
+     txt:'Liquids take the shape of their container. Pour the same juice into three cups: three shapes — but it is the same juice.',dur:7600},
+    {art:'a3',badge:2,media:'teach_gas',cap:'GASES spread out to fill ALL the space.',vid:'t_gas',
+     txt:'Gases spread out to fill all the space they can. Air fills the whole balloon. Air is not nothing — it is a gas, and it is matter too.',dur:8000},
+    {art:'a4',badge:null,media:'teach_heat',cap:'Heat melts and boils. Cold freezes. SAME stuff!',vid:'t_heat',
+     txt:'Heating and cooling change the form. Heat melts solid chocolate into liquid chocolate. More heat boils water into a gas called steam. Cold freezes water into ice. And listen: it is the same stuff every time. Melted chocolate is still chocolate!',dur:11000}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(BEATS.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+    badges.forEach(b=>b.className='badge'); cap.textContent='';
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene();
+    let t=0;
+    BEATS.forEach(b=>{
+      later(()=>{
+        document.querySelectorAll('.beatart').forEach(a=>a.classList.remove('on'));
+        document.getElementById(b.art).classList.add('on');
+        cap.textContent=b.cap; say(b.txt,b.vid); showBeat(b.media);
+        if(b.badge!==null) badges[b.badge].classList.add('on');
+      },t);
+      t+=b.dur;
+    });
+    later(()=>{ badges.forEach(b=>b.classList.add('on')); document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2A: sort ---------- */
+  const ITEMS=[
+    {id:'block',n:'Wooden block',p:'🧱',k:'card_block',a:'solid',why:'A block keeps its shape wherever you put it. Solid!'},
+    {id:'milk',n:'Milk',p:'🥛',k:'card_milk',a:'liquid',why:'Milk pours and takes the cup\'s shape. Liquid!'},
+    {id:'balloon',n:'Air in a balloon',p:'🎈',k:'card_balloon',a:'gas',mis:'nothing',why:'The air spreads out and fills the WHOLE balloon. Gas!'},
+    {id:'honey',n:'Honey',p:'🍯',k:'card_honey',a:'liquid',mis:'slow',why:'Slow — but it still pours and takes the jar\'s shape. Honey is a liquid!'},
+    {id:'steam',n:'Steam from a pot',p:'♨️',k:'card_steam',a:'gas',mis:'nothing',why:'Steam is water as a gas — it spreads out into the air.'},
+    {id:'sand',n:'Sand',p:'⏳',k:'card_sand',a:'solid',mis:'pours',why:'Sand pours — but each tiny grain is a little solid that keeps its shape!'},
+    {id:'ice',n:'Ice cube',p:'🧊',k:'card_ice',a:'solid',why:'Frozen water keeps its shape. Ice is a solid — until it melts!'},
+    {id:'juice',n:'Juice',p:'🧃',k:'card_juice',a:'liquid',why:'Juice takes the shape of any cup. Liquid!'}
+  ];
+  const FB={
+    pours:'It pours — but look closely. Each tiny grain keeps its own shape. Many tiny solids!',
+    nothing:'A gas is not nothing! It is real stuff that spreads out to fill all the space.',
+    slow:'Slow pouring is still pouring. If it takes the container\'s shape, it is a liquid.',
+    other:'Ask: does it keep its shape? Take the cup\'s shape? Or fill all the space?'
+  };
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,seen=0,pass1=true;
+  const item=document.getElementById('item'),fb=document.getElementById('fb');
+  function startPrac(){
+    queue=ITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;seen=0;pass1=true;
+    ['gotSolid','gotLiquid','gotGas'].forEach(i=>document.getElementById(i).innerHTML='');
+    fb.textContent=''; fb.className='fb'; document.getElementById('pracNext').disabled=true;
+    document.getElementById('sortpane').classList.remove('off'); document.getElementById('heatlab').classList.remove('on');
+    document.getElementById('pracTitle').firstChild.textContent='Sort the stuff! ';
+    showItem();
+  }
+  function showItem(){
+    if(!queue.length){ startHeat(); return; }
+    const it=queue[0]; item.style.visibility='visible';
+    const ip=document.getElementById('itemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="" draggable="false">'; else ip.textContent=it.p;
+    document.getElementById('itemName').textContent=it.n;
+    document.getElementById('counter').textContent=`${done} of ${ITEMS.length} sorted`;
+    say(it.n+'. Solid, liquid, or gas?','p_'+it.id);
+  }
+  function answer(bin){
+    if(!queue.length || item.style.visibility==='hidden') return;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>ITEMS.length) pass1=false;
+    const ok=bin===it.a;
+    if(ok){ done++; if(pass1) pass1correct++;
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say(it.why,'why_'+it.id);
+      const s=document.createElement('span'); if(img(it.k)) s.innerHTML='<img src="'+img(it.k)+'" alt="">'; else s.textContent=it.p; s.title=it.n;
+      document.getElementById(bin==='solid'?'gotSolid':bin==='liquid'?'gotLiquid':'gotGas').appendChild(s);
+    } else {
+      misses[it.mis||'other']=(misses[it.mis||'other']||0)+1;
+      const hint=FB[it.mis]||FB.other;
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+(it.mis||'other'));
+      queue.push(it);
+    }
+    setTimeout(showItem, ok?1500:2000);
+  }
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>answer(b.dataset.tap));
+  let drag=null;
+  item.addEventListener('pointerdown',e=>{ drag={dx:e.clientX-item.getBoundingClientRect().left,dy:e.clientY-item.getBoundingClientRect().top,w:item.offsetWidth}; item.classList.add('dragging'); item.style.width=drag.w+'px'; move(e); item.setPointerCapture(e.pointerId); });
+  function move(e){ if(!drag) return; item.style.left=(e.clientX-drag.dx)+'px'; item.style.top=(e.clientY-drag.dy)+'px';
+    document.querySelectorAll('.bin').forEach(b=>{ const r=b.getBoundingClientRect(); b.classList.toggle('over', e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom); }); }
+  item.addEventListener('pointermove',move);
+  item.addEventListener('pointerup',e=>{ if(!drag) return; const over=document.querySelector('.bin.over'); item.classList.remove('dragging'); item.style.cssText=''; document.querySelectorAll('.bin').forEach(b=>b.classList.remove('over')); drag=null; if(over) answer(over.dataset.bin); });
+  item.addEventListener('pointercancel',()=>{ item.classList.remove('dragging'); item.style.cssText=''; drag=null; });
+
+  /* ---------- stage 2B: heat lab ---------- */
+  const HEAT=[
+    {id:'h1',k:'card_choc',p:'🍫',q:'Heat the chocolate bar gently. What happens?',
+     o:['It melts — still chocolate, now liquid','It turns into a new different food'],a:0,mis:'newstuff',
+     why:'It melts into liquid chocolate — the same chocolate, just a new form!'},
+    {id:'h2',k:'card_pot',p:'🫕',q:'Heat the pot of water until it bubbles hard. What happens?',
+     o:['Some becomes steam — water as a gas','It disappears into nothing'],a:0,mis:'nothing',
+     why:'It becomes steam — water as a gas, floating into the air. Still water!'},
+    {id:'h3',k:'card_freezer',p:'🥶',q:'Put the cup of juice in the freezer. What happens?',
+     o:['It freezes into a solid','It stays liquid — juice cannot freeze'],a:0,mis:'nochange',
+     why:'Cold freezes it solid — a juice ice pop! Warm it up, and it is juice again.'}
+  ];
+  const HFB={
+    newstuff:'Melting does not make new stuff. Melted chocolate is still chocolate!',
+    nothing:'It does not vanish! Water turns into steam — a gas you can see rising.',
+    nochange:'Cold changes liquids too. Cold enough, and juice freezes solid.'
+  };
+  let hqueue=[],hdone=0;
+  const hitem=document.getElementById('hitem'),htaps=document.getElementById('htaps');
+  function startHeat(){
+    document.getElementById('sortpane').classList.add('off'); document.getElementById('heatlab').classList.add('on');
+    document.getElementById('pracTitle').firstChild.textContent='Now — heat it! ';
+    document.getElementById('pLead').innerHTML='Predict: what does <b>heat</b> or <b>cold</b> do?';
+    const ps=document.getElementById('pracSay'); ps.dataset.say='Now the heat lab! Predict what heat or cold will do, then tap your answer.'; ps.dataset.voice='heat_intro';
+    fb.textContent=''; fb.className='fb'; hqueue=HEAT.slice(); hdone=0;
+    say('Now the heat lab! Predict what heat or cold will do.','heat_intro');
+    showHeat();
+  }
+  function showHeat(){
+    if(!hqueue.length){ hitem.style.visibility='hidden'; htaps.innerHTML=''; document.getElementById('hcounter').textContent='Lab complete! ⚗️'; document.getElementById('pracNext').disabled=false; say('Lab complete! Now show what you know.','prac_done'); return; }
+    const it=hqueue[0]; hitem.style.visibility='visible';
+    const ip=document.getElementById('hitemPic'); if(img(it.k)) ip.innerHTML='<img src="'+img(it.k)+'" alt="">'; else ip.textContent=it.p;
+    document.getElementById('hitemQ').textContent=it.q;
+    document.getElementById('hcounter').textContent=`${hdone} of ${HEAT.length} predicted`;
+    htaps.innerHTML='';
+    it.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='btn ghost'; b.textContent=t; b.onclick=()=>hanswer(i); htaps.appendChild(b); });
+    say(it.q,'p_'+it.id);
+  }
+  function hanswer(i){
+    if(!hqueue.length) return;
+    const it=hqueue.shift(); tries++;
+    const ok=i===it.a;
+    if(ok){ hdone++; fb.className='fb good'; fb.textContent='✓ '+it.why; say(it.why,'why_'+it.id); }
+    else {
+      misses[it.mis]=(misses[it.mis]||0)+1;
+      fb.className='fb bad'; fb.textContent='Not quite. '+HFB[it.mis]; say('Not quite. '+HFB[it.mis],'fb_'+it.mis);
+      hqueue.push(it);
+    }
+    setTimeout(showHeat, ok?1500:2000);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🧃',k:'card_juice',q:'You pour the same juice into a tall thin glass. What shape is the juice now?',
+     o:['Tall and thin — the glass\'s shape','It keeps its old shape'],a:0},
+    {id:2,pic:'⏳',k:'card_sand',q:'Sand pours out of a bucket. What is sand?',
+     o:['A liquid — because it pours','Many tiny solids'],a:1},
+    {id:3,pic:'🎈',k:'card_balloon',q:'The balloon is puffed up with air. What is inside?',
+     o:['Nothing — air is nothing','A gas that fills all the space'],a:1},
+    {id:4,pic:'🍫',k:'card_choc',q:'Heat melts the chocolate bar into a puddle. What is the puddle?',
+     o:['Still chocolate — now liquid','A new, different stuff'],a:0},
+    {id:5,pic:'🧊',k:'card_ice',q:'What turns water into ice?',
+     o:['Cooling it down','Heating it up','Pouring it fast'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know solid, liquid, and gas! 🧊💧💨' : 'Good try! Let\'s watch solid, liquid, gas once more.';
+    document.getElementById('guessTxt').textContent = guess==='takes' ? 'At the start you guessed the juice takes each cup\'s shape — you were right!' : guess==='keeps' ? 'At the start you guessed the juice keeps one shape. Now you know: liquids take the container\'s shape!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch solid, liquid, gas again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Ask a grown-up to melt a square of chocolate — watch it shape-shift. 🍫'; say('Lesson done! Ask a grown-up to melt a square of chocolate, and watch it shape-shift.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

@@ -14,5 +14,5 @@
   "card_suffix": ", plain warm cream background, subject fills the middle 60% of the frame",
   "scene_suffix": ", wide storybook scene, soft horizon, lots of sky",
   "video_prefix": "Gentle storybook animation, subtle natural motion only, camera locked off, no zoom, no cuts, no text, loopable, calm pace,",
-  "notes": "Every K-4 package inherits this. Change here, regenerate everywhere. Voice 'luna' = gentle/patient per xAI voice list; alternatives: ara, iris, ursa."
+  "notes": "Every K-4 package inherits this. Change here, regenerate everywhere. House voice is luna — Grok TTS, a British woman, speed 0.92 (gentle/patient). Alternatives: ara, iris, ursa."
 }

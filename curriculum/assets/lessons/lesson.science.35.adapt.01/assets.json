@@ -1,0 +1,66 @@
+{
+  "lesson": "lesson.science.35.adapt.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "mongoose": {
+      "prompt": "a small alert Indian grey mongoose, full body, standing in profile facing right, coarse grizzled grey-brown fur, long low body, short legs, bushy tail, bright dark eyes, brave friendly bearing, suitable as a recurring storybook character",
+      "kind": "card"
+    }
+  },
+  "images": [
+    { "id": "hook_fight", "ref": "mongoose", "prompt": "the same mongoose facing a large hooded cobra in an Indian garden, the two circling at a respectful storybook distance, tension but no violence, tall grass and a garden path, dawn light", "kind": "scene" },
+    { "id": "teach_mongoose", "ref": "mongoose", "prompt": "the same mongoose mid-dodge, body stretched in a fast leap away from a cobra's strike that misses, fur bristling thick, motion lines gentle, Indian garden", "kind": "scene" },
+    { "id": "teach_tiger", "prompt": "a tiger standing half-hidden in tall dry golden grass, its dark stripes blending with the grass stems so its outline nearly disappears, Indian jungle edge, calm mood", "kind": "scene" },
+    { "id": "teach_behave", "prompt": "three wolves working together to circle a large deer in a snowy clearing, spread out in a wide arc, teamwork visible, no violence shown, and in the far background a bear curled asleep in a den under a snowbank", "kind": "scene" },
+    { "id": "teach_time", "prompt": "three small groups of finch-like brown birds shown left to right: first group with mixed small and large beaks among soft seeds, middle group of large-beaked birds cracking big hard nuts, right group all large-beaked with chicks, suggesting generations passing", "kind": "scene" },
+    { "id": "teach_fossil", "prompt": "a rocky mountain summit with a split stone in the foreground revealing a clear fish fossil imprint, small ammonite shell fossils beside it, sky and distant peaks behind, no creatures alive in frame", "kind": "scene" },
+    { "id": "card_stripes", "prompt": "a tiger's striped flank filling most of the frame, bold dark stripes on orange fur, close-up pattern", "kind": "card" },
+    { "id": "card_pack", "prompt": "three wolves running together as a team across snow, evenly spaced, no prey in frame", "kind": "card" },
+    { "id": "card_fur", "ref": "mongoose", "prompt": "the same mongoose seen close, its thick coarse fur standing bristled and dense", "kind": "card" },
+    { "id": "card_dead", "prompt": "an opossum lying flopped on its side on forest leaves playing dead, tongue slightly out, clearly unharmed and pretending", "kind": "card" },
+    { "id": "card_claws", "prompt": "an eagle's foot gripping a branch, long curved sharp talons clearly visible, close-up", "kind": "card" },
+    { "id": "card_south", "prompt": "a V-formation of geese flying across an autumn sky, seen from below", "kind": "card" },
+    { "id": "card_hare", "prompt": "a white winter hare sitting in deep snow, almost invisible against the drifts, only its dark eyes standing out", "kind": "card" },
+    { "id": "card_fossil", "prompt": "a split grey stone held open showing a detailed fish skeleton fossil imprint", "kind": "card" },
+    { "id": "card_beaks", "prompt": "two brown finch-like birds side by side on a branch, one with a small thin beak and one with a large deep beak, a pile of big hard seeds below", "kind": "card" },
+    { "id": "card_mongoose", "ref": "mongoose", "prompt": "the same mongoose standing proud and alert, full body, tail raised", "kind": "card" },
+    { "id": "badge_phys", "prompt": "a simple emblem of a paw print inside a circle", "kind": "card" },
+    { "id": "badge_behav", "prompt": "a simple emblem of three arrows moving together in an arc, teamwork motif, plain background", "kind": "card" }
+  ],
+  "clips": [
+    { "id": "teach_mongoose", "from": "teach_mongoose", "seconds": 6, "prompt": "the cobra strikes slowly and the mongoose springs aside in one smooth dodge, landing poised, fur bristling, grass swaying gently" },
+    { "id": "teach_tiger", "from": "teach_tiger", "seconds": 6, "prompt": "the tall grass sways in a light wind and the tiger's striped outline fades in and out of visibility as it takes one slow step" },
+    { "id": "teach_behave", "from": "teach_behave", "seconds": 6, "prompt": "the three wolves jog in a coordinated arc tightening their circle around the deer, staying spread out, snow kicking up softly, no contact" },
+    { "id": "teach_time", "from": "teach_time", "seconds": 6, "prompt": "gentle crossfade left to right across the three bird groups, beaks growing larger group by group, chicks appearing in the last group" },
+    { "id": "teach_fossil", "from": "teach_fossil", "seconds": 6, "prompt": "light passes over the fish fossil imprint and a faint ghostly blue wash of ancient water briefly shimmers over the mountain scene, then fades" }
+  ],
+  "voice": [
+    { "id": "hook", "text": "In The Jungle Book, Rikki-tikki the little mongoose fights the great cobra — and <emphasis>wins</emphasis>. [pause] How can a small furry animal beat a giant snake? Tap your guess." },
+    { "id": "t_mongoose", "text": "Rikki-tikki wins with <emphasis>physical adaptations</emphasis> — body parts he was born with. [pause] Lightning speed to dodge the strike. Thick, coarse fur that is hard to bite through. A tough body that even the cobra can barely hurt." },
+    { "id": "t_tiger", "text": "The tiger has one too: stripes. In tall grass they melt away — that is <emphasis>camouflage</emphasis>, a body pattern it was born with. Physical." },
+    { "id": "t_behave", "text": "Now something different. One wolf cannot catch a big deer — but the pack hunts <emphasis>together</emphasis>. Hunting together is a thing wolves <emphasis>do</emphasis>, not a body part. That is a <emphasis>behavioral</emphasis> adaptation. [pause] The bear's long winter sleep is behavioral too." },
+    { "id": "t_time", "text": "Can a whole population change? Yes — but slowly. [pause] One year, only big hard seeds are left. Birds with bigger beaks can crack them; they survive, and have chicks. Many, many generations later, most of the birds have big beaks. [pause] No bird <emphasis>chose</emphasis> to change. It happened over a long, long time." },
+    { "id": "t_fossil", "text": "How do we know about animals from long, long ago? <emphasis>Fossils</emphasis> — living things turned to stone are clues. [pause] A fish fossil high on a mountain tells a story: this land was once under water." },
+    { "id": "prac_intro", "text": "An adaptation appears. Is it physical — a body part — or behavioral — a thing the animal does? [pause] Then two detective questions!" },
+    { "id": "prac_done", "text": "All sorted, detective! [pause] Now show what you know." },
+    { "id": "fb_mix", "text": "Not quite. [pause] Ask: is it a body part the animal was born with, or an action it takes?" },
+    { "id": "fb_habitat", "text": "Not quite. [pause] Match the trick to the home. What would help an animal hide and stay alive in <emphasis>this</emphasis> place?" },
+    { "id": "fb_rock", "text": "Not quite. [pause] A fossil is never just a rock — it is a clue. Ask: where does that animal live?" },
+    { "id": "why_stripes", "text": "Yes! Stripes are a body pattern the tiger was born with — physical." },
+    { "id": "why_pack", "text": "Yes! Hunting together is a thing wolves do — behavioral. No body part does it for them." },
+    { "id": "why_fur", "text": "Yes! Fur grows on the body — a physical adaptation Rikki-tikki was born with." },
+    { "id": "why_dead", "text": "Yes! Playing dead is an act the opossum performs — behavioral." },
+    { "id": "why_claws", "text": "Yes! Claws are body parts — physical." },
+    { "id": "why_south", "text": "Yes! Flying south is a journey the geese make — behavioral." },
+    { "id": "why_hare", "text": "Yes! White fur vanishes against snow — the right trick for this home. Adaptations fit the habitat." },
+    { "id": "why_fossil", "text": "Yes! A fossil is a clue: fish live in water, so this high ground was once a sea floor — long, long ago." },
+    { "id": "q1", "text": "The tiger's stripes hide it in tall grass. What kind of adaptation?" },
+    { "id": "q2", "text": "Wolves hunt in a pack. What kind of adaptation?" },
+    { "id": "q3", "text": "One year, only big hard seeds are left. How does the bird population end up with bigger beaks?" },
+    { "id": "q4", "text": "High on a mountain you find a fish fossil. What does it tell you?" },
+    { "id": "q5", "text": "Why does Rikki-tikki the mongoose beat the cobra?" },
+    { "id": "pass", "text": "You can read an animal like a detective! [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the adaptations once more." },
+    { "id": "done", "text": "Lesson done! Now open research and look up the real mongoose. Find two adaptations the story got right, and save them in notebooks." }
+  ]
+}

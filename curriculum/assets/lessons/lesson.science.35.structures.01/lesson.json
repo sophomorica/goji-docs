@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.35.structures.01",
+  "title": "Built to survive — the leaf factory and the horse",
+  "subject": "science",
+  "band": "35",
+  "grade_hint": "4",
+  "objectives": ["obj.science.35.structures.01"],
+  "va_sol": ["4.2"],
+  "duration_min": 15,
+  "anchor": { "book": "black-beauty", "note": "the horse is the worked structure-function example; the meadow grass he eats is the photosynthesis case" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.35.structures.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.35.structures.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

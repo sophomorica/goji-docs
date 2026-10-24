@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patterns in the sky — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:14px;text-align:center}
+.pick .big{font-size:90px;line-height:1.1}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media .big{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 70%,#a9c98a 70% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg{position:absolute}
+#night{position:absolute;inset:0;background:#20304a;opacity:0;transition:opacity 1.4s;z-index:0}
+#night.on{opacity:.85}
+#wSun{left:8%;top:46%;width:13%;transition:left 2s ease,top 2s ease,opacity 1s;z-index:1}
+#wSun.mid{left:43%;top:6%} #wSun.set{left:80%;top:52%;opacity:0}
+#wMoonStars{right:6%;top:8%;width:30%;opacity:0;transition:opacity 1.2s;z-index:1}
+#wMoonStars.on{opacity:1}
+#wMoonStars .tw{animation:tw 1.8s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.4}to{opacity:1}}
+#wWheel{left:50%;top:50%;transform:translate(-50%,-52%);width:min(46%,320px);opacity:0;transition:opacity .8s;z-index:1}
+#wWheel.on{opacity:1}
+#wArrow{transform-origin:150px 150px;transition:transform 1.2s ease}
+#wWheel .quad{opacity:.35;transition:opacity .8s}
+#wWheel .quad.lit{opacity:1}
+#wStrip{left:50%;top:50%;transform:translate(-50%,-50%);width:min(86%,760px);opacity:0;transition:opacity .8s;z-index:1}
+#wStrip.on{opacity:1}
+#wStrip .stamp{opacity:0;transition:opacity .5s}
+#wStrip .stamp.on{opacity:1}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene .caption.night{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;z-index:1}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.pviz{min-height:250px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+.pviz svg{width:min(60vw,300px);height:auto}
+.strip{font-size:64px;letter-spacing:6px;text-align:center;line-height:1.2}
+.strip .lbl{display:block;font-size:24px;color:var(--ink2);font-weight:700;letter-spacing:0;margin-top:6px}
+.matchpic{font-size:100px;text-align:center;line-height:1.15}
+.matchpic .lbl{display:block;font-size:26px;color:var(--ink2);font-weight:700;margin-top:4px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:14px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:20px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:84px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px} .strip{font-size:44px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Patterns in the sky <button class="say" data-say="The sun is going down. The sky is getting dark. Will the sun come back tomorrow? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">The sun is going down. The sky is getting dark. <b>Will the sun come back tomorrow?</b></p>
+  <div class="choice2">
+    <div class="pick" data-guess="back">
+      <img data-img="hook_sunrise" alt="" hidden>
+      <div class="big">🌅</div>
+      <span>Yes — it always comes back</span>
+    </div>
+    <div class="pick" data-guess="gone">
+      <img data-img="hook_night" alt="" hidden>
+      <div class="big">🌙</div>
+      <span>Maybe it's gone for good</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Nature repeats! <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div id="night"></div>
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg id="wSun" viewBox="0 0 120 120"><g stroke="#e0a93b" stroke-width="7" stroke-linecap="round"><line x1="60" y1="4" x2="60" y2="22"/><line x1="60" y1="98" x2="60" y2="116"/><line x1="4" y1="60" x2="22" y2="60"/><line x1="98" y1="60" x2="116" y2="60"/><line x1="20" y1="20" x2="33" y2="33"/><line x1="87" y1="87" x2="100" y2="100"/><line x1="100" y1="20" x2="87" y2="33"/><line x1="33" y1="87" x2="20" y2="100"/></g><circle cx="60" cy="60" r="34" fill="#e0a93b" stroke="#d1962c" stroke-width="4"/></svg>
+    <svg id="wMoonStars" viewBox="0 0 300 160">
+      <path d="M80 30 a46 46 0 1 0 40 70 a38 38 0 0 1 -40 -70z" fill="#f3e9d6"/>
+      <g fill="#fff"><circle class="tw" cx="170" cy="34" r="5"/><circle class="tw" cx="220" cy="70" r="4" style="animation-delay:.4s"/><circle class="tw" cx="260" cy="30" r="5" style="animation-delay:.8s"/><circle class="tw" cx="190" cy="110" r="4" style="animation-delay:.6s"/><circle class="tw" cx="250" cy="130" r="5" style="animation-delay:.2s"/></g>
+    </svg>
+    <svg id="wWheel" viewBox="0 0 300 300">
+      <circle cx="150" cy="150" r="140" fill="#fff" stroke="#d9ccb4" stroke-width="6"/>
+      <path class="quad" id="tq0" d="M150 150 L150 14 A136 136 0 0 1 286 150 Z" fill="#bfe0a8"/>
+      <path class="quad" id="tq1" d="M150 150 L286 150 A136 136 0 0 1 150 286 Z" fill="#f4d98a"/>
+      <path class="quad" id="tq2" d="M150 150 L150 286 A136 136 0 0 1 14 150 Z" fill="#e8b183"/>
+      <path class="quad" id="tq3" d="M150 150 L14 150 A136 136 0 0 1 150 14 Z" fill="#cfe6ee"/>
+      <text x="205" y="90" font-size="40" text-anchor="middle">🌸</text>
+      <text x="205" y="222" font-size="40" text-anchor="middle">☀️</text>
+      <text x="95" y="222" font-size="40" text-anchor="middle">🍂</text>
+      <text x="95" y="90" font-size="40" text-anchor="middle">❄️</text>
+      <g id="wArrow"><polygon points="150,44 138,86 162,86" fill="#b5382f"/><line x1="150" y1="80" x2="150" y2="150" stroke="#b5382f" stroke-width="10" stroke-linecap="round"/></g>
+      <circle cx="150" cy="150" r="14" fill="#8e2a23"/>
+    </svg>
+    <svg id="wStrip" viewBox="0 0 700 160">
+      <g font-size="22" font-weight="bold" fill="#6b5646" text-anchor="middle">
+        <text x="55" y="28">Mon</text><text x="153" y="28">Tue</text><text x="251" y="28">Wed</text><text x="349" y="28">Thu</text><text x="447" y="28">Fri</text><text x="545" y="28">Sat</text><text x="643" y="28">Sun</text>
+      </g>
+      <g fill="#fff" stroke="#d9ccb4" stroke-width="4">
+        <rect x="15" y="40" width="80" height="80" rx="14"/><rect x="113" y="40" width="80" height="80" rx="14"/><rect x="211" y="40" width="80" height="80" rx="14"/><rect x="309" y="40" width="80" height="80" rx="14"/><rect x="407" y="40" width="80" height="80" rx="14"/><rect x="505" y="40" width="80" height="80" rx="14"/><rect x="603" y="40" width="80" height="80" rx="14"/>
+      </g>
+      <g font-size="46" text-anchor="middle">
+        <text class="stamp" x="55" y="98">☀️</text><text class="stamp" x="153" y="98">☀️</text><text class="stamp" x="251" y="98">☁️</text><text class="stamp" x="349" y="98">🌧️</text><text class="stamp" x="447" y="98">🌧️</text><text class="stamp" x="545" y="98">☁️</text><text class="stamp" x="643" y="98">☀️</text>
+      </g>
+      <text x="350" y="152" font-size="24" font-weight="bold" fill="#6b5646" text-anchor="middle">Our weather journal</text>
+    </svg>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">🌅</span>Day–night repeats</div>
+    <div class="badge" id="b1"><span class="em">🔄</span>Seasons in order</div>
+    <div class="badge" id="b2"><span class="em">📓</span>Record the weather</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Pattern wheel <button class="say" data-say="Build the season wheel, finish the patterns, and match the seasons. Tap the answer that comes next." data-voice="prac_intro">🔊</button></h2>
+  <p class="lead" id="pPrompt"></p>
+  <div class="pviz" id="pviz">
+    <svg id="pWheel" viewBox="0 0 300 300">
+      <circle cx="150" cy="150" r="140" fill="#fff" stroke="#d9ccb4" stroke-width="6"/>
+      <path class="quad" id="pq0" d="M150 150 L150 14 A136 136 0 0 1 286 150 Z" fill="#bfe0a8" opacity=".25"/>
+      <path class="quad" id="pq1" d="M150 150 L286 150 A136 136 0 0 1 150 286 Z" fill="#f4d98a" opacity=".25"/>
+      <path class="quad" id="pq2" d="M150 150 L150 286 A136 136 0 0 1 14 150 Z" fill="#e8b183" opacity=".25"/>
+      <path class="quad" id="pq3" d="M150 150 L14 150 A136 136 0 0 1 150 14 Z" fill="#cfe6ee" opacity=".25"/>
+      <text id="pt0" x="205" y="90" font-size="40" text-anchor="middle" opacity=".3">🌸</text>
+      <text id="pt1" x="205" y="222" font-size="40" text-anchor="middle" opacity=".3">☀️</text>
+      <text id="pt2" x="95" y="222" font-size="40" text-anchor="middle" opacity=".3">🍂</text>
+      <text id="pt3" x="95" y="90" font-size="40" text-anchor="middle" opacity=".3">❄️</text>
+      <circle cx="150" cy="150" r="14" fill="#8e2a23"/>
+    </svg>
+    <div class="strip" id="pStrip" style="display:none"></div>
+    <div class="matchpic" id="pMatch" style="display:none"></div>
+  </div>
+  <div class="opts" id="popts"></div>
+  <div class="fb" id="fb"></div>
+  <div class="counter" id="counter"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the patterns again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.weather.01',version:1,quiz:'quiz.science.k2.weather.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_daynight'],['b1','badge_wheel'],['b2','badge_journal']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const el=id=>document.getElementById(id);
+  const wSun=el('wSun'),night=el('night'),wMoonStars=el('wMoonStars'),wWheel=el('wWheel'),
+        wArrow=el('wArrow'),wStrip=el('wStrip'),cap=el('cap');
+  const badges=[0,1,2].map(i=>el('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    wSun.className=''; wSun.style.display='';
+    night.className=''; wMoonStars.className=''; wWheel.className=''; wStrip.className='';
+    wArrow.style.transform=''; wWheel.querySelectorAll('.quad').forEach(q=>q.classList.remove('lit'));
+    wStrip.querySelectorAll('.stamp').forEach(s=>s.classList.remove('on'));
+    cap.textContent=''; cap.className='caption'; badges.forEach(b=>b.className='badge');
+    layer.innerHTML=''; sceneEl.classList.remove('media');
+    el('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "The sun comes up. The sun goes down. Then it comes up again. Day, night, day, night — again and again!",
+    "Seasons repeat too, always in the same order: spring, summer, fall, winter — then spring again. Around and around!",
+    "Weather changes every day. But we can write it down! Sun, sun, cloud, rain… Look — a pattern! One rainy day does not change the season."
+  ];
+  el('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: day-night cycle
+    cap.textContent='The sun comes up…'; say(teachScript[0],'t_daynight'); showBeat('teach_daynight');
+    later(()=>{ wSun.classList.add('mid'); cap.textContent='Day!'; },900);
+    later(()=>{ wSun.classList.remove('mid'); wSun.classList.add('set'); },3000);
+    later(()=>{ night.classList.add('on'); wMoonStars.classList.add('on'); cap.textContent='…then night…'; cap.classList.add('night'); },4200);
+    later(()=>{ night.classList.remove('on'); wMoonStars.classList.remove('on'); cap.classList.remove('night'); wSun.classList.remove('set'); wSun.classList.add('mid'); cap.textContent='…then DAY again. It repeats!'; badges[0].classList.add('on'); },6400);
+    // beat 2: season wheel
+    later(()=>{ cap.textContent='Seasons go in ORDER, around the wheel.'; say(teachScript[1],'t_seasons'); showBeat('teach_seasons');
+      wSun.style.display='none'; wWheel.classList.add('on'); el('tq0').classList.add('lit'); },8600);
+    later(()=>{ el('tq1').classList.add('lit'); wArrow.style.transform='rotate(90deg)'; },10400);
+    later(()=>{ el('tq2').classList.add('lit'); wArrow.style.transform='rotate(180deg)'; },11800);
+    later(()=>{ el('tq3').classList.add('lit'); wArrow.style.transform='rotate(270deg)'; },13200);
+    later(()=>{ wArrow.style.transform='rotate(360deg)'; cap.textContent='…then SPRING again! Around and around.'; badges[1].classList.add('on'); },14600);
+    // beat 3: weather journal strip
+    later(()=>{ cap.textContent='Weather changes each day — so we WRITE IT DOWN.'; say(teachScript[2],'t_weather'); showBeat('teach_journal');
+      wWheel.classList.remove('on'); wStrip.classList.add('on'); },16800);
+    later(()=>{ const st=wStrip.querySelectorAll('.stamp'); st.forEach((s,i)=>setTimeout(()=>s.classList.add('on'), reduced?0:i*420)); },17600);
+    later(()=>{ cap.textContent='Look — a pattern! One rainy day does NOT change the season.'; badges[2].classList.add('on'); el('teachNext').disabled=false; },21200);
+  }
+  el('replay').onclick=playTeach;
+  el('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const SEASONS=['Spring','Summer','Fall','Winter'];
+  const PRAC=[
+    {t:'wheel',after:0,q:'The wheel starts at SPRING. What season comes next?',o:['Summer','Winter','Fall'],a:0,voice:'pr_w1'},
+    {t:'wheel',after:1,q:'After SUMMER, what season comes next?',o:['Spring','Fall','Winter'],a:1,voice:'pr_w2'},
+    {t:'wheel',after:2,q:'After FALL, what season comes next?',o:['Winter','Summer','Spring'],a:0,voice:'pr_w3'},
+    {t:'wheel',after:3,q:'After WINTER, the wheel goes around again! What comes next?',o:['Summer','Fall','Spring'],a:2,voice:'pr_w4'},
+    {t:'next',strip:'☀️ → 🌙 → ☀️ → ❓',lbl:'day, night, day…',q:'What comes next?',o:['Night 🌙','Day ☀️'],a:0,voice:'pr_n1'},
+    {t:'next',strip:'🌙 → ☀️ → 🌙 → ❓',lbl:'night, day, night…',q:'What comes next?',o:['Day ☀️','Night 🌙'],a:0,voice:'pr_n2'},
+    {t:'next',strip:'🌸 → ☀️ → 🍂 → ❓',lbl:'spring, summer, fall…',q:'What season comes next?',o:['Spring','Winter','Summer'],a:1,voice:'pr_n3'},
+    {t:'match',pic:'🧤 ❄️',lbl:'Mittens on! Snow is falling.',q:'Which season is it?',o:['Winter','Summer','Fall'],a:0,voice:'pr_m1'},
+    {t:'match',pic:'🍂 🎃',lbl:'Leaves turn orange and drift down.',q:'Which season is it?',o:['Spring','Winter','Fall'],a:2,voice:'pr_m2'},
+    {t:'match',pic:'🌸 🐣',lbl:'Flowers bloom and baby birds hatch.',q:'Which season is it?',o:['Spring','Fall','Winter'],a:0,voice:'pr_m3'}
+  ];
+  const NP=PRAC.length;
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,answering=false;
+  const fb=el('fb'), pPrompt=el('pPrompt');
+  function litWheel(){ // light quadrants already earned
+    for(let i=0;i<4;i++){ const on=i<=wheelLit; el('pq'+i).setAttribute('opacity',on?'1':'.25'); el('pt'+i).setAttribute('opacity',on?'1':'.3'); }
+  }
+  let wheelLit=0;
+  function startPrac(){ queue=PRAC.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;wheelLit=0; fb.textContent=''; el('pracNext').disabled=true; showPrac(); }
+  function showPrac(){
+    answering=false;
+    if(!queue.length){
+      el('counter').textContent='All patterns found! ⭐'; pPrompt.innerHTML='<b>Nature repeats — and you saw it!</b>';
+      el('popts').innerHTML=''; el('pracNext').disabled=false; say('All patterns found! Now show what you know.','prac_done'); return;
+    }
+    const it=queue[0];
+    el('counter').textContent=done+' of '+NP+' done';
+    el('pWheel').style.display= it.t==='wheel'?'':'none';
+    el('pStrip').style.display= it.t==='next'?'':'none';
+    el('pMatch').style.display= it.t==='match'?'':'none';
+    if(it.t==='wheel'){ litWheel(); }
+    if(it.t==='next'){ el('pStrip').innerHTML=it.strip+'<span class="lbl">'+it.lbl+'</span>'; }
+    if(it.t==='match'){ el('pMatch').innerHTML=it.pic+'<span class="lbl">'+it.lbl+'</span>'; }
+    pPrompt.innerHTML='<b>'+it.q+'</b>';
+    const o=el('popts'); o.innerHTML='';
+    it.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>answer(i,b); o.appendChild(b); });
+    say(it.q+' '+it.o.map(x=>x.replace(/[^\w\s]/g,'')).join(', or '), it.voice);
+  }
+  function answer(i,btn){
+    if(answering || !queue.length) return; answering=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>NP) pass1=false;
+    const ok=i===it.a;
+    document.querySelectorAll('#popts .opt').forEach((b,j)=>{ b.disabled=true; if(j===it.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){
+      done++; if(pass1) pass1correct++;
+      if(it.t==='wheel'){ wheelLit=Math.min(3,it.after+1===4?3:it.after+1); if(it.after===3) wheelLit=3; litWheel(); }
+      const okTxt= it.t==='wheel' ? (it.after===3?'Yes! After winter, spring comes back — around and around!':'Yes! The wheel always turns the same way.')
+        : it.t==='next' ? 'Yes! The pattern repeats.' : 'Yes! Those are the clues for '+it.o[it.a].toLowerCase()+'.';
+      fb.className='fb good'; fb.textContent='✓ '+okTxt; say(okTxt, it.t==='wheel'?'ok_wheel':it.t==='next'?'ok_next':'ok_match');
+    } else {
+      if(it.t==='wheel'||it.t==='next'&&it.o.length===3){ misses.order=(misses.order||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. Seasons never jump around — they always go in the same order.'; say('Not quite. Seasons always go in the same order around the wheel.','fb_order');
+      } else if(it.t==='next'){ misses.cycle=(misses.cycle||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. Day and night take turns — the pattern repeats.'; say('Not quite. After day comes night, then day again. The sun always comes back.','fb_cycle');
+      } else { misses.season=(misses.season||0)+1;
+        fb.className='fb bad'; fb.textContent='Not quite. Look at the clues in the picture again.'; say('Not quite. Look at the clues, and think which season shows them.','fb_season');
+      }
+      queue.push(it);
+    }
+    setTimeout(showPrac, ok?1500:1900);
+  }
+  el('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🌅',k:'card_sunrise',q:'The sun goes down at night. What happens in the morning?',o:['The sun comes up again','The sun is gone forever'],a:0},
+    {id:2,pic:'☀️',k:'card_summer',q:'What season comes after SUMMER?',o:['Fall','Winter','Spring'],a:0},
+    {id:3,pic:'❄️',k:'card_winter',q:'What season comes after WINTER?',o:['Spring','Summer'],a:0},
+    {id:4,pic:'🌸',k:'card_hotday',q:'One hot, sunny day comes in spring. Did spring turn into summer?',o:['No — weather changes day to day; the season stays','Yes — a hot day means it is summer now'],a:0},
+    {id:5,pic:'📓',k:'card_journal',q:'How can we find the weather pattern?',o:['Write the weather down every day','We can\'t — weather is just random'],a:0}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; el('quiz').style.display=''; el('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; el('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=el('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    el('qtext').textContent=q.q; el('qfb').textContent='';
+    el('qNext').disabled=true; el('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=el('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=el('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    el('qNext').disabled=false;
+  }
+  el('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    el('quiz').style.display='none'; el('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); el('ring').style.setProperty('--pct',pct+'%'); el('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    el('gateTxt').textContent= passed? 'You found nature\'s patterns! 🔄' : 'Good try! Let\'s watch the patterns once more.';
+    el('guessTxt').textContent = guess==='back' ? 'At the start you guessed the sun would come back — you were right! It always does.' : guess==='gone' ? 'At the start you thought the sun might be gone. Now you know: day and night repeat, again and again!' : '';
+    say(el('gateTxt').textContent+' '+el('guessTxt').textContent, passed?'pass':'retry');
+    el('finish').style.display = passed? '' : 'none';
+    el('againTeach').textContent = passed? '↺ Watch the patterns again' : '↺ Watch again, then try once more';
+  }
+  el('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  el('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    el('gateTxt').textContent='Lesson done! Start your weather journal today — draw the sky! 📓'; say('Lesson done! Start your weather journal today. Draw what the sky looks like, every day.','done');
+    el('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

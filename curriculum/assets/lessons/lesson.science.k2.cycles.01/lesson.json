@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.cycles.01",
+  "title": "Round and round — life cycles",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.cycles.01"],
+  "va_sol": ["K.7"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "n/a — butterfly & frog specimens per K.7 skills row; hand-off = Kiwix Butterfly + journal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.cycles.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.cycles.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

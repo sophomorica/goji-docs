@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.matter.01",
+  "title": "Property detective",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.matter.01"],
+  "va_sol": ["K.3"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off: sort real spoons/socks with parent + journal sentence" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.matter.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.matter.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

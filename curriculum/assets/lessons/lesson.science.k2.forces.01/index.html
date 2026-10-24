@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pushes and pulls — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.hookpic{display:flex;justify-content:center;margin:6px 0}
+.hookpic svg{width:min(60vw,420px);height:auto}
+.hookpic img{width:min(60vw,420px);border-radius:var(--radius);box-shadow:var(--shadow);display:block}
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;min-height:140px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:28px;font-weight:800;padding:20px 14px;text-align:center}
+.pick.sel{border-color:var(--gold)}
+/* ---- scenes (teach + practice) ---- */
+.scene{position:relative;flex:1;min-height:300px;background:linear-gradient(var(--sky) 0 74%,#a9c98a 74% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media>svg{display:none}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+.mv{transition:transform 1.3s ease-out}
+.mv.fast{transition-duration:.7s}
+.mv.slow{transition-duration:2s}
+.pivot{transform-box:fill-box;transform-origin:50% 0}
+.stamp{position:absolute;z-index:3;right:5%;top:24%;font-size:38px;font-weight:900;letter-spacing:2px;padding:10px 20px;border:6px solid;border-radius:14px;
+  transform:rotate(-10deg) scale(0);transition:transform .4s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.88)}
+.stamp.show{transform:rotate(-10deg) scale(1)}
+.stamp.no{color:var(--red);border-color:var(--red)}
+.stamp.yes{color:var(--green);border-color:var(--green)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+/* ---- practice ---- */
+.pq{font-size:28px;font-weight:800;margin:8px 0 4px;min-height:40px}
+.popts{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.popt{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:16px 22px;cursor:pointer;box-shadow:var(--shadow);min-height:72px;min-width:180px}
+.popt.sel{border-color:var(--gold)}
+.popt[disabled]{cursor:default;opacity:.9}
+.fb{min-height:60px;font-size:24px;font-weight:700;text-align:center;margin-top:6px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{text-align:center;margin:8px 0}
+.bigpic svg{width:min(38vw,240px);height:auto}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:220px} .caption{font-size:22px} .pq{font-size:24px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Pushes and pulls <button class="say" data-say="Here is a red wagon, sitting very still. Can it start moving all by itself? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">Here is a wagon, sitting very still. <b>Can it start moving all by itself?</b> Tap your guess.</p>
+  <div class="hookpic">
+    <img data-img="hook_wagon" alt="" hidden>
+    <svg viewBox="0 0 300 150" aria-label="a wagon on the grass"><rect y="112" width="300" height="38" fill="#a9c98a"/><g transform="translate(70,14)"><use href="#sh_wagon"/></g></svg>
+  </div>
+  <div class="choice2">
+    <div class="pick" data-guess="self">Yes — it can go<br>by itself</div>
+    <div class="pick" data-guess="force">No — it needs<br>a push or a pull</div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Pushes and pulls make things move <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 320" preserveAspectRatio="xMidYMax meet">
+      <g id="tSwing" style="display:none"><g transform="translate(340,14)"><use href="#sh_frame"/><g class="pivot" id="tSeat"><use href="#sh_ropes"/></g></g></g>
+      <g id="tWagon" class="mv" style="display:none"><use href="#sh_wagon"/></g>
+      <g id="tBall" class="mv" style="display:none"><use href="#sh_ball"/></g>
+      <g id="tHand" class="mv" style="display:none"><use href="#sh_hand"/></g>
+    </svg>
+    <div class="stamp no" id="stampNo">NOT BY ITSELF</div>
+    <div class="stamp yes" id="stampYes">A PUSH MAKES IT GO!</div>
+  </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">👐</span>Push = away</div>
+    <div class="badge" id="b1"><span class="em">🪢</span>Pull = toward</div>
+    <div class="badge" id="b2"><span class="em">💪</span>Strong = far</div>
+    <div class="badge" id="b3"><span class="em">↔️</span>Change its way</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Predict, then test! <button class="say" data-say="First guess what will happen. Then tap Test it, and watch!" data-voice="prac_intro">🔊</button></h2>
+  <div class="pq"><span id="pqText"></span><button class="say" id="sayP" style="width:48px;height:48px;font-size:22px">🔊</button></div>
+  <div class="scene" id="pSceneWrap" style="min-height:240px">
+    <div class="caption" id="pCap" style="font-size:24px"></div>
+    <svg id="pScene" viewBox="0 0 1000 320" preserveAspectRatio="xMidYMax meet">
+      <g id="pSwing" style="display:none"><g transform="translate(340,14)"><use href="#sh_frame"/><g class="pivot" id="pSeat"><use href="#sh_ropes"/></g></g></g>
+      <line id="pRope" x1="0" y1="0" x2="0" y2="0" stroke="#a9906b" stroke-width="6" stroke-linecap="round" style="display:none"/>
+      <g id="pWagon" class="mv" style="display:none"><use href="#sh_wagon"/></g>
+      <g id="pBall" class="mv" style="display:none"><use href="#sh_ball"/></g>
+      <g id="pHand" class="mv" style="display:none"><use href="#sh_hand"/></g>
+    </svg>
+  </div>
+  <div class="popts" id="pOpts"></div>
+  <div class="row" style="margin-top:4px;padding-top:4px"><button class="btn" id="testBtn" style="display:none">Test it! ▶</button></div>
+  <div class="fb" id="fb"></div>
+  <div class="counter" id="counter"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch pushes and pulls again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="sh_ball">
+      <circle cx="40" cy="40" r="34" fill="#c9503c"/>
+      <path d="M12 28 Q40 8 68 28" stroke="#f3e9d6" stroke-width="10" fill="none"/>
+      <path d="M12 54 Q40 74 68 54" stroke="#e0a93b" stroke-width="8" fill="none"/>
+    </g>
+    <g id="sh_wagon">
+      <path d="M130 38 L158 12" stroke="#5c554b" stroke-width="7" stroke-linecap="round"/>
+      <rect x="146" y="4" width="22" height="8" rx="4" fill="#5c554b"/>
+      <rect x="8" y="32" width="126" height="42" rx="8" fill="#b5382f"/>
+      <rect x="16" y="40" width="110" height="6" rx="3" fill="#8e2a23"/>
+      <circle cx="42" cy="84" r="15" fill="#3b2a1e"/><circle cx="42" cy="84" r="5" fill="#8d8d8d"/>
+      <circle cx="104" cy="84" r="15" fill="#3b2a1e"/><circle cx="104" cy="84" r="5" fill="#8d8d8d"/>
+    </g>
+    <g id="sh_hand">
+      <rect x="52" y="16" width="16" height="30" rx="5" fill="#5a7ea3"/>
+      <ellipse cx="34" cy="31" rx="26" ry="19" fill="#dba272"/>
+      <ellipse cx="16" cy="16" rx="11" ry="8" fill="#dba272" transform="rotate(-30 16 16)"/>
+    </g>
+    <g id="sh_frame">
+      <path d="M40 236 L150 12 L260 236" stroke="#8a6b48" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M96 122 L204 122" stroke="#8a6b48" stroke-width="8"/>
+    </g>
+    <g id="sh_ropes">
+      <line x1="138" y1="18" x2="138" y2="178" stroke="#a9906b" stroke-width="5"/>
+      <line x1="162" y1="18" x2="162" y2="178" stroke="#a9906b" stroke-width="5"/>
+      <rect x="124" y="176" width="52" height="12" rx="4" fill="#6b4a2f"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.forces.01',version:1,quiz:'quiz.science.k2.forces.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media (Grok Imagine / TTS via tools/lesson_assets) ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_push'],['b1','badge_pull'],['b2','badge_strong'],['b3','badge_direction']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; if(el.nextElementSibling&&el.nextElementSibling.tagName==='svg') el.nextElementSibling.style.display='none'; } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- scene helpers ---------- */
+  function snap(el,tr){ el.style.transition='none'; el.style.transform=tr; el.getBoundingClientRect(); requestAnimationFrame(()=>{ el.style.transition=''; }); }
+  function slide(el,tr,dur){ el.style.transitionDuration=(reduced?0:(dur||1300))+'ms'; el.style.transform=tr; }
+  function showEl(el,on){ el.style.display=on?'':'none'; }
+
+  /* ---------- stage 1: teach ---------- */
+  const T={ball:document.getElementById('tBall'),wagon:document.getElementById('tWagon'),hand:document.getElementById('tHand'),
+           swing:document.getElementById('tSwing'),seat:document.getElementById('tSeat'),cap:document.getElementById('cap'),
+           no:document.getElementById('stampNo'),yes:document.getElementById('stampYes')};
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    [T.ball,T.wagon,T.hand,T.swing].forEach(el=>showEl(el,false));
+    badges.forEach(b=>b.className='badge'); T.no.className='stamp no'; T.yes.className='stamp yes';
+    T.cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "A push moves things away from you.",
+    "A pull brings things toward you.",
+    "A gentle push moves it a little. A strong push moves it far!",
+    "A push or a pull can change which way it goes.",
+    "Can the wagon start all by itself? No! Nothing moves by itself. It waits for a push, or a pull."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: push = away
+    showEl(T.ball,true); snap(T.ball,'translate(220px,192px)');
+    showEl(T.hand,true); snap(T.hand,'translate(60px,200px) scaleX(-1)');
+    T.cap.textContent='A PUSH moves things AWAY from you.'; say(teachScript[0],'t_push'); showBeat('teach_push');
+    later(()=>{ slide(T.hand,'translate(160px,200px) scaleX(-1)',600); },700);
+    later(()=>{ slide(T.ball,'translate(560px,192px)',1300); },1200);
+    later(()=>{ badges[0].classList.add('on'); },2800);
+    // beat 2: pull = toward
+    later(()=>{ showEl(T.ball,false); showEl(T.hand,true); snap(T.hand,'translate(880px,190px)');
+      showEl(T.wagon,true); snap(T.wagon,'translate(140px,168px)');
+      T.cap.textContent='A PULL brings things TOWARD you.'; say(teachScript[1],'t_pull'); showBeat('teach_pull'); },4200);
+    later(()=>{ slide(T.wagon,'translate(660px,168px)',1600); },5200);
+    later(()=>{ badges[1].classList.add('on'); },7200);
+    // beat 3: strength
+    later(()=>{ showEl(T.wagon,false); showEl(T.ball,true); snap(T.ball,'translate(160px,192px)');
+      snap(T.hand,'translate(40px,200px) scaleX(-1)');
+      T.cap.textContent='A GENTLE push moves it a little…'; say(teachScript[2],'t_strength'); showBeat('teach_strength');
+      slide(T.ball,'translate(260px,192px)',1400); },8200);
+    later(()=>{ T.cap.textContent='A STRONG push moves it FAR!'; snap(T.ball,'translate(160px,192px)'); },10200);
+    later(()=>{ slide(T.ball,'translate(760px,192px)',800); },10500);
+    later(()=>{ badges[2].classList.add('on'); },11600);
+    // beat 4: change direction
+    later(()=>{ T.cap.textContent='A push can CHANGE WHICH WAY it goes.'; say(teachScript[3],'t_direction'); showBeat('teach_direction');
+      snap(T.hand,'translate(860px,200px)'); slide(T.ball,'translate(300px,192px)',1500); },12600);
+    later(()=>{ badges[3].classList.add('on'); },14400);
+    // beat 5: nothing moves by itself
+    later(()=>{ showEl(T.ball,false); showEl(T.hand,false); showEl(T.wagon,true); snap(T.wagon,'translate(420px,168px)');
+      T.cap.textContent='Can the wagon start all by itself? Watch…'; say(teachScript[4],'t_self'); showBeat('teach_self'); },15600);
+    later(()=>{ T.no.classList.add('show'); T.cap.textContent='No. Nothing moves by itself.'; },18200);
+    later(()=>{ T.no.classList.remove('show'); showEl(T.hand,true); snap(T.hand,'translate(320px,180px) scaleX(-1)');
+      T.cap.textContent='It waits for a push — like this!'; slide(T.wagon,'translate(720px,168px)',1200); },20200);
+    later(()=>{ T.yes.classList.add('show'); document.getElementById('teachNext').disabled=false; },21600);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice (predict-then-test) ---------- */
+  const MIS={
+    onlypush:'See? The PULL moved it toward you. Pulls make things move too!',
+    strength:'Watch the strength! A stronger push moves it farther than a gentle one.',
+    self:'Look — nothing happened until a push or a pull came. Things do not move by themselves.',
+    direction:'Watch which way it went. A push sends things AWAY. A pull brings them TOWARD you.'
+  };
+  const ROUNDS=[
+    {act:'ball_gentle',sc:'ball',q:'Give the ball a GENTLE push. How far will it roll?',o:['A little way','Very far'],a:0,mis:'strength',why:'A gentle push moves it just a little.'},
+    {act:'ball_strong',sc:'ball',q:'Now a STRONG push! How far will it roll?',o:['A little way','Very far'],a:1,mis:'strength',why:'A stronger push moves it much farther.'},
+    {act:'wagon_pull',sc:'wagon',q:'The wagon is far away. What brings it TO you?',o:['A push','A pull'],a:1,mis:'onlypush',why:'A pull brings things toward you.'},
+    {act:'wagon_push',sc:'wagon',q:'Now PUSH the wagon. Where will it go?',o:['Away from you','Toward you'],a:0,mis:'direction',why:'A push sends things away from you.'},
+    {act:'swing_still',sc:'swing',q:'Nobody is touching the swing. Will it start swinging by itself?',o:['Yes — it will start','No — it stays still'],a:1,mis:'self',why:'It stays still. Things never start moving by themselves.'},
+    {act:'swing_push',sc:'swing',q:'Give the swing a push. What happens?',o:['It swings','It stays still'],a:0,mis:'self',why:'Your push starts the motion!'},
+    {act:'ball_pull',sc:'ball',q:'A rope is tied to the ball. PULL the rope. Which way does the ball go?',o:['Away from you','Toward you'],a:1,mis:'onlypush',why:'Pulls make things move too — toward you.'},
+    {act:'wagon_strong',sc:'wagon',q:'The wagon is stuck! A gentle push did not move it. Will a STRONG push help?',o:['Yes — stronger moves it','No — strength does not matter'],a:0,mis:'strength',why:'When gentle is not enough, a stronger push does the job.'}
+  ];
+  const P={ball:document.getElementById('pBall'),wagon:document.getElementById('pWagon'),hand:document.getElementById('pHand'),
+           swing:document.getElementById('pSwing'),seat:document.getElementById('pSeat'),rope:document.getElementById('pRope'),
+           cap:document.getElementById('pCap')};
+  let pq=[],pdone=0,ptries=0,pmiss={},ppass1=0,pfirst=true,pseen=0,curR=null,predIdx=null;
+  const fb=document.getElementById('fb'),pOpts=document.getElementById('pOpts'),testBtn=document.getElementById('testBtn');
+  function startPrac(){ pq=ROUNDS.slice(); pdone=0;ptries=0;pmiss={};ppass1=0;pfirst=true;pseen=0; fb.textContent=''; fb.className='fb';
+    document.getElementById('pracNext').disabled=true; showRound(); }
+  function setupScene(r){
+    [P.ball,P.wagon,P.hand,P.swing].forEach(el=>showEl(el,false)); showEl(P.rope,false); P.cap.textContent='';
+    P.seat.style.transition='none'; P.seat.style.transform='none'; P.seat.getBoundingClientRect(); requestAnimationFrame(()=>{P.seat.style.transition='';});
+    switch(r.act){
+      case 'ball_gentle': case 'ball_strong':
+        showEl(P.ball,true); snap(P.ball,'translate(180px,192px)');
+        showEl(P.hand,true); snap(P.hand,'translate(70px,200px) scaleX(-1)'); break;
+      case 'ball_pull':
+        showEl(P.ball,true); snap(P.ball,'translate(180px,192px)');
+        showEl(P.hand,true); snap(P.hand,'translate(880px,196px)');
+        showEl(P.rope,true); P.rope.setAttribute('x1',252); P.rope.setAttribute('y1',232); P.rope.setAttribute('x2',890); P.rope.setAttribute('y2',224); break;
+      case 'wagon_pull':
+        showEl(P.wagon,true); snap(P.wagon,'translate(120px,168px)');
+        showEl(P.hand,true); snap(P.hand,'translate(880px,188px)'); break;
+      case 'wagon_push': case 'wagon_strong':
+        showEl(P.wagon,true); snap(P.wagon,'translate(520px,168px)');
+        showEl(P.hand,true); snap(P.hand,'translate(720px,188px)');
+        if(r.act==='wagon_strong'){ snap(P.wagon,'translate(300px,168px)'); snap(P.hand,'translate(500px,188px)'); P.cap.textContent='Stuck in the thick grass!'; }
+        break;
+      case 'swing_still': case 'swing_push':
+        showEl(P.swing,true); break;
+    }
+  }
+  function runAct(act,cb){
+    let wait=1600;
+    switch(act){
+      case 'ball_gentle': slide(P.hand,'translate(120px,200px) scaleX(-1)',400); setTimeout(()=>slide(P.ball,'translate(300px,192px)',1400),reduced?0:350); break;
+      case 'ball_strong': slide(P.hand,'translate(120px,200px) scaleX(-1)',300); setTimeout(()=>slide(P.ball,'translate(820px,192px)',900),reduced?0:250); break;
+      case 'ball_pull': showEl(P.rope,false); slide(P.ball,'translate(700px,192px)',1400); break;
+      case 'wagon_pull': slide(P.wagon,'translate(640px,168px)',1500); break;
+      case 'wagon_push': slide(P.hand,'translate(680px,188px)',300); setTimeout(()=>slide(P.wagon,'translate(120px,168px)',1400),reduced?0:250); break;
+      case 'wagon_strong': slide(P.hand,'translate(440px,188px)',300); setTimeout(()=>slide(P.wagon,'translate(700px,168px)',1000),reduced?0:250); break;
+      case 'swing_still': wait=2000; setTimeout(()=>{P.cap.textContent='…still. Nothing moved it.';},reduced?100:1400); break;
+      case 'swing_push': slide(P.seat,'rotate(-30deg)',700); setTimeout(()=>slide(P.seat,'rotate(18deg)',700),reduced?0:750); setTimeout(()=>slide(P.seat,'rotate(0deg)',600),reduced?0:1500); wait=2200; break;
+    }
+    setTimeout(cb, reduced?400:wait);
+  }
+  function showRound(){
+    if(!pq.length){ document.getElementById('counter').textContent='All done! 🎉'; document.getElementById('pracNext').disabled=false;
+      pOpts.innerHTML=''; testBtn.style.display='none'; say('All done! Now show what you know.','prac_done'); return; }
+    curR=pq[0]; predIdx=null; setupScene(curR);
+    document.getElementById('pqText').textContent=curR.q;
+    document.getElementById('sayP').onclick=()=>say(curR.q,'p_'+curR.act);
+    document.getElementById('counter').textContent=`${pdone} of ${ROUNDS.length} tested`;
+    fb.textContent=''; fb.className='fb'; testBtn.style.display='none';
+    pOpts.innerHTML='';
+    curR.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='popt'; b.textContent=t;
+      b.onclick=()=>{ if(predIdx!==null) return; predIdx=i; b.classList.add('sel');
+        pOpts.querySelectorAll('.popt').forEach(x=>x.disabled=true); testBtn.style.display=''; say('Now tap Test it!'); };
+      pOpts.appendChild(b); });
+    say(curR.q,'p_'+curR.act);
+  }
+  testBtn.onclick=()=>{
+    if(predIdx===null||!curR) return; testBtn.style.display='none';
+    const r=pq.shift(); ptries++; pseen++;
+    if(pseen>ROUNDS.length) pfirst=false;
+    runAct(r.act,()=>{
+      const ok=predIdx===r.a;
+      if(ok){ pdone++; if(pfirst) ppass1++;
+        fb.className='fb good'; fb.textContent='✓ '+r.why; say('Yes! '+r.why,'why_'+r.act);
+      } else {
+        pmiss[r.mis]=(pmiss[r.mis]||0)+1;
+        fb.className='fb bad'; fb.textContent='Not what you guessed! '+MIS[r.mis]; say('Not what you guessed! '+MIS[r.mis],'fb_'+r.mis);
+        pq.push(r);
+      }
+      setTimeout(showRound, ok?1900:2600);
+    });
+  };
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const SVGBOX={ball:'0 0 80 80',wagon:'0 0 170 100',swing:'0 0 300 250'};
+  const QUIZ=[
+    {id:1,svg:'wagon',k:'card_wagon',q:'The wagon is across the yard. To bring it TO you, what do you do?',o:['Push it','Pull it','Wait — it will come by itself'],a:1},
+    {id:2,svg:'ball',k:'card_ball',q:'Which kick sends the ball farther?',o:['A gentle tap','A strong kick','Both the same — strength does not matter'],a:1,mis:'strength'},
+    {id:3,svg:'ball',k:'card_ball_still',q:'A ball sits still on the grass. What can start it moving?',o:['It starts all by itself','A push or a pull'],a:1,mis:'self'},
+    {id:4,svg:'wagon',k:'card_stuck',q:'A gentle push did not move the stuck wagon. What should you try?',o:['A stronger push','The same gentle push again','Just wait for it to move'],a:0,mis:'strength'},
+    {id:5,svg:'swing',k:'card_swing',q:'To send the swing AWAY from you, what do you do?',o:['Pull it','Push it','It swings by itself'],a:1,mis:'direction'}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=`${qi+1} / ${QUIZ.length}`;
+    const qp=document.getElementById('qpic');
+    if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">';
+    else qp.innerHTML='<svg viewBox="'+SVGBOX[q.svg]+'"><use href="#sh_'+(q.svg==='swing'?'frame':q.svg)+'"/>'+(q.svg==='swing'?'<use href="#sh_ropes"/>':'')+'</svg>';
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:ppass1,tries:ptries,misses:pmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know what makes things move! 👐' : 'Good try! Let\'s watch pushes and pulls once more.';
+    document.getElementById('guessTxt').textContent = guess==='force' ? 'At the start you guessed the wagon needs a push or a pull — you were right!' : guess==='self' ? 'At the start you guessed the wagon moves by itself. Now you know: it always needs a push or a pull!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch pushes and pulls again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go hunt for pushes and pulls with your grown-up. 👐'; say('Lesson done! Now go hunt for pushes and pulls with your grown-up.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

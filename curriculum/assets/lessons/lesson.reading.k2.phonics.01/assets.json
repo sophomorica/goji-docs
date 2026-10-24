@@ -1,0 +1,111 @@
+{
+  "lesson": "lesson.reading.k2.phonics.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "voice": [
+    {
+      "id": "hook",
+      "text": "The fox wants the grapes. Which one is the word fox? Tap your guess."
+    },
+    {
+      "id": "prac_done",
+      "text": "All blended! Now show what you know."
+    },
+    {
+      "id": "yes",
+      "text": "Yes!"
+    },
+    {
+      "id": "hint",
+      "text": "Try again."
+    },
+    {
+      "id": "pass",
+      "text": "You can crack CVC words!"
+    },
+    {
+      "id": "retry",
+      "text": "Good try. Blend left to right once more."
+    },
+    {
+      "id": "hook_word",
+      "text": "fox \u2014 three sounds."
+    },
+    {
+      "id": "hook_pic",
+      "text": "That is a picture, not the word."
+    },
+    {
+      "id": "t1",
+      "text": "Letters make sounds. f, o, x."
+    },
+    {
+      "id": "t2",
+      "text": "Slide them together. fff ooo x. Fox."
+    },
+    {
+      "id": "t3",
+      "text": "Never guess from a picture. Read the code."
+    },
+    {
+      "id": "p1",
+      "text": "Build fox."
+    },
+    {
+      "id": "p2",
+      "text": "Build hen."
+    },
+    {
+      "id": "p3",
+      "text": "Build dog."
+    },
+    {
+      "id": "p4",
+      "text": "Build sun."
+    },
+    {
+      "id": "p5",
+      "text": "Build hop."
+    },
+    {
+      "id": "p6",
+      "text": "Build ant."
+    },
+    {
+      "id": "p7",
+      "text": "Build cat."
+    },
+    {
+      "id": "p8",
+      "text": "Build log."
+    },
+    {
+      "id": "q1",
+      "text": "c-a-t slides into\u2026 cat, or cut, or cot"
+    },
+    {
+      "id": "q2",
+      "text": "The Aesop animal: f-o-x fix, or fox, or box"
+    },
+    {
+      "id": "q3",
+      "text": "h-e-n is\u2026 han, or hen, or hin"
+    },
+    {
+      "id": "q4",
+      "text": "Which word has the short o of hop? sun, or dog, or hen"
+    },
+    {
+      "id": "q5",
+      "text": "How do you read a secret-code word? Guess the picture, or Blend left to right, or Skip it"
+    }
+  ],
+  "images": [
+    {
+      "id": "hook",
+      "prompt": "storybook scene for Crack the code, Aesop meadow, no letters",
+      "kind": "scene"
+    }
+  ],
+  "clips": [],
+  "notes": "House voice is luna (Grok TTS, British woman, 0.92). Packages run with speechSynthesis until media/ is generated."
+}

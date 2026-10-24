@@ -1,0 +1,36 @@
+{
+  "id": "lesson.reading.k2.phonics.05",
+  "title": "Tricky teams",
+  "subject": "reading",
+  "band": "k2",
+  "grade_hint": "1",
+  "objectives": [
+    "obj.reading.k2.phonics.05"
+  ],
+  "va_sol": [
+    "2.FFR.3"
+  ],
+  "duration_min": 12,
+  "anchor": {
+    "book": "aesop-fables",
+    "note": "mouse / moon \u2014 Town Mouse; the moon above the meadow",
+    "research": "Mouse"
+  },
+  "stages": [
+    "hook",
+    "teach",
+    "practice",
+    "check"
+  ],
+  "check": {
+    "quiz_id": "quiz.reading.k2.phonics.05",
+    "n_items": 5,
+    "pass": 4
+  },
+  "animations": [
+    "anim.reading.k2.phonics.05"
+  ],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

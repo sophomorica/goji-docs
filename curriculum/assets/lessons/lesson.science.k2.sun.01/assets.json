@@ -1,0 +1,157 @@
+{
+  "lesson": "lesson.science.k2.sun.01",
+  "style": "../../../tools/lesson_assets/style.json",
+  "characters": {
+    "toydino": {
+      "prompt": "a painted wooden toy dinosaur on a small red wheeled pull-toy base, green rounded body with pale spots and three flat triangle back plates, no eyes, no face, clearly a handmade toy, side view facing left",
+      "kind": "card"
+    }
+  },
+  "images": [
+    {
+      "id": "hook_rock_sun",
+      "prompt": "a smooth brown rock sitting on green grass in bright direct sunshine, a plain yellow sun high in a clear sky, warm light on the rock, no faces, no creatures",
+      "kind": "scene"
+    },
+    {
+      "id": "hook_rock_shade",
+      "prompt": "a smooth grey rock sitting on grass in the cool shade under a leafy tree, soft shadow patch around it, no faces, no creatures",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_warm",
+      "prompt": "a plain round yellow sun with simple rays high over a gentle landscape: green land, a small blue pond, soft heat shimmer rising from the ground, wide calm scene, no face on the sun, no creatures",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_rocks",
+      "prompt": "two rocks side by side in one scene: left rock in the shade under a leafy tree looking cool grey, right rock in open bright sunshine looking warm brown, plain sun without a face in the sky, a child's hand reaching to touch the sunny rock",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_block",
+      "ref": "toydino",
+      "prompt": "the same toy dinosaur standing on grass, plain sun without a face low on the LEFT side of the sky, a soft beam of light reaching the toy, and the toy's dark shadow stretching along the ground to the RIGHT of the toy",
+      "kind": "scene"
+    },
+    {
+      "id": "teach_flip",
+      "ref": "toydino",
+      "prompt": "the same toy dinosaur standing on grass, plain sun without a face now low on the RIGHT side of the sky, the toy's dark shadow stretching along the ground to the LEFT of the toy",
+      "kind": "scene"
+    },
+    {
+      "id": "card_dino",
+      "ref": "toydino",
+      "prompt": "the same toy dinosaur alone on a plain cream background, full side view, clearly a wheeled toy",
+      "kind": "card"
+    },
+    {
+      "id": "card_sun_left",
+      "ref": "toydino",
+      "prompt": "small scene card: plain sun without a face on the far LEFT, the same toy dinosaur in the middle of a grassy field, empty ground on the right where a shadow could fall, no shadow drawn",
+      "kind": "card"
+    },
+    {
+      "id": "card_sun_right",
+      "ref": "toydino",
+      "prompt": "small scene card: plain sun without a face on the far RIGHT, the same toy dinosaur in the middle of a grassy field, empty ground on the left, no shadow drawn",
+      "kind": "card"
+    },
+    {
+      "id": "card_shade_tree",
+      "prompt": "small scene card: one leafy tree casting a cool shade patch on the left, bright open sunny grass on the right, one rock in each spot, plain sun without a face, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "card_earth_warm",
+      "prompt": "small scene card: plain sun without a face warming a simple landscape strip of green land, blue water, and pale sky together, gentle warm light over all three, no creatures",
+      "kind": "card"
+    },
+    {
+      "id": "prac_scene_sun_left",
+      "ref": "toydino",
+      "prompt": "wide practice scene: plain sun without a face low on the left, the same toy dinosaur centered on a grass strip, two empty dashed oval spots on the ground left and right of the toy, no shadow drawn",
+      "kind": "scene"
+    },
+    {
+      "id": "prac_scene_sun_right",
+      "ref": "toydino",
+      "prompt": "wide practice scene: plain sun without a face low on the right, the same toy dinosaur centered on a grass strip, two empty dashed oval spots on the ground left and right of the toy, no shadow drawn",
+      "kind": "scene"
+    },
+    {
+      "id": "prac_scene_shade",
+      "prompt": "wide practice scene: a leafy tree with a cool shade patch over one ground spot and bright sun over the other ground spot, one rock on each spot, plain sun without a face, no creatures",
+      "kind": "scene"
+    },
+    {
+      "id": "badge_warm",
+      "prompt": "a plain round yellow sun with simple straight rays, no face, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_shade",
+      "prompt": "a small leafy tree with a soft dark shade patch beneath it, simple emblem",
+      "kind": "card"
+    },
+    {
+      "id": "badge_shadow",
+      "prompt": "a small toy block with its dark shadow stretching to one side on the ground, simple emblem, no face",
+      "kind": "card"
+    }
+  ],
+  "clips": [
+    {
+      "id": "teach_warm",
+      "from": "teach_warm",
+      "seconds": 6,
+      "prompt": "the sun's rays glow gently brighter and softer, heat shimmer rises slowly from the land, the pond surface glitters calmly"
+    },
+    {
+      "id": "teach_rocks",
+      "from": "teach_rocks",
+      "seconds": 6,
+      "prompt": "the child's hand gently touches the sunny rock, a soft warm glow pulses on the sunny rock while the shady rock stays cool and still"
+    },
+    {
+      "id": "teach_block",
+      "from": "teach_block",
+      "seconds": 6,
+      "prompt": "the toy dinosaur slides slowly into the beam of sunlight and its shadow fades in and stretches out on the ground on the side away from the sun"
+    },
+    {
+      "id": "teach_flip",
+      "from": "teach_flip",
+      "seconds": 6,
+      "prompt": "the sun glides slowly from the left side of the sky to the right, and the toy's shadow sweeps around to the opposite side of the toy"
+    }
+  ],
+  "voice": [
+    { "id": "hook", "text": "Two rocks sat outside all morning. [pause] One in the sun. One in the shade. [pause] Which rock feels warmer? Tap your guess." },
+    { "id": "t_warm", "text": "<emphasis>The sun warms the Earth.</emphasis> [pause] It warms the land, [pause] the air, [pause] and the water." },
+    { "id": "t_rocks", "text": "Touch the rocks! [pause] The sunny rock is <emphasis>warm</emphasis>. [pause] The shady rock is <emphasis>cool</emphasis> — the tree blocks the sun." },
+    { "id": "t_block", "text": "Watch the toy dinosaur. [pause] It <emphasis>blocks</emphasis> the light. [pause] A shadow appears on the other side!" },
+    { "id": "t_flip", "text": "The sun moved. [pause] The shadow moved too — <emphasis>always on the side away from the sun.</emphasis>" },
+    { "id": "prac_intro", "text": "Look where the sun is. [pause] Then tap the spot where the shadow will fall. [pause] Sometimes I will ask which spot is cooler, or warmer." },
+    { "id": "pr_sh_l", "text": "The sun is on the left. [pause] Tap where the shadow will fall." },
+    { "id": "pr_sh_r", "text": "The sun is on the right. [pause] Tap where the shadow will fall." },
+    { "id": "pr_cool", "text": "One rock is in the sun. One is in the shade. [pause] Tap the cooler spot." },
+    { "id": "pr_warm", "text": "One rock is in the sun. One is in the shade. [pause] Tap the warmer spot." },
+    { "id": "ok_sh", "text": "Yes! [pause] The shadow falls away from the sun." },
+    { "id": "ok_cool", "text": "Yes! [pause] Shade is cooler. The tree blocks the sun." },
+    { "id": "ok_warm", "text": "Yes! [pause] The sun warms that spot." },
+    { "id": "fb_sunside", "text": "Not quite. [pause] The shadow is on the other side, away from the sun. The toy blocks the light." },
+    { "id": "fb_shadecool", "text": "Not quite. [pause] The tree blocks the sun, so the shade is cooler." },
+    { "id": "fb_sunwarm", "text": "Not quite. [pause] The sun shines on the open spot, so that one is warmer." },
+    { "id": "prac_done", "text": "Lab complete! [pause] Now show what you know." },
+    { "id": "q1", "text": "What makes the toy dinosaur's shadow? [pause] The toy blocks the sun's light, [pause] or, dark stuff leaks out of the toy?" },
+    { "id": "q2", "text": "The sun is on the left. Where is the toy's shadow? [pause] On the right, away from the sun, [pause] or on the left, next to the sun?" },
+    { "id": "q3", "text": "Which spot feels cooler? [pause] The shade under the tree, [pause] the sunny open spot, [pause] or do they feel the same?" },
+    { "id": "q4", "text": "What does the sun warm? [pause] The land, the air, and the water, [pause] or only the land?" },
+    { "id": "q5", "text": "The sun moves to the right. What does the shadow do? [pause] It moves to the left, away from the sun, [pause] or it stays next to the sun?" },
+    { "id": "pass", "text": "<soft>You know where shadows fall!</soft> [pause] Well done." },
+    { "id": "retry", "text": "Good try! Let's watch the sun and the shadow once more." },
+    { "id": "done", "text": "Lesson done! Now go trace a real shadow outside, in the morning and again in the afternoon." }
+  ]
+}

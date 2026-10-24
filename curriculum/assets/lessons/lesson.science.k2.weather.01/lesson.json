@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.weather.01",
+  "title": "Patterns in the sky",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "K",
+  "objectives": ["obj.science.k2.weather.01"],
+  "va_sol": ["K.9"],
+  "duration_min": 12,
+  "anchor": { "book": "aesop-fables", "note": "The North Wind and the Sun week — the fable's weather duel opens the talk; hand-off starts the daily weather journal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.weather.01", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.weather.01"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

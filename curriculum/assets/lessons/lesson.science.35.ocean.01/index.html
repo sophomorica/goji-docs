@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Down to the deep — the ocean — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --sea1:#7ec8e3; --sea2:#1b5e8c; --sea3:#0a2740;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:36px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:30px;margin:6px 0;line-height:1.15}
+p.lead{font-size:23px;color:var(--ink2);margin:4px 0 12px;line-height:1.35}
+.say{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:28px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:24px;border:0;border-radius:var(--radius);padding:16px 32px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:240px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:26px;font-weight:800;padding:14px;text-align:center;min-height:180px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach scene ---- */
+.scene{position:relative;flex:1;min-height:320px;background:linear-gradient(var(--sea1) 0%,var(--sea2) 45%,var(--sea3) 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:14px 20px;font-size:26px;font-weight:800;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.55)}
+.tg{display:none}
+.tg.cur{display:block}
+.scene.media .tg{display:none}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media .caption{background:linear-gradient(rgba(10,39,64,.9),rgba(10,39,64,0));padding-bottom:34px}
+#sub{animation:dive 12s ease-in-out infinite alternate}
+@keyframes dive{from{transform:translate(0,0)}to{transform:translate(160px,120px)}}
+#wavetop{animation:bob 3s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(8px)}}
+#lure{animation:glowp 2s ease-in-out infinite alternate}
+@keyframes glowp{from{opacity:.5}to{opacity:1}}
+/* ---- practice ---- */
+.track{display:flex;gap:12px;justify-content:center;align-items:flex-end;flex-wrap:wrap;background:linear-gradient(var(--sea2),var(--sea3));border-radius:var(--radius);
+  padding:14px 10px;box-shadow:var(--shadow);min-height:96px;margin-bottom:10px}
+.slot{width:150px;height:76px;border-radius:14px;border:3px dashed #6f9ab0;display:grid;place-items:center;color:#bcd8e8;font-weight:800;font-size:19px;position:relative;text-align:center}
+.slot.filled{border-style:solid;border-color:var(--gold);color:#fff;font-size:17px}
+.ppic{display:flex;justify-content:center;margin:2px 0}
+.q{font-size:27px;font-weight:800;margin:6px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.opt{font:inherit;font-size:23px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:18px 14px;cursor:pointer;box-shadow:var(--shadow);min-height:80px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.fb{min-height:60px;font-size:23px;font-weight:700;text-align:center;margin-top:8px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:21px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.bigpic{font-size:96px;text-align:center;line-height:1.1;margin:6px 0}
+.bigpic img{width:min(38vw,240px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:27px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:28px} h2{font-size:24px} p.lead{font-size:20px}
+  .scene{min-height:230px} .caption{font-size:20px}
+  .slot{width:120px;height:64px;font-size:16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>Down to the deep <button class="say" data-say="A submarine dives all the way to the bottom of the ocean. What does it find down there? Tap your guess: flat sand, or mountains and canyons?" data-voice="hook">🔊</button></h1>
+  <p class="lead">A submarine dives all the way to the bottom of the ocean. <b>What does it find down there?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="flat">
+      <svg viewBox="0 0 200 130" aria-label="flat sandy bottom"><rect width="200" height="130" rx="16" fill="#1b5e8c"/><rect y="100" width="200" height="30" fill="#d9c07a"/><path d="M0 100 h200" stroke="#c4a960" stroke-width="3"/></svg><img data-img="hook_flat" alt="" hidden>
+      <span>Flat sand,<br>smooth all the way</span>
+    </div>
+    <div class="pick" data-guess="mountains">
+      <svg viewBox="0 0 200 130" aria-label="underwater mountains and trench"><rect width="200" height="130" rx="16" fill="#1b5e8c"/><path d="M0 90 L35 60 L60 95 L85 75 L105 118 L120 80 L150 55 L175 92 L200 78 L200 130 L0 130Z" fill="#6b5d4a"/></svg><img data-img="hook_mtn" alt="" hidden>
+      <span>Mountains, canyons,<br>and deep trenches</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Dive in →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>The submarine dive <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+      <!-- FLOOR PROFILE -->
+      <g class="tg" data-tg="floor">
+        <path d="M0 60 Q60 52 120 60 T240 60" stroke="#dff2fb" stroke-width="4" fill="none" opacity=".7"/>
+        <path d="M0 90 L30 90 L200 110 L280 210 L520 300 L640 300 L690 385 L730 385 L770 300 L850 250 L890 300 L1000 300 L1000 420 L0 420Z" fill="#6b5d4a"/>
+        <path d="M0 70 L30 90 L200 110" stroke="#e8d79a" stroke-width="6" fill="none"/>
+        <text x="90" y="150" fill="#fff" font-size="23" font-weight="800">continental shelf</text>
+        <text x="300" y="190" fill="#fff" font-size="23" font-weight="800">slope</text>
+        <text x="455" y="285" fill="#fff" font-size="23" font-weight="800">abyssal plain</text>
+        <text x="712" y="370" fill="#ffd98a" font-size="23" font-weight="800" text-anchor="middle">trench</text>
+        <text x="852" y="235" fill="#fff" font-size="23" font-weight="800" text-anchor="middle">ridge</text>
+        <g id="sub"><ellipse cx="140" cy="70" rx="34" ry="14" fill="#e0a93b"/><rect x="128" y="48" width="20" height="14" rx="5" fill="#e0a93b"/><circle cx="152" cy="70" r="5" fill="#3b2a1e"/></g>
+      </g>
+      <!-- LIGHT ZONES -->
+      <g class="tg" data-tg="zones">
+        <rect x="0" y="40" width="1000" height="110" fill="#4fa3cc" opacity=".55"/>
+        <rect x="0" y="150" width="1000" height="120" fill="#1b4e78" opacity=".6"/>
+        <rect x="0" y="270" width="1000" height="150" fill="#050e1c" opacity=".75"/>
+        <g stroke="#fff8d8" stroke-width="4" opacity=".8"><line x1="120" y1="40" x2="80" y2="140"/><line x1="240" y1="40" x2="200" y2="140"/><line x1="360" y1="40" x2="320" y2="140"/></g>
+        <text x="700" y="105" fill="#fff" font-size="26" font-weight="800">SUNLIGHT zone — bright, warm, crowded</text>
+        <text x="700" y="220" fill="#cfe0f2" font-size="26" font-weight="800">TWILIGHT zone — dim, colder</text>
+        <text x="700" y="350" fill="#9fb3cc" font-size="26" font-weight="800">MIDNIGHT zone — pitch dark, icy</text>
+        <text x="40" y="395" fill="#cfe0f2" font-size="22">…and ALL of it salty!</text>
+      </g>
+      <!-- WAVES + TIDES -->
+      <g class="tg" data-tg="waves">
+        <g id="wavetop"><path d="M0 120 Q80 90 160 120 T320 120 T480 120 T640 120 T800 120 T960 120 L1000 120 L1000 160 Q920 190 840 160 T680 160 T520 160 T360 160 T200 160 T40 160 L0 160Z" fill="#dff2fb" opacity=".5"/></g>
+        <g stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M80 60 h110"/><path d="M60 85 h90"/><path d="M210 60 l24 0"/></g>
+        <text x="320" y="75" fill="#fff" font-size="25" font-weight="800">WIND pushes up waves</text>
+        <circle cx="900" cy="70" r="30" fill="#efe9dc"/><circle cx="890" cy="62" r="5" fill="#d8d2c4"/><circle cx="908" cy="80" r="7" fill="#d8d2c4"/>
+        <text x="860" y="130" fill="#fff8d8" font-size="24" font-weight="800" text-anchor="middle">the MOON pulls tides</text>
+        <text x="500" y="280" fill="#cfe0f2" font-size="26" font-weight="800" text-anchor="middle">Waves = wind · Tides = the moon — remember?</text>
+      </g>
+      <!-- CURRENTS -->
+      <g class="tg" data-tg="currents">
+        <path d="M120 330 Q300 300 420 220 Q560 130 780 110" stroke="#e07a5f" stroke-width="16" fill="none" stroke-linecap="round" stroke-dasharray="30 18"/>
+        <path d="M780 110 l-8 -26 l30 14z" fill="#e07a5f"/>
+        <text x="180" y="380" fill="#ffd9c9" font-size="25" font-weight="800">warm water from the south…</text>
+        <text x="620" y="80" fill="#ffd9c9" font-size="25" font-weight="800">…warms faraway shores</text>
+        <text x="470" y="250" fill="#fff" font-size="28" font-weight="800">the GULF STREAM — a river IN the sea</text>
+      </g>
+      <!-- LIFE ZONES -->
+      <g class="tg" data-tg="life">
+        <rect x="0" y="270" width="1000" height="150" fill="#050e1c" opacity=".7"/>
+        <g><path d="M60 180 q30 -60 60 0 q-30 40 -60 0z" fill="#e07a5f"/><path d="M150 150 q24 -46 48 0 q-24 34 -48 0z" fill="#e0a93b"/><path d="M230 190 q20 -40 40 0 q-20 30 -40 0z" fill="#7fc98a"/>
+        <path d="M120 120 l14 -8 l0 16z" fill="#f2e7c9"/><path d="M180 100 l14 -8 l0 16z" fill="#f2e7c9"/><path d="M90 105 l12 -7 l0 14z" fill="#f2e7c9"/></g>
+        <text x="340" y="140" fill="#fff" font-size="25" font-weight="800">Sunlit reefs — CROWDED with life</text>
+        <g><ellipse cx="500" cy="350" rx="55" ry="30" fill="#3a3a4a"/><path d="M553 350 l30 -18 l0 36z" fill="#3a3a4a"/><path d="M470 325 q-14 -28 8 -30" stroke="#3a3a4a" stroke-width="5" fill="none"/><circle id="lure" cx="478" cy="292" r="8" fill="#fff8b8"/><circle cx="482" cy="345" r="5" fill="#e8e8f2"/></g>
+        <text x="640" y="360" fill="#cdd6e8" font-size="25" font-weight="800">Deep-dark specialists — the anglerfish</text>
+        <text x="640" y="392" fill="#8fa3c0" font-size="22">glowing lure, huge mouth, no sunlight needed</text>
+      </g>
+      <!-- FOOD WEB -->
+      <g class="tg" data-tg="web">
+        <g fill="#bfe8b8"><circle cx="150" cy="120" r="5"/><circle cx="170" cy="105" r="4"/><circle cx="135" cy="100" r="4"/><circle cx="185" cy="125" r="5"/><circle cx="160" cy="140" r="4"/></g>
+        <text x="160" y="180" fill="#dff2d8" font-size="23" font-weight="800" text-anchor="middle">plankton</text>
+        <path d="M230 130 h110" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M340 130 l-14 -9 l0 18z" fill="#fff" transform="rotate(180 333 130)"/>
+        <path d="M390 150 q22 -44 46 0 q-24 34 -46 0z" fill="#7fc98a"/>
+        <text x="415" y="200" fill="#dff2d8" font-size="23" font-weight="800" text-anchor="middle">small fish</text>
+        <path d="M480 130 h110" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+        <path d="M640 160 q40 -70 84 0 q-42 54 -84 0z" fill="#4a7fb5"/>
+        <text x="685" y="215" fill="#cfe0f2" font-size="23" font-weight="800" text-anchor="middle">big fish</text>
+        <text x="500" y="310 " fill="#fff" font-size="27" font-weight="800" text-anchor="middle">Plankton = the ocean's GRASS.</text>
+        <text x="500" y="348" fill="#cfe0f2" font-size="24" text-anchor="middle">Almost every ocean food web starts with it.</text>
+      </g>
+    </svg>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Dive again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2 id="pTitle">Label the dive <button class="say" id="sayPrac">🔊</button></h2>
+  <p class="lead" id="pLead"></p>
+  <div class="track" id="track">
+    <div class="slot" data-slot="0">1 · shore</div><div class="slot" data-slot="1">2</div><div class="slot" data-slot="2">3</div><div class="slot" data-slot="3">4 · deepest</div>
+  </div>
+  <div class="q"><span id="pPrompt"></span></div>
+  <div class="opts" id="pOpts"></div>
+  <div class="fb" id="pfb"></div>
+  <div class="counter" id="pCount"></div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Dive again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.35.ocean.01',version:1,quiz:'quiz.science.35.ocean.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.95; u.pitch=1.02; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPrac(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const cap=document.getElementById('cap');
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,500*timers.length+200) : ms)); }
+  function setScene(name){ document.querySelectorAll('.tg').forEach(g=>g.classList.toggle('cur',g.dataset.tg===name)); }
+  const TEACH=[
+    {vid:'t_floor', media:'teach_floor', scene:'floor', dur:11000, cap:'The ocean floor has SHAPE: shelf → slope → abyssal plain → trench — plus ridges and seamounts.',
+     txt:'Dive with the submarine! The ocean floor is not flat sand — it has shape, like the land. First the shallow continental shelf, just off the beach. Then the steep slope, down, down. Then the huge flat abyssal plain. And then — a trench, a canyon deeper than any mountain is tall! Underwater mountain ridges and lone seamounts rise from the plain.'},
+    {vid:'t_zones', media:'teach_zones', scene:'zones', dur:10000, cap:'Deeper = darker and colder. Sunlight zone → twilight zone → midnight zone. All of it salty.',
+     txt:'As we sink, the light fades. The top is the sunlight zone — bright, warm, crowded with life. Below it, the twilight zone — dim and cold. And at the bottom, the midnight zone — pitch dark and icy, all year long. And every drop, top to bottom, is salty — never drink it!'},
+    {vid:'t_waves', media:'teach_waves', scene:'waves', dur:9000, cap:'WAVES are made by WIND. TIDES are the moon\'s pull — twice a day.',
+     txt:'Now feel the water move! The waves on top? Wind makes those — the harder it blows, the bigger they roll. And the slow rise and fall of the whole sea at the shore — the tides — that is the moon\'s pull, twice a day. You learned that with our neighbor the moon!'},
+    {vid:'t_currents', media:'teach_currents', scene:'currents', dur:9000, cap:'CURRENTS are rivers IN the sea. The Gulf Stream carries warm water and warms faraway shores.',
+     txt:'And deep inside the ocean, the water travels in currents — giant rivers flowing IN the sea. The Gulf Stream is one: it carries warm southern water up along our coast and across the sea, warming faraway shores. The ocean is never, ever still.'},
+    {vid:'t_life', media:'teach_life', scene:'life', dur:10000, cap:'Sunlit reefs are CROWDED. The deep dark has SPECIALISTS — like the glowing anglerfish.',
+     txt:'Who lives here? Where sunlight reaches, life crowds in — coral reefs packed with fish, like a busy city. But the deep dark is not empty! Down in the midnight zone live specialists, like the anglerfish — it dangles its own glowing lure to catch dinner in the blackness.'},
+    {vid:'t_web', media:'teach_web', scene:'web', dur:9000, cap:'Plankton = the ocean\'s GRASS. Food webs keep going underwater.',
+     txt:'And what feeds them all? Plankton — clouds of tiny drifting living things. Plankton is the ocean\'s grass: little fish eat plankton, big fish eat little fish. Food webs don\'t stop at the beach — they keep going, all the way down.'}
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(TEACH.map(b=>b.txt).join(' '));
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[]; cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media'); setScene('');
+    document.getElementById('teachNext').disabled=true;
+  }
+  function playTeach(){
+    resetScene(); let t=200;
+    TEACH.forEach(b=>{ later(()=>{ cap.textContent=b.cap; say(b.txt,b.vid); setScene(b.scene); showBeat(b.media); },t); t+=b.dur; });
+    later(()=>{ document.getElementById('teachNext').disabled=false; },t);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const STOPS=[
+    {n:'Continental shelf',c:'#e8d79a',why:'The shelf — shallow and flat, just off the beach.'},
+    {n:'Slope',c:'#b08a4f',why:'The slope — the steep drop toward the deep.'},
+    {n:'Abyssal plain',c:'#6b5d4a',why:'The abyssal plain — the huge deep flat.'},
+    {n:'Trench',c:'#2a2a3a',why:'The trench — the deepest canyon of all.'}
+  ];
+  const PHASE=[
+    {title:'Label the dive', lead:'The submarine dives from the beach to the deepest deep. Tap the next stop.', vid:'prac0',
+     txt:'Label the dive! The submarine goes from the beach to the deepest deep: shelf, slope, abyssal plain, trench. Tap the next stop.'},
+    {title:'Who lives where?', lead:'Match each resident to its zone.', vid:'prac1',
+     txt:'Who lives where? Match each resident to its zone — sunlight, twilight, or midnight.'},
+    {title:'What moves the water?', lead:'Wind, moon, or rivers-in-the-sea? Tap the true cause.', vid:'prac2',
+     txt:'What moves the water? Waves, tides, currents — each has its own cause. Tap the true one.'}
+  ];
+  function stopItem(i){
+    const wrong=[(i+1)%4,(i+2)%4];
+    const opts=[STOPS[i].n,STOPS[wrong[0]].n,STOPS[wrong[1]].n].map((t,j)=>({t,ok:j===0}));
+    for(let j=opts.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[opts[j],opts[k]]=[opts[k],opts[j]];}
+    return {ph:0,q:'Dive stop '+(i+1)+' is the…',opts:opts.map(o=>o.t),a:opts.findIndex(o=>o.ok),
+      why:STOPS[i].why,mis:'profile',hint:'Shore to deepest: shelf, then slope, then abyssal plain, then trench.',slot:i,retry:true};
+  }
+  const PRAC=[
+    stopItem(0),stopItem(1),stopItem(2),stopItem(3),
+    {ph:1,q:'A bright, crowded coral reef. Which zone?',opts:['Sunlight zone','Midnight zone','Twilight zone'],a:0,mis:'zone',
+     why:'Yes — reefs need sunlight, so they crowd the bright top.',hint:'Coral needs light to thrive. Where is the light?'},
+    {ph:1,q:'The anglerfish dangles a glowing lure. Which zone is home?',opts:['Midnight zone','Sunlight zone','The beach'],a:0,mis:'zone',
+     why:'Yes — in the pitch-dark midnight zone, it brings its own light!',hint:'Why would a fish need to GROW its own light?'},
+    {ph:1,q:'The midnight zone is pitch dark and icy. What lives there?',opts:['Specialists like the anglerfish','Nothing — it is too dark','Coral reefs'],a:0,mis:'empty',
+     why:'Yes — the deep is alive, with animals built for the dark.',hint:'The deep dark is not empty — think of the glowing lure.'},
+    {ph:2,q:'What makes the WAVES on top?',opts:['Wind','The moon','Fish swimming'],a:0,mis:'cause',
+     why:'Yes — wind pushes the surface into waves.',hint:'Waves grow on stormy, blowy days. What is blowing?'},
+    {ph:2,q:'What makes the TIDES rise and fall twice a day?',opts:['The moon\'s pull','Wind','Submarines'],a:0,mis:'cause',
+     why:'Yes — the moon\'s gravity tugs the whole sea. You remembered!',hint:'This one comes from the sky — remember the moon lesson.'},
+    {ph:2,q:'What is the Gulf Stream?',opts:['A warm current — a river in the sea','A wave','A kind of fish'],a:0,mis:'still',
+     why:'Yes — a giant warm current that warms faraway shores.',hint:'It FLOWS along the coast like a river — but it is in the ocean.'},
+    {ph:2,q:'Under the waves, is the deep ocean water still?',opts:['No — currents keep it moving, like rivers in the sea','Yes — only the waves on top move'],a:0,mis:'still',
+     why:'Yes — the whole ocean stirs and flows, top to bottom.',hint:'Think of the Gulf Stream — is that just on top?'},
+    {ph:2,q:'Why is plankton called the ocean\'s GRASS?',opts:['Almost every ocean food web starts with it','It is grass that washed off lawns','It is just specks of dirt'],a:0,mis:'plankton',
+     why:'Yes — tiny drifting life that feeds the little fish that feed the big fish.',hint:'On land, grass feeds the food web. What plays that part at sea?'}
+  ];
+  let pq=[],ptries=0,pdone=0,pmiss={},pfirstCorrect=0,pseen=0,plast=-1,pbusy=false;
+  const FBV={profile:'fb_profile',zone:'fb_zone',empty:'fb_empty',cause:'fb_cause',still:'fb_still',plankton:'fb_plankton'};
+  const pfb=document.getElementById('pfb');
+  function startPrac(){ pq=PRAC.slice(); ptries=0;pdone=0;pmiss={};pfirstCorrect=0;pseen=0;plast=-1;pbusy=false;
+    document.querySelectorAll('.slot').forEach((s,i)=>{s.classList.remove('filled');s.textContent= i===0?'1 · shore': i===3?'4 · deepest':String(i+1);});
+    pfb.textContent=''; document.getElementById('pracNext').disabled=true; showP(); }
+  function showP(){
+    pbusy=false;
+    if(!pq.length){ document.getElementById('pPrompt').textContent='Surfacing — great dive, explorer!'; document.getElementById('pOpts').innerHTML='';
+      document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+      document.getElementById('pracNext').disabled=false; say('Surfacing! Great dive, explorer. Now show what you know.','prac_done'); return; }
+    const it=pq[0];
+    if(it.ph!==plast){ plast=it.ph; const ph=PHASE[it.ph];
+      document.getElementById('pTitle').childNodes[0].textContent=ph.title+' ';
+      document.getElementById('pLead').innerHTML=ph.lead;
+      document.getElementById('sayPrac').onclick=()=>say(ph.txt,ph.vid);
+      document.getElementById('track').style.display= it.ph===0? '' : 'none';
+      say(ph.txt,ph.vid);
+    }
+    document.getElementById('pPrompt').textContent=it.q;
+    document.getElementById('pCount').textContent=pdone+' of '+PRAC.length+' answered';
+    const o=document.getElementById('pOpts'); o.innerHTML='';
+    it.opts.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pAnswer(i,b); o.appendChild(b); });
+  }
+  function pAnswer(i,btn){
+    if(pbusy) return; pbusy=true;
+    const it=pq.shift(); ptries++; pseen++;
+    const ok=i===it.a;
+    document.querySelectorAll('#pOpts .opt').forEach((b,j)=>{ b.disabled=true; if(j===it.a&&ok) b.classList.add('right'); if(j===i&&!ok) b.classList.add('wrong'); });
+    if(ok){ pdone++; if(pseen<=PRAC.length) pfirstCorrect++;
+      pfb.className='fb good'; pfb.textContent='✓ '+it.why; say(it.why);
+      if(it.slot!==undefined){ const s=document.querySelector('.slot[data-slot="'+it.slot+'"]'); const p=STOPS[it.slot];
+        s.classList.add('filled'); s.style.background=p.c; s.style.color= it.slot>1?'#fff':'#3b2a1e'; s.textContent=p.n; }
+    } else {
+      pmiss[it.mis]=(pmiss[it.mis]||0)+1;
+      pfb.className='fb bad'; pfb.textContent='Not quite. '+it.hint; say('Not quite. '+it.hint,FBV[it.mis]);
+      if(it.retry) pq.unshift(it); else pq.push(it);
+    }
+    setTimeout(showP, ok?1500:2100);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'⛰️',k:'card_floor',q:'What is the deep ocean floor like?',
+     o:['It has shape — slopes, plains, ridges, and deep trenches','Flat sand, smooth all the way across','Nobody has ever mapped it'],a:0},
+    {id:2,pic:'🌑',k:'card_deepwater',q:'Deep down, ocean water is…',
+     o:['Cold, pitch dark — and still salty','Warm and sunny, like at the beach','Fresh, like river water'],a:0},
+    {id:3,pic:'🌊',k:'card_moves',q:'"Only the waves on top move — the rest of the ocean stands still." True?',
+     o:['No — currents flow through it like rivers in the sea','Yes — under the waves the water never moves'],a:0},
+    {id:4,pic:'🎣',k:'card_angler',q:'What lives in the pitch-dark midnight zone?',
+     o:['Specialists like the glowing anglerfish','Nothing — it is too dark and cold to live there','Coral reefs'],a:0},
+    {id:5,pic:'🌱',k:'card_plankton',q:'Why is plankton called the ocean\'s grass?',
+     o:['Almost every ocean food web starts with it','It is lawn grass that washed into the sea','It is not important to ocean animals'],a:0}
+  ];
+  const WHY={1:'Shelf, slope, abyssal plain, trench — the floor has shape like the land.',2:'Sunlight cannot reach the deep: midnight zone — icy, black, and salty.',3:'The Gulf Stream alone moves more water than all rivers on land together.',4:'The deep is alive — its animals bring their own light.',5:'Plankton feeds the small fish that feed the big fish — grass of the sea.'};
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('#opts .opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes! '+WHY[q.id]:'The answer is "'+q.o[q.a]+'". '+WHY[q.id];
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pfirstCorrect,tries:ptries,misses:pmiss}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You know the deep! 🌊' : 'Good try! Let\'s ride the dive once more.';
+    document.getElementById('guessTxt').textContent = guess==='mountains' ? 'At the start you guessed MOUNTAINS AND CANYONS down there — you were right! The floor has shape, like the land.' : guess==='flat' ? 'At the start you guessed FLAT SAND. Now you know: the floor has mountains, plains — even trenches deeper than Everest is tall!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Dive again' : '↺ Dive again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Go find one deep-sea creature in your research. 🐟'; say('Lesson done! Go find one deep-sea creature in your research.','done');
+    document.getElementById('finish').disabled=true;
+  };
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+})();
+</script>
+</body>
+</html>

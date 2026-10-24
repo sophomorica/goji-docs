@@ -1,0 +1,17 @@
+{
+  "id": "lesson.science.k2.plants.02",
+  "title": "Thank a plant",
+  "subject": "science",
+  "band": "k2",
+  "grade_hint": "2",
+  "objectives": ["obj.science.k2.plants.02"],
+  "va_sol": ["2.8"],
+  "duration_min": 12,
+  "anchor": { "book": null, "note": "anchor n/a — hand-off = plant-product hunt at home (find 5) with parent → journal" },
+  "stages": ["hook", "teach", "practice", "check"],
+  "check": { "quiz_id": "quiz.science.k2.plants.02", "n_items": 5, "pass": 4 },
+  "animations": ["anim.science.k2.plants.02"],
+  "reduced_motion": true,
+  "version": 1,
+  "entry": "index.html"
+}

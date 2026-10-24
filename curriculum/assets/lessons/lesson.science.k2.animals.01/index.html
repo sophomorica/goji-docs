@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The fox's parts have jobs — Goji</title>
+<script src="media/index.js"></script>
+<style>
+:root{
+  --cream:#fbf5ea; --cream2:#f3e9d6; --ink:#3b2a1e; --ink2:#6b5646;
+  --red:#b5382f; --red2:#8e2a23; --green:#3f7d4e; --green2:#2f6a3e;
+  --sky:#cfe6ee; --sky2:#9fc7d6; --gold:#e0a93b; --grey:#8d8d8d;
+  --radius:22px; --shadow:0 6px 0 rgba(59,42,30,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Avenir Next","Nunito","Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;user-select:none}
+header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0}
+.seal{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--red)}
+.seal i{width:30px;height:30px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:inset 0 0 0 5px var(--cream),inset 0 0 0 8px var(--red)}
+.dots{display:flex;gap:10px}
+.dots b{width:16px;height:16px;border-radius:50%;background:var(--cream2);border:3px solid var(--sky2);display:block;transition:.3s}
+.dots b.on{background:var(--red);border-color:var(--red)}
+.dots b.done{background:var(--green);border-color:var(--green)}
+main{width:100%;max-width:1100px;flex:1;padding:12px 22px 24px;display:flex;flex-direction:column}
+.stage{display:none;flex:1;flex-direction:column}
+.stage.active{display:flex;animation:fadein .4s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;margin:8px 0 4px;line-height:1.1}
+h2{font-size:32px;margin:6px 0;line-height:1.15}
+p.lead{font-size:26px;color:var(--ink2);margin:4px 0 14px;line-height:1.3}
+.say{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:0;background:var(--sky);
+  color:var(--ink);font-size:26px;cursor:pointer;box-shadow:var(--shadow);vertical-align:middle;margin-left:10px}
+.say:active{transform:translateY(3px);box-shadow:none}
+.btn{font:inherit;font-weight:800;font-size:26px;border:0;border-radius:var(--radius);padding:18px 34px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 6px 0 var(--red2);min-width:180px;min-height:72px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--red2)}
+.btn.ghost{background:var(--cream2);color:var(--ink);box-shadow:0 6px 0 #d9ccb4}
+.btn.ghost:active{box-shadow:0 2px 0 #d9ccb4}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:auto;padding-top:14px}
+/* ---- hook ---- */
+.choice2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:260px}
+.pick{border:5px solid transparent;border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:pointer;font-size:30px;font-weight:800;padding:14px}
+.pick svg{width:min(30vw,240px);height:auto}
+.pick.sel{border-color:var(--gold)}
+.pick img{width:min(30vw,240px);height:auto;border-radius:16px;display:block}
+.pick.media svg{display:none}
+/* ---- teach / scene ---- */
+.scene{position:relative;flex:1;min-height:330px;background:linear-gradient(var(--sky) 0 62%,#a9c98a 62% 100%);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.scene svg.actor{position:absolute}
+#fox{left:8%;bottom:8%;width:44%;transition:left 1.2s ease}
+#fox.run{left:44%}
+#fox.run .leg{animation:trot .3s infinite alternate}
+@keyframes trot{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+#crow{right:6%;bottom:34%;width:22%;opacity:0;transition:opacity .8s}
+#crow.show{opacity:1}
+#hand{right:8%;bottom:8%;width:20%;opacity:0;transition:opacity .8s}
+#hand.show{opacity:1}
+#mouse{left:58%;bottom:9%;width:9%;opacity:0;transition:opacity .6s}
+#mouse.show{opacity:1}
+.part{transition:filter .4s}
+.part.glow{filter:drop-shadow(0 0 10px #e0a93b) drop-shadow(0 0 4px #e0a93b)}
+.caption{position:absolute;z-index:2;left:0;right:0;top:0;padding:16px 20px;font-size:28px;font-weight:800;color:var(--ink);text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.badges{display:flex;gap:12px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+.badge{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--cream2);border-radius:40px;padding:8px 18px 8px 10px;
+  font-size:22px;font-weight:800;color:var(--grey);transition:.4s;transform:scale(.92)}
+.badge .em{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cream2);font-size:22px;overflow:hidden}
+.badge .em img{width:100%;height:100%;object-fit:cover}
+.badge.on{color:var(--ink);border-color:var(--green);transform:scale(1)}
+.badge.on .em{background:var(--green);color:#fff}
+.scene video,.scene img.still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.scene video.on,.scene img.still.on{opacity:1}
+.scene.media svg.actor{display:none}
+.scene.media .caption{background:linear-gradient(rgba(251,245,234,.95),rgba(251,245,234,0));padding-bottom:34px}
+/* ---- practice ---- */
+.pwrap{display:flex;flex-direction:column;gap:14px;flex:1}
+.pscene{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;align-items:center;justify-content:center;min-height:200px}
+.pscene svg{width:min(48vw,380px);height:auto}
+.pscene img{width:min(40vw,260px);border-radius:16px;display:block}
+.pscene .bigmoji{font-size:110px;line-height:1.1}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.partbtn{font:inherit;font-size:24px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:14px;cursor:pointer;box-shadow:var(--shadow);min-height:90px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.partbtn .ic{font-size:40px;line-height:1}
+.partbtn .ic img{width:56px;height:56px;object-fit:cover;border-radius:50%;display:block}
+.partbtn.right{border-color:var(--green);background:#eaf5ec}
+.partbtn.wrong{border-color:var(--red);background:#fbe9e7}
+.partbtn[disabled]{cursor:default}
+.fb{min-height:64px;font-size:24px;font-weight:700;text-align:center;margin-top:4px;color:var(--ink2)}
+.fb.good{color:var(--green)} .fb.bad{color:var(--red)}
+.counter{font-size:22px;color:var(--ink2);text-align:center}
+/* ---- check ---- */
+.q{font-size:30px;font-weight:800;margin:6px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.opt{font:inherit;font-size:26px;font-weight:800;background:#fff;border:5px solid var(--cream2);border-radius:var(--radius);padding:22px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:90px}
+.opt.right{border-color:var(--green);background:#eaf5ec}
+.opt.wrong{border-color:var(--red);background:#fbe9e7}
+.opt[disabled]{cursor:default}
+.bigpic{font-size:110px;text-align:center;line-height:1.1;margin:8px 0}
+.bigpic img{width:min(40vw,260px);border-radius:18px;box-shadow:var(--shadow)}
+.gate{text-align:center;font-size:28px;font-weight:800}
+.ring{width:160px;height:160px;border-radius:50%;margin:10px auto;display:grid;place-items:center;font-size:48px;font-weight:900;color:#fff;background:conic-gradient(var(--green) var(--pct),var(--cream2) 0)}
+.ring span{width:120px;height:120px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:720px){
+  h1{font-size:32px} h2{font-size:26px} p.lead{font-size:22px}
+  .scene{min-height:240px} .caption{font-size:22px}
+  .parts{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal"><i></i>Goji</div>
+  <div class="dots" aria-label="progress"><b data-s="0"></b><b data-s="1"></b><b data-s="2"></b><b data-s="3"></b></div>
+</header>
+<main>
+
+<!-- ===== STAGE 0: HOOK ===== -->
+<section class="stage active" id="s0">
+  <h1>The fox's parts have jobs <button class="say" data-say="A mouse squeaks far away under the grass. The fox hears it! Which part does that job? Tap your guess." data-voice="hook">🔊</button></h1>
+  <p class="lead">A mouse squeaks far away. The fox hears it! <b>Which part does that job?</b> Tap your guess.</p>
+  <div class="choice2">
+    <div class="pick" data-guess="ears">
+      <svg viewBox="0 0 200 140" aria-label="big ears"><use href="#foxhead"/></svg><img data-img="hook_ears" alt="" hidden>
+      <span>Big ears</span>
+    </div>
+    <div class="pick" data-guess="tail">
+      <svg viewBox="0 0 200 140" aria-label="bushy tail"><use href="#foxtailpic"/></svg><img data-img="hook_tail" alt="" hidden>
+      <span>Bushy tail</span>
+    </div>
+  </div>
+  <div class="row"><button class="btn" id="hookNext" disabled>Let's find out →</button></div>
+</section>
+
+<!-- ===== STAGE 1: TEACH ===== -->
+<section class="stage" id="s1">
+  <h2>Every part has a job <button class="say" id="sayTeach">🔊</button></h2>
+  <div class="scene" id="scene">
+    <div class="caption" id="cap"></div>
+    <div id="mediaLayer"></div>
+    <svg class="actor" id="fox" viewBox="0 0 260 150"><use href="#foxshape"/></svg>
+    <svg class="actor" id="crow" viewBox="0 0 160 140"><use href="#crowshape"/></svg>
+    <svg class="actor" id="mouse" viewBox="0 0 80 40"><ellipse cx="40" cy="26" rx="26" ry="12" fill="#9a8f83"/><circle cx="16" cy="22" r="9" fill="#9a8f83"/><circle cx="12" cy="15" r="5" fill="#b3a89b"/><circle cx="13" cy="22" r="1.8" fill="#2b2b2b"/><path d="M64 26 q14 -4 12 -14" stroke="#9a8f83" stroke-width="3" fill="none"/></svg>
+    <svg class="actor" id="hand" viewBox="0 0 120 140"><path d="M30 130 q-8 -40 0 -66 q3 -10 10 -8 q6 2 6 12 l1 22 M47 90 l-2 -44 q0 -11 8 -11 q8 0 8 11 l2 44 M63 90 l0 -50 q0 -11 8 -11 q8 0 8 11 l-1 50 M78 92 l3 -38 q1 -10 9 -9 q8 1 6 12 l-5 38 q14 32 -8 40 q-32 12 -43 -13z" fill="#e8b98d" stroke="#c99a6f" stroke-width="3" stroke-linejoin="round"/></svg>
+    <svg class="actor" id="acorn" style="right:10%;bottom:12%;width:8%;opacity:0" viewBox="0 0 60 60"><ellipse cx="30" cy="38" rx="16" ry="18" fill="#a9743c"/><path d="M12 30 q18 -12 36 0 l-2 -8 q-16 -10 -32 0z" fill="#6f4a24"/></svg>
+    </div>
+  <div class="badges">
+    <div class="badge" id="b0"><span class="em">👂</span>Ears hear</div>
+    <div class="badge" id="b1"><span class="em">🧣</span>Tail balances &amp; warms</div>
+    <div class="badge" id="b2"><span class="em">🦷</span>Teeth eat meat</div>
+    <div class="badge" id="b3"><span class="em">🐾</span>Legs run</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="replay">↺ Watch again</button>
+    <button class="btn" id="teachNext" disabled>Your turn →</button>
+  </div>
+</section>
+
+<!-- ===== STAGE 2: PRACTICE ===== -->
+<section class="stage" id="s2">
+  <h2>Which part does this job? <button class="say" data-say="Listen to the job. Then tap the part that does it." data-voice="prac_intro">🔊</button></h2>
+  <div class="pwrap">
+    <p class="lead" id="ptext" style="margin:0"></p>
+    <div class="pscene" id="pscene"></div>
+    <div class="parts" id="pbtns"></div>
+    <div class="fb" id="fb"></div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="row"><button class="btn" id="pracNext" disabled>Show what you know →</button></div>
+</section>
+
+<!-- ===== STAGE 3: CHECK ===== -->
+<section class="stage" id="s3">
+  <h2>Show what you know <span class="counter" id="qcount"></span></h2>
+  <div id="quiz">
+    <div class="bigpic" id="qpic"></div>
+    <div class="q"><span id="qtext"></span><button class="say" id="sayQ">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="qfb"></div>
+    <div class="row"><button class="btn" id="qNext" disabled>Next →</button></div>
+  </div>
+  <div id="result" style="display:none">
+    <div class="ring" id="ring"><span id="ringTxt"></span></div>
+    <div class="gate" id="gateTxt"></div>
+    <p class="lead" id="guessTxt" style="text-align:center"></p>
+    <div class="row">
+      <button class="btn ghost" id="againTeach">↺ Watch the jobs again</button>
+      <button class="btn" id="finish">Done ✓</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="foxshape">
+      <!-- bushy tail -->
+      <g class="part" id="pt_tail"><path d="M185 88 q46 -6 58 -40 q10 26 -10 48 q-20 22 -50 12z" fill="#d4763b"/><path d="M225 62 q8 16 -6 30" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" opacity=".85"/></g>
+      <!-- body -->
+      <ellipse cx="130" cy="92" rx="62" ry="28" fill="#d4763b"/>
+      <!-- legs -->
+      <g class="part" id="pt_legs">
+        <g class="leg" style="transform-origin:88px 108px"><rect x="82" y="104" width="13" height="34" rx="6" fill="#b35f2c"/></g>
+        <g class="leg" style="transform-origin:108px 110px;animation-delay:.15s"><rect x="102" y="106" width="13" height="32" rx="6" fill="#8f4a20"/></g>
+        <g class="leg" style="transform-origin:152px 110px;animation-delay:.15s"><rect x="146" y="106" width="13" height="32" rx="6" fill="#8f4a20"/></g>
+        <g class="leg" style="transform-origin:172px 108px"><rect x="166" y="104" width="13" height="34" rx="6" fill="#b35f2c"/></g>
+      </g>
+      <!-- head -->
+      <g class="part" id="pt_head">
+        <ellipse cx="62" cy="66" rx="30" ry="24" fill="#dd8248"/>
+        <!-- muzzle + teeth -->
+        <g class="part" id="pt_teeth"><path d="M38 72 q-14 4 -12 12 q10 6 22 -2z" fill="#fff"/><path d="M30 80 l4 6 l4 -6" fill="#fff" stroke="#c9c9c9" stroke-width="1"/></g>
+        <circle cx="27" cy="78" r="4" fill="#2b2b2b"/>
+        <circle cx="52" cy="62" r="4" fill="#2b2b2b"/>
+        <!-- big ears -->
+        <g class="part" id="pt_ears"><path d="M42 50 l-8 -30 l22 18z" fill="#d4763b"/><path d="M44 47 l-5 -19 l14 12z" fill="#f6d9c0"/><path d="M72 46 l10 -30 l12 24z" fill="#d4763b"/><path d="M74 43 l7 -19 l8 16z" fill="#f6d9c0"/></g>
+        <!-- white chest -->
+        <path d="M78 82 q10 14 26 12 q-6 -20 -26 -12z" fill="#fff"/>
+      </g>
+    </g>
+    <g id="foxhead"><g transform="translate(45,25) scale(1.6)"><ellipse cx="62" cy="46" rx="30" ry="24" fill="#dd8248"/><path d="M38 52 q-14 4 -12 12 q10 6 22 -2z" fill="#fff"/><circle cx="27" cy="58" r="4" fill="#2b2b2b"/><circle cx="52" cy="42" r="4" fill="#2b2b2b"/><path d="M42 30 l-8 -30 l22 18z" fill="#d4763b"/><path d="M44 27 l-5 -19 l14 12z" fill="#f6d9c0"/><path d="M72 26 l10 -30 l12 24z" fill="#d4763b"/><path d="M74 23 l7 -19 l8 16z" fill="#f6d9c0"/></g></g>
+    <g id="foxtailpic"><g transform="translate(10,20) scale(1.5)"><path d="M20 60 q40 -30 80 -20 q20 6 18 24 q-2 20 -30 22 q-40 4 -68 -26z" fill="#d4763b"/><path d="M100 46 q16 8 12 28" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round" opacity=".9"/></g></g>
+    <g id="crowshape">
+      <!-- tail -->
+      <path d="M118 80 l34 22 l-28 4z" fill="#23272e"/>
+      <!-- body -->
+      <ellipse cx="85" cy="78" rx="42" ry="28" fill="#2e343d"/>
+      <!-- wing -->
+      <g class="part" id="pt_wings"><path d="M80 62 q40 -10 52 12 q-24 18 -52 6z" fill="#1d2127"/></g>
+      <!-- head -->
+      <circle cx="46" cy="52" r="20" fill="#2e343d"/>
+      <circle cx="40" cy="48" r="3.5" fill="#e8e8e8"/><circle cx="40" cy="48" r="1.8" fill="#111"/>
+      <!-- beak -->
+      <g class="part" id="pt_beak"><path d="M28 52 l-22 6 l22 8z" fill="#e0a93b"/></g>
+      <!-- claws on branch -->
+      <g class="part" id="pt_claws"><path d="M70 102 l-6 12 m6 -12 l2 13 m-2 -13 l8 11" stroke="#e0a93b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M96 104 l-6 12 m6 -12 l2 13 m-2 -13 l8 11" stroke="#e0a93b" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <path d="M40 116 l100 -4" stroke="#7a5a35" stroke-width="8" stroke-linecap="round"/>
+    </g>
+    <g id="fishshape"><ellipse cx="70" cy="50" rx="45" ry="22" fill="#7fa8c9"/><path d="M112 50 l28 -18 l-6 18 l6 18z" fill="#5d87a8"/><circle cx="38" cy="44" r="4" fill="#16222b"/><path d="M55 34 a14 14 0 0 1 0 32 M75 32 a16 16 0 0 1 0 36" stroke="#5d87a8" stroke-width="3" fill="none"/></g>
+    <g id="rabbitshape"><ellipse cx="70" cy="80" rx="40" ry="26" fill="#bfae9c"/><circle cx="34" cy="60" r="18" fill="#cbbcab"/><path d="M28 44 q-8 -28 4 -34 q10 4 6 34z" fill="#cbbcab"/><path d="M42 42 q2 -30 14 -32 q8 8 -4 34z" fill="#cbbcab"/><circle cx="26" cy="56" r="3" fill="#2b2b2b"/><circle cx="104" cy="72" r="9" fill="#fff"/></g>
+    <g id="duckshape"><ellipse cx="72" cy="70" rx="42" ry="24" fill="#e6dfc8"/><circle cx="34" cy="44" r="16" fill="#eae4d0"/><path d="M20 46 l-16 4 l16 6z" fill="#e0a93b"/><circle cx="30" cy="40" r="3" fill="#2b2b2b"/><path d="M66 56 q30 -8 40 8 q-18 14 -40 6z" fill="#d6cdb2"/></g>
+    <g id="snakeshape"><path d="M14 74 q26 -26 52 0 q26 26 52 0" stroke="#7d9c5a" stroke-width="20" fill="none" stroke-linecap="round"/><circle cx="118" cy="70" r="13" fill="#7d9c5a"/><circle cx="123" cy="66" r="2.5" fill="#16222b"/><path d="M131 70 l10 -3 m-10 3 l10 3" stroke="#b5382f" stroke-width="2.5" fill="none"/></g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- player bridge ---------- */
+  const LESSON={id:'lesson.science.k2.animals.01',version:1,quiz:'quiz.science.k2.animals.01',pass:4};
+  const t0=Date.now();
+  let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function post(type,payload){ try{ if(window.parent!==window) window.parent.postMessage({type,lesson:LESSON.id,...payload},'*'); }catch(e){} }
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='player.config'){ if(m.reduced_motion) reduced=true; } });
+  post('lesson.ready',{id:LESSON.id,version:LESSON.version});
+
+  /* ---------- speech ---------- */
+  let say=function(txt){ try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=.92; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} };
+  document.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>say(b.dataset.say,b.dataset.voice)));
+
+  /* ---------- generated media ---------- */
+  const M=window.GOJI_MEDIA||{img:{},clip:{},voice:{}};
+  const img=id=>M.img&&M.img[id]; const clip=id=>M.clip&&M.clip[id]; const vo=id=>M.voice&&M.voice[id];
+  [['b0','badge_ears'],['b1','badge_tail'],['b2','badge_teeth'],['b3','badge_legs']].forEach(([b,k])=>{ if(img(k)) document.querySelector('#'+b+' .em').innerHTML='<img src="'+img(k)+'" alt="">'; });
+  document.querySelectorAll('img[data-img]').forEach(el=>{ const src=img(el.dataset.img); if(src){ el.src=src; el.hidden=false; el.closest('.pick')?.classList.add('media'); } else el.remove(); });
+  let audio=null;
+  const _say=say;
+  say=function(txt,id){ if(audio){audio.pause();audio=null;} const f=id&&vo(id); if(f){ try{ audio=new Audio(f); audio.play().catch(()=>_say(txt)); return; }catch(e){} } _say(txt); };
+  const layer=document.getElementById('mediaLayer'), sceneEl=document.getElementById('scene');
+  function showBeat(id){
+    if(!(clip(id)||img(id))) { sceneEl.classList.remove('media'); layer.innerHTML=''; return false; }
+    sceneEl.classList.add('media'); layer.innerHTML='';
+    let el;
+    if(clip(id) && !reduced){ el=document.createElement('video'); el.src=clip(id); el.muted=true; el.loop=true; el.playsInline=true; el.autoplay=true; if(img(id)) el.poster=img(id); el.play&&el.play().catch(()=>{}); }
+    else { el=document.createElement('img'); el.className='still'; el.src=img(id)||''; }
+    layer.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); return true;
+  }
+
+  /* ---------- stages ---------- */
+  const stages=['hook','teach','practice','check'];
+  let cur=0;
+  function go(n){
+    document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.dots b').forEach((d,i)=>{d.classList.toggle('on',i===n);d.classList.toggle('done',i<n);});
+    cur=n; post('lesson.stage',{stage:stages[n]}); window.scrollTo(0,0);
+    if(n===1) playTeach(); if(n===2) startPractice(); if(n===3) startQuiz();
+  }
+
+  /* ---------- stage 0: hook ---------- */
+  let guess=null;
+  document.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+    guess=p.dataset.guess; document.getElementById('hookNext').disabled=false;
+  }));
+  document.getElementById('hookNext').onclick=()=>go(1);
+
+  /* ---------- stage 1: teach ---------- */
+  const fox=document.getElementById('fox'),crow=document.getElementById('crow'),mouse=document.getElementById('mouse'),
+        hand=document.getElementById('hand'),acorn=document.getElementById('acorn'),cap=document.getElementById('cap');
+  const badges=[0,1,2,3].map(i=>document.getElementById('b'+i));
+  let timers=[];
+  function later(fn,ms){ timers.push(setTimeout(fn, reduced? Math.min(ms,400*timers.length+200) : ms)); }
+  function glow(id,on){ const el=fox.ownerDocument.getElementById(id); if(el) el.classList.toggle('glow',on); }
+  function clearGlow(){ ['pt_ears','pt_tail','pt_teeth','pt_legs','pt_beak','pt_wings','pt_claws'].forEach(p=>glow(p,false)); }
+  function resetScene(){
+    timers.forEach(clearTimeout); timers=[];
+    fox.className='actor'; fox.style.display=''; crow.className='actor'; mouse.className='actor'; hand.className='actor'; acorn.style.opacity=0;
+    clearGlow(); badges.forEach(b=>b.className='badge'); cap.textContent=''; layer.innerHTML=''; sceneEl.classList.remove('media');
+    document.getElementById('teachNext').disabled=true;
+  }
+  const teachScript=[
+    "The fox's big EARS have a job: they catch tiny sounds, like a mouse squeak.",
+    "The bushy TAIL has a job: it balances the fox when she turns fast, and wraps her warm at night.",
+    "The sharp TEETH have a job: eating meat.",
+    "The strong LEGS have a job: running fast.",
+    "The crow has different parts. A BEAK to pick up food. WINGS to fly. CLAWS to grab a branch. Different parts, same needs: food, water, and air.",
+    "You have parts with jobs too! Hands that grab, and different kinds of teeth. No animal picks its parts. Every animal is born with parts that fit its life."
+  ];
+  document.getElementById('sayTeach').onclick=()=>say(teachScript.join(' '));
+  function playTeach(){
+    resetScene();
+    // beat 1: ears
+    cap.textContent='Big EARS — the job: hear tiny sounds.'; say(teachScript[0],'t_ears'); showBeat('teach_ears');
+    mouse.classList.add('show'); glow('pt_ears',true);
+    later(()=>{ badges[0].classList.add('on'); },2200);
+    // beat 2: tail
+    later(()=>{ clearGlow(); mouse.className='actor'; cap.textContent='Bushy TAIL — the job: balance, and a warm wrap.'; say(teachScript[1],'t_tail'); showBeat('teach_tail'); glow('pt_tail',true); },4200);
+    later(()=>{ badges[1].classList.add('on'); },6600);
+    // beat 3: teeth
+    later(()=>{ clearGlow(); cap.textContent='Sharp TEETH — the job: eating meat.'; say(teachScript[2],'t_teeth'); showBeat('teach_teeth'); glow('pt_teeth',true); },8400);
+    later(()=>{ badges[2].classList.add('on'); },10400);
+    // beat 4: legs
+    later(()=>{ clearGlow(); cap.textContent='Strong LEGS — the job: run fast!'; say(teachScript[3],'t_legs'); showBeat('teach_legs'); glow('pt_legs',true); fox.classList.add('run'); },12000);
+    later(()=>{ badges[3].classList.add('on'); fox.classList.remove('run'); },14400);
+    // beat 5: the crow
+    later(()=>{ clearGlow(); cap.textContent='The CROW: beak, wings, claws — different parts, same needs.'; say(teachScript[4],'t_crow'); showBeat('teach_crow'); crow.classList.add('show'); glow('pt_beak',true); glow('pt_wings',true); glow('pt_claws',true); },16200);
+    // beat 6: people too
+    later(()=>{ clearGlow(); cap.textContent='You too! Hands grab. Nobody picks their parts — you are born with them.'; say(teachScript[5],'t_people'); showBeat('teach_people'); hand.classList.add('show'); acorn.style.opacity=1; },21400);
+    later(()=>{ document.getElementById('teachNext').disabled=false; },24800);
+  }
+  document.getElementById('replay').onclick=playTeach;
+  document.getElementById('teachNext').onclick=()=>{ timers.forEach(clearTimeout); go(2); };
+
+  /* ---------- stage 2: practice ---------- */
+  const FOXPARTS=[['ears','👂','Ears'],['tail','🧣','Tail'],['teeth','🦷','Teeth'],['legs','🐾','Legs']];
+  const CROWPARTS=[['beak','🔶','Beak'],['wings','🪽','Wings'],['claws','🪝','Claws']];
+  const COVERS=[['fur','🦊','Fur'],['feathers','🪶','Feathers'],['scales','🐟','Scales']];
+  // fixed misconception feedback for the part the child tapped (names its REAL job)
+  const PARTFB={
+    ears:'The ears’ job is hearing tiny sounds. Which part fits THIS job?',
+    tail:'The tail’s job is balance and keeping warm. Which part fits THIS job?',
+    teeth:'The teeth’s job is eating meat. Which part fits THIS job?',
+    legs:'The legs’ job is running. Which part fits THIS job?',
+    beak:'The beak’s job is picking up food. Which part fits THIS job?',
+    wings:'The wings’ job is flying. Which part fits THIS job?',
+    claws:'The claws’ job is grabbing the branch. Which part fits THIS job?',
+    fur:'Fur is soft hair, like the fox’s coat. Look again — what covers this animal?',
+    feathers:'Feathers belong to birds. Look again — what covers this animal?',
+    scales:'Scales are smooth little plates, like a fish. Look again — what covers this animal?'
+  };
+  const PITEMS=[
+    {id:'p1',kind:'fox',shape:'foxshape',k:'card_fox',q:'Tap the part that hears the mouse squeak.',a:'ears',why:'Big ears catch tiny sounds far away.'},
+    {id:'p2',kind:'fox',shape:'foxshape',k:'card_fox',q:'Tap the part that keeps the fox warm at night.',a:'tail',why:'The bushy tail wraps around her like a blanket — and balances her when she runs.'},
+    {id:'p3',kind:'fox',shape:'foxshape',k:'card_fox',q:'Tap the part whose job is eating meat.',a:'teeth',why:'Sharp teeth are made for eating meat.'},
+    {id:'p4',kind:'fox',shape:'foxshape',k:'card_fox',q:'Tap the part that makes the fox fast.',a:'legs',why:'Strong legs let the fox run and pounce.'},
+    {id:'p5',kind:'crow',shape:'crowshape',k:'card_crow',q:'Now the crow! Tap the part that grabs the branch.',a:'claws',why:'Claws curl around the branch and hold on tight.'},
+    {id:'p6',kind:'crow',shape:'crowshape',k:'card_crow',q:'Tap the part the crow uses to pick up food.',a:'beak',why:'The beak is the crow’s food-picker — it has no hands!'},
+    {id:'c1',kind:'cover',shape:'rabbitshape',k:'card_rabbit',q:'The rabbit — what covers its body?',a:'fur',why:'Soft fur covers the rabbit and keeps it warm.'},
+    {id:'c2',kind:'cover',shape:'duckshape',k:'card_duck',q:'The duck — what covers its body?',a:'feathers',why:'Feathers cover the duck — birds are the feather group.'},
+    {id:'c3',kind:'cover',shape:'fishshape',k:'card_fish',q:'The fish — what covers its body?',a:'scales',why:'Smooth scales cover the fish.'},
+    {id:'c4',kind:'cover',shape:'snakeshape',k:'card_snake',q:'The snake — what covers its body?',a:'scales',why:'The snake has scales too — no fur, no feathers.'}
+  ];
+  let queue=[],done=0,tries=0,misses={},pass1correct=0,pass1=true,seen=0,plock=false;
+  const ptext=document.getElementById('ptext'),pscene=document.getElementById('pscene'),pbtns=document.getElementById('pbtns'),fb=document.getElementById('fb');
+  function startPractice(){ queue=PITEMS.slice(); done=0;tries=0;misses={};pass1correct=0;pass1=true;seen=0;plock=false; fb.textContent=''; fb.className='fb'; showP(); }
+  function showP(){
+    plock=false;
+    if(!queue.length){ ptext.textContent='All jobs matched!'; pscene.innerHTML='<div class="bigmoji">🦊🐦</div>'; pbtns.innerHTML='';
+      document.getElementById('counter').textContent='All done! 🎉'; document.getElementById('pracNext').disabled=false;
+      say('All done! Every part matched its job. Now show what you know.','prac_done'); return; }
+    const it=queue[0];
+    ptext.innerHTML=it.q;
+    if(img(it.k)) pscene.innerHTML='<img src="'+img(it.k)+'" alt="">';
+    else pscene.innerHTML='<svg viewBox="0 0 260 150"><use href="#'+it.shape+'"/></svg>';
+    const opts=it.kind==='fox'?FOXPARTS:it.kind==='crow'?CROWPARTS:COVERS;
+    pbtns.innerHTML='';
+    opts.forEach(([key,ic,label])=>{
+      const b=document.createElement('button'); b.className='partbtn';
+      const bk='badge_'+key;
+      b.innerHTML='<span class="ic">'+(img(bk)?'<img src="'+img(bk)+'" alt="">':ic)+'</span>'+label;
+      b.onclick=()=>answer(key,b); pbtns.appendChild(b);
+    });
+    document.getElementById('counter').textContent=done+' of '+PITEMS.length+' matched';
+    say(it.q);
+  }
+  function answer(key,btn){
+    if(plock||!queue.length) return; plock=true;
+    const it=queue.shift(); tries++; seen++;
+    if(seen>PITEMS.length) pass1=false;
+    const ok=key===it.a;
+    document.querySelectorAll('.partbtn').forEach(b=>b.disabled=true);
+    if(ok){ done++; if(pass1) pass1correct++;
+      btn.classList.add('right');
+      fb.className='fb good'; fb.textContent='✓ '+it.why; say('Yes! '+it.why,'why_'+it.id);
+    } else {
+      misses[key]=(misses[key]||0)+1;
+      btn.classList.add('wrong');
+      const hint=PARTFB[key]||'Think about the job again.';
+      fb.className='fb bad'; fb.textContent='Not quite. '+hint; say('Not quite. '+hint,'fb_'+key);
+      queue.push(it);
+    }
+    setTimeout(showP, ok?1500:2000);
+  }
+  document.getElementById('pracNext').onclick=()=>go(3);
+
+  /* ---------- stage 3: check ---------- */
+  const QUIZ=[
+    {id:1,pic:'🦊',k:'card_fox_head',q:'Which part does the hearing job for the fox?',o:['Big ears','Bushy tail','It just chooses to hear'],a:0,mis:['','job-swap','chose-parts']},
+    {id:2,pic:'🦷',k:'card_fox_teeth',q:'Why does the fox have sharp teeth?',o:['It was born with them — they fit eating meat','It grew them on purpose because it wanted them','To chew grass like a cow'],a:0,mis:['','chose-parts','part-job-mismatch']},
+    {id:3,pic:'🐦',k:'card_fox_crow',q:'The fox and the crow BOTH need…',o:['Food, water, and air','Toys and cooked dinner','Nothing — animals need nothing'],a:0,mis:['','people-needs','needs-blind']},
+    {id:4,pic:'🪶',k:'card_crow',q:'What covers a bird’s body?',o:['Feathers','Fur','Scales'],a:0,mis:['','covering-swap','covering-swap']},
+    {id:5,pic:'🧀',k:'card_fable',q:'In the fable, the crow held the cheese with its…',o:['Beak','Hands','Ears'],a:0,mis:['','animals-like-people','job-swap']}
+  ];
+  let qi=0,score=0,qlog=[];
+  function startQuiz(){ qi=0;score=0;qlog=[]; document.getElementById('quiz').style.display=''; document.getElementById('result').style.display='none'; showQ(); }
+  function showQ(){
+    const q=QUIZ[qi]; document.getElementById('qcount').textContent=(qi+1)+' / '+QUIZ.length;
+    const qp=document.getElementById('qpic'); if(img(q.k)) qp.innerHTML='<img src="'+img(q.k)+'" alt="">'; else qp.textContent=q.pic;
+    document.getElementById('qtext').textContent=q.q; document.getElementById('qfb').textContent='';
+    document.getElementById('qNext').disabled=true; document.getElementById('sayQ').onclick=()=>say(q.q+' '+q.o.join(', or '),'q'+q.id);
+    const o=document.getElementById('opts'); o.innerHTML='';
+    q.o.forEach((t,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=t; b.onclick=()=>pick(i,b); o.appendChild(b); });
+    say(q.q,'q'+q.id);
+  }
+  function pick(i,btn){
+    const q=QUIZ[qi]; const ok=i===q.a; if(ok) score++;
+    qlog.push({id:q.id,correct:ok,chosen:q.o[i]});
+    document.querySelectorAll('.opt').forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add('right'); else if(j===i&&!ok) b.classList.add('wrong'); });
+    const f=document.getElementById('qfb'); f.className='fb '+(ok?'good':'bad'); f.textContent= ok?'✓ Yes!':'The answer is "'+q.o[q.a]+'".';
+    document.getElementById('qNext').disabled=false;
+  }
+  document.getElementById('qNext').onclick=()=>{ qi++; if(qi<QUIZ.length) showQ(); else finishQuiz(); };
+  function finishQuiz(){
+    post('lesson.check',{quiz_id:LESSON.quiz,score,total:QUIZ.length,items:qlog,practice:{first_pass_correct:pass1correct,tries,misses}});
+    document.getElementById('quiz').style.display='none'; document.getElementById('result').style.display='';
+    const pct=Math.round(score/QUIZ.length*100); const ring=document.getElementById('ring'); ring.style.setProperty('--pct',pct+'%'); document.getElementById('ringTxt').textContent=score+'/'+QUIZ.length;
+    const passed=score>=LESSON.pass;
+    document.getElementById('gateTxt').textContent= passed? 'You can match parts to jobs! 🦊' : 'Good try! Let\'s watch the jobs once more.';
+    document.getElementById('guessTxt').textContent = guess==='ears' ? 'At the start you guessed the EARS — right! Big ears catch tiny sounds.' : guess==='tail' ? 'At the start you guessed the TAIL. Now you know: the tail balances and warms — the EARS do the hearing!' : '';
+    say(document.getElementById('gateTxt').textContent+' '+document.getElementById('guessTxt').textContent, passed?'pass':'retry');
+    document.getElementById('finish').style.display = passed? '' : 'none';
+    document.getElementById('againTeach').textContent = passed? '↺ Watch the jobs again' : '↺ Watch again, then try once more';
+  }
+  document.getElementById('againTeach').onclick=()=>go(1);
+  /* ---------- test hook (validator contract; no runtime effect) ---------- */
+  window.GOJI_TEST={go,quiz:()=>QUIZ,autoCheck:function(pass=true){go(3);return new Promise(res=>{const step=()=>{if(document.getElementById('result').style.display!=='none'){res({score});return;}const q=QUIZ[qi];const want=pass?q.a:((q.a+1)%q.o.length);document.querySelectorAll('#opts .opt')[want].click();setTimeout(()=>{document.getElementById('qNext').click();setTimeout(step,50);},40);};setTimeout(step,150);})}};
+  document.getElementById('finish').onclick=()=>{
+    post('lesson.complete',{quiz_id:LESSON.quiz,score,total:QUIZ.length,duration_s:Math.round((Date.now()-t0)/1000)});
+    document.getElementById('gateTxt').textContent='Lesson done! Now go find one job a real fox part does. 🦊'; say('Lesson done! Now go look up the fox, and find one job a fox part does.','done');
+    document.getElementById('finish').disabled=true;
+  };
+})();
+</script>
+</body>
+</html>

@@ -63,7 +63,7 @@ The default integrated flow a School Day assigns — each step feeds the next:
 
 | Band | Typical daily chain (25–45 min) |
 |------|--------------------------------|
-| K–2 | flashcards (anchor phonics/HF deck) → reader (fable, aloud) → journal (3-sentence retell) → parent quiz (4–5 items) → *spice:* research animal fact |
+| K–2 | **Lessons** (phonics package, luna voice) → flashcards (same Aesop deck) → typing (same words) → reader (fable, aloud) → journal (sounded-out sentence) → *spice:* Kiwix animal fact → parent heat map on `obj.reading.k2.phonics.*` |
 | 3–5 | reader (chapter) → journal (umbrella / claim+proof) → parent quiz → research (anchor topic) → notebooks (2 facts) → flashcards (vocab deck) |
 | 6–8 | reader (chapters) → notebooks (running summary / theme log) → parent quiz → research (era/geography unit §4) → journal (analysis paragraph) |
 | 9–12 | reader (close-read passage) → notebooks (annotation/argument map) → writing (essay-form response) → research (primary-source context) → parent review |
