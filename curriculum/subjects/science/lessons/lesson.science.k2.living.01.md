@@ -7,7 +7,7 @@
 | **Band** | K–2 (grade hint K) |
 | **Duration (target)** | 12 min on Goji + 5 min research hand-off |
 | **Objectives** | `obj.science.k2.living.01` |
-| **Status** | ready — package authored (`assets/lessons/lesson.science.k2.living.01/`); **blocked for kid playback** on the lesson player (`TOOLS.md` §6A). Bridge today: parent quiz + parent walks the HTML on any browser. |
+| **Status** | ready — package playable in a browser (`assets/lessons/lesson.science.k2.living.01/`): hook, teach, guided sort, independent sort, check. **Blocked for kid playback** on the lesson player (`TOOLS.md` §6A). Bridge today: a parent walks the HTML, then the parent quiz. |
 
 **Anchor:** `aesop-fables` — the wolf (*The Boy Who Cried Wolf* / *The Wolf and the Lamb* week). The package's specimen is the wolf; retake variants swap in the current fable animal.
 

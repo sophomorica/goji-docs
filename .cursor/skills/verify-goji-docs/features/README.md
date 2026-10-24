@@ -43,3 +43,5 @@ Keep implementation details out of the map. Name only user paths, stable handles
 - [Studio zoom](./studio-zoom.md) covers zoom from the slot title or the zoom button, then close.
 - [Child detail tabs](./studio-child-tabs.md) covers Today, Standing, and Activity inside the Child detail phone.
 - [Living lesson](./lesson-living.md) covers the hook guess and the move into the teach stage.
+- [Living practice](./lesson-practice.md) covers the guided sort that follows teach.
+- [Studio walk](./studio-walk.md) covers Show a family, from the glance through the lesson.
