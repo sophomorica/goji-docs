@@ -42,6 +42,8 @@ git clone git@github.com:sophomorica/goji-cloud.git goji_cloud
 git clone git@github.com:sophomorica/goji-learner-app.git goji_learner_app
 ```
 
+**Go-to-market v1 (device-only + OTA): [`GTM_PLAN.md`](./GTM_PLAN.md) is the SoT for v1 scope, locked decisions D1–D16 and milestones.** Read it before any OTA, image, or ship work. It overrides older scope notes in `PARENT_APP_PRODUCT.md` and `TODO.md` for v1.
+
 **Parent-folder coordination:** product decisions that span computer + app + cloud land here (`PARENT_APP_PRODUCT.md`, `TODO.md`, this file). Agents should read those first, then work in the child repos in parallel without drifting.
 
 **Curriculum / pedagogy planning (K–12, teaching animations, quizzes, tools map):**
