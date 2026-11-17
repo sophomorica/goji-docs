@@ -92,9 +92,8 @@ installs updates, so it stays secure. You can turn it back on the same way.
 ### How long we keep health reports
 
 - We keep the record of each update result for up to 365 days, then delete it.
-- We keep one current record per Goji (its latest versions and status) for
-  [as long as the Goji keeps reporting, and delete it 365 days after its last
-  report].
+- We keep one current record per Goji (its latest versions and status) while
+  it keeps reporting, and delete it 365 days after its last report.
 - Only Narrow Road Studios can read these records. We do not sell or share
   them, and we do not combine them with order information.
 
@@ -132,7 +131,8 @@ someone else.
 
 The random install number is kept through an erase so that we can still tell
 updates are working on that device. To remove the health records we hold for
-your Goji, email us [how the owner identifies their device].
+your Goji, email us its install number. You can find it on the Goji under
+Settings → Software update → Device health report.
 
 ### Your choices and rights
 
@@ -173,29 +173,31 @@ Open items, most important first.
    personal information is collected from children), state privacy laws, and
    whether the Virginia sales-tax and returns terms belong in a separate terms
    of sale.
-2. **Retention has to be made true.** The policy promises deletion after 365
-   days. Today the purge of `ota_device_events` is a manual SQL statement in
-   `goji-cloud/HUMAN_CHECKLIST.md`, not a scheduled job, and nothing deletes
-   an `ota_devices` row at all. Either schedule both or change the wording.
-3. **Decide the `ota_devices` retention.** The bracketed text proposes
-   deleting a device's row 365 days after its last report. The contract does
-   not say; it needs a line in `OTA_CONTRACT.md` §8.5.
-4. **Deleting one device's records on request.** The policy offers it, but an
-   owner has no way to tell us their install number: it is not shown anywhere
-   on the Goji. Showing it under Software update would close that. Until then
-   the honest wording is that turning the report off stops new records and
-   existing ones expire after 365 days.
-5. **The hardware fields are in.** `GTM_PLAN.md` still lists the extra
+2. **Retention is built but not live.** `goji-cloud` now has a migration
+   (`20261117230000_ota_retention.sql`) that makes the database delete update
+   records after 365 days and a device's record 365 days after its last
+   report, driven by incoming heartbeats. The policy's retention section is
+   true only once that migration is pushed to the live project
+   (`HUMAN_CHECKLIST.md`). If no Goji reports for a stretch, nothing is purged
+   until the next report arrives.
+3. **Deleting one device's records on request.** The Goji now shows its
+   install number under Software update, so an owner can quote it. Doing the
+   deletion is still a manual step for whoever answers the email:
+   `delete from ota_device_events where install_id = …; delete from ota_devices
+   where install_id = …;` in the SQL editor. A Goji that is still reporting
+   will create a fresh record at its next report unless the owner also turns
+   the report off; the reply to the owner should say so.
+4. **The hardware fields are in.** `GTM_PLAN.md` still lists the extra
    heartbeat fields (hardware model, memory, uptime, internal versions) as an
    open question. The contract already records Patrick's answer (2026-10-24)
    that they are sent and must be named here, and this draft names them. The
    "Open" line in `GTM_PLAN.md` §1 can be closed.
-6. **Hosting provider logs.** The update server and health-report function run
+5. **Hosting provider logs.** The update server and health-report function run
    on Supabase. Confirm what connection logs Supabase keeps and for how long,
    and whether the policy should name it.
-7. **Fill the brackets:** effective date, postal address, support email,
+6. **Fill the brackets:** effective date, postal address, support email,
    policy URL, response time.
-8. **Printed one-pager.** `TODO.md` has "Printed privacy one-pager for the
+7. **Printed one-pager.** `TODO.md` has "Printed privacy one-pager for the
    box"; its linked draft describes the paired parent-app product, which is
    not v1. "The short version" above is the right basis for the card.
 
@@ -215,4 +217,6 @@ So a reviewer can check the policy against the product.
 | Wi-Fi password encrypted | `backend/utils/crypto.py` (per-device key, never shared between units) |
 | PIN not readable | `backend/utils/pin.py` (PBKDF2 hash) |
 | Log file has no child data | `backend/routes/support.py` reads only the log directory, updater status and service journals, never the database or data directory |
+| Records deleted after 365 days | `goji-cloud` `ota_purge_expired()` and the trigger on `ota_devices` (`OTA_CONTRACT.md` §8.5); not live until the migration is pushed |
+| Install number shown to the owner | `GET /api/updates/status` (loopback-only) and Settings → Software update |
 | Erase removes everything | `updater/goji_updater/factoryreset.py` (data, logs, backups, saved Wi-Fi, browser storage); install ID kept per contract §8.2 |
