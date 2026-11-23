@@ -1,0 +1,322 @@
+<title>goji landing page</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  /* Layout: one paper column, 68rem wide. The stamp is the only loud thing;
+     everything else is ink on paper. Tokens are the product's own
+     (kodi-computer PRODUCT_DESIGN.md), so the page and the kiosk match. */
+  :root {
+    --paper: #EFE8DC;
+    --card: #FFFDF9;
+    --cream: #FBF6EE;
+    --ink: #2A211E;
+    --ink-soft: #4A4037;
+    --line: #D8CCB8;
+    --seal: #C6392F;
+    --seal-deep: #A32D25;
+    --leaf: #5A7C4C;
+    --on-seal: #FBF6EE;
+    --draft: #8A5A00;
+    --draft-bg: #FBEFD0;
+    --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --radius-control: 0.75rem;
+    --radius-card: 1rem;
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1714; --card: #2A211E; --cream: #FBF6EE; --ink: #F3EBDD;
+      --ink-soft: #CFC3B1; --line: #4A4037; --seal: #D6453A; --seal-deep: #E2543F;
+      --leaf: #7A9B6C; --on-seal: #FBF6EE; --draft: #F0C766; --draft-bg: #3A2E14;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1714; --card: #2A211E; --cream: #FBF6EE; --ink: #F3EBDD;
+    --ink-soft: #CFC3B1; --line: #4A4037; --seal: #D6453A; --seal-deep: #E2543F;
+    --leaf: #7A9B6C; --on-seal: #FBF6EE; --draft: #F0C766; --draft-bg: #3A2E14;
+    color-scheme: dark;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; }
+  .wrap { max-width: 68rem; margin-inline: auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.25rem); font-weight: 800; letter-spacing: -0.025em; }
+  h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 700; }
+  h3 { font-size: 1.15rem; font-weight: 700; }
+  p { margin: 0; max-width: 62ch; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--leaf); outline-offset: 3px; border-radius: 4px; }
+  .eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--seal-deep); }
+  .soft { color: var(--ink-soft); }
+  .todo { background: var(--draft-bg); color: var(--draft); border-radius: 4px; padding: 0 0.3em; font-weight: 600; }
+
+  /* top bar */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; }
+  .top svg { height: 44px; width: auto; display: block; }
+  .top nav { display: flex; gap: 1.5rem; flex-wrap: wrap; font-weight: 600; font-size: 0.95rem; }
+  .top nav a { text-decoration: none; }
+  .top nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: center; padding-block: clamp(2rem, 6vw, 4.5rem); }
+  .hero-copy { display: grid; gap: 1.25rem; min-width: 0; }
+  .hero-copy p { font-size: 1.2rem; }
+  .buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 0.5rem; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 1.6rem; border-radius: var(--radius-control); background: var(--seal); color: var(--on-seal); font-weight: 700; font-size: 1.05rem; text-decoration: none; border: 0; cursor: pointer; font-family: inherit; transition: background 160ms var(--ease), transform 160ms var(--ease); }
+  .btn:hover { background: var(--seal-deep); }
+  .btn:active { transform: translateY(1px); }
+  .price { font-weight: 700; font-size: 1.05rem; }
+  .price small { display: block; font-weight: 500; font-size: 0.9rem; color: var(--ink-soft); }
+
+  /* the stamp: the one loud object */
+  .stamp { position: relative; justify-self: center; width: min(100%, 22rem); aspect-ratio: 1; display: grid; place-items: center; }
+  .stamp svg { width: 78%; height: auto; transform: rotate(-5deg); animation: press 900ms var(--ease) both; }
+  .stamp::before { content: ""; position: absolute; inset: 6%; border: 2px dashed var(--line); border-radius: 50%; }
+  @keyframes press { from { transform: rotate(-9deg) scale(1.18); opacity: 0.35; } to { transform: rotate(-5deg) scale(1); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .stamp svg { animation: none; } .btn { transition: none; } }
+
+  section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+  .rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
+  .head { display: grid; gap: 0.75rem; margin-bottom: 2rem; }
+
+  /* promise: three plain statements */
+  .promise { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+  .promise div { display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+  .promise b { font-size: 2.5rem; font-weight: 800; line-height: 1; color: var(--seal-deep); }
+
+  /* hub tiles, as on the device */
+  .hub { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 1rem 1.1rem; display: grid; gap: 0.3rem; align-content: start; min-width: 0; }
+  .tile i { width: 0.7rem; height: 0.7rem; border-radius: 3px; display: block; margin-bottom: 0.4rem; }
+  .tile span { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.45; }
+  .c1 { background: var(--seal); } .c2 { background: var(--leaf); } .c3 { background: var(--ink); } .c4 { background: #C28A2B; }
+
+  /* the one door */
+  .door { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+  .ledger { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); overflow: hidden; }
+  .ledger h3 { padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+  .ledger ul { list-style: none; margin: 0; padding: 0; }
+  .ledger li { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 0.75rem; padding: 0.7rem 1.25rem; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+  .ledger li:last-child { border-bottom: 0; }
+  .tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; align-self: center; }
+  .stays { color: var(--leaf); } .goes { color: var(--seal-deep); }
+  .door-copy { display: grid; gap: 1rem; }
+
+  /* box + specs */
+  .box { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3rem); }
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .list li { padding: 0.75rem 0; border-bottom: 1px solid var(--line); display: grid; gap: 0.15rem; }
+  .list li span { font-size: 0.92rem; color: var(--ink-soft); }
+  .need { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 1.5rem; display: grid; gap: 0.75rem; align-content: start; }
+
+  /* faq */
+  details { border-bottom: 1px solid var(--line); padding: 1rem 0; }
+  summary { font-weight: 700; cursor: pointer; font-size: 1.05rem; }
+  details p { margin-top: 0.6rem; color: var(--ink-soft); }
+
+  /* closing band */
+  .close { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .close .wrap { display: grid; gap: 1.25rem; justify-items: start; }
+
+  footer { padding-block: 2rem 3rem; font-size: 0.9rem; color: var(--ink-soft); display: grid; gap: 0.5rem; }
+
+  /* draft notes: for Patrick, not for the published page */
+  .notes { background: var(--draft-bg); color: var(--ink); border-radius: var(--radius-card); padding: 1.5rem; display: grid; gap: 0.75rem; }
+  .notes h2 { font-size: 1.25rem; }
+  .notes ol { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.4rem; font-size: 0.95rem; }
+
+  @media (max-width: 52rem) {
+    .hero, .door, .box { grid-template-columns: minmax(0, 1fr); }
+    .stamp { width: min(70%, 16rem); order: -1; }
+    .promise { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+    .hub { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .top nav { display: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a href="#top" aria-label="goji home">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 225 108" role="img" aria-label="goji"><g stroke="currentColor" fill="none" stroke-width="11" stroke-linecap="butt" stroke-linejoin="round"><rect x="20" y="30" width="36" height="44" rx="10"></rect><path d="M 56 64 C 56 90 42 99 28 93"></path><circle cx="102" cy="52" r="19"></circle><path d="M 154 30 V 82 C 154 95 142 99 130 93"></path><path d="M 196 30 V 74"></path></g><rect x="190" y="8" width="12" height="12" fill="var(--seal)"></rect></svg>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#inside">What's inside</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#box">In the box</a>
+      <a href="#questions">Questions</a>
+    </nav>
+  </header>
+
+  <div class="hero" id="top">
+    <div class="hero-copy">
+      <span class="eyebrow">A learning computer for kids</span>
+      <h1>A computer with nothing to scroll.</h1>
+      <p>goji is a small computer that reads, writes, types, does math and teaches coding. It has no web browser, no ads, no accounts and no feeds. Plug it into a TV and it works, with or without Wi-Fi.</p>
+      <div class="buy-row">
+        <a class="btn" href="#buy">Buy goji</a>
+        <div class="price">$400, shipping included<small>30-day returns</small></div>
+      </div>
+    </div>
+    <div class="stamp" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 126"><path d="M 84 16 C 86 6 96 2 104 7 C 101 16 92 20 84 16" fill="var(--leaf)"></path><rect x="12" y="18" width="96" height="96" rx="14" fill="var(--seal)"></rect><circle cx="44" cy="60" r="6.5" fill="var(--cream)"></circle><circle cx="78" cy="60" r="6.5" fill="var(--cream)"></circle><path d="M 61 60 V 76 C 61 86 53 89 46 84" fill="none" stroke="var(--cream)" stroke-width="7" stroke-linecap="round"></path></svg>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<div class="wrap">
+  <section>
+    <div class="promise">
+      <div><b>0</b><h3>ways for a child to get online</h3><p class="soft">There is no browser to open and no store to visit. The part of goji a child uses is blocked from the internet by the system itself.</p></div>
+      <div><b>0</b><h3>accounts, ads or trackers</h3><p class="soft">Nobody signs in. Nothing is sold to them. Nothing watches what they do.</p></div>
+      <div><b>1</b><h3>connection, and it's ours</h3><p class="soft">If you give goji Wi-Fi, it checks our server for free updates. That is the only place it ever connects.</p></div>
+    </div>
+  </section>
+</div>
+
+<hr class="rule">
+
+<div class="wrap">
+  <section id="inside">
+    <div class="head">
+      <span class="eyebrow">What's inside</span>
+      <h2>Everything is already on it.</h2>
+      <p class="soft">This is the home screen a child sees. Each tile opens something to do, and all of it works with no internet.</p>
+    </div>
+    <div class="hub">
+      <div class="tile"><i class="c1"></i><h3>Reading Library</h3><span>Classic books, with a speed-reading trainer.</span></div>
+      <div class="tile"><i class="c2"></i><h3>Writing</h3><span>Stories and essays that save as they type.</span></div>
+      <div class="tile"><i class="c3"></i><h3>Journal</h3><span>A private daily entry with a prompt.</span></div>
+      <div class="tile"><i class="c4"></i><h3>Notebooks</h3><span>Notes for any subject, and notes on PDFs.</span></div>
+      <div class="tile"><i class="c2"></i><h3>Math</h3><span>Practice that adjusts to how they're doing.</span></div>
+      <div class="tile"><i class="c1"></i><h3>Typing</h3><span>Lessons and games that build real speed.</span></div>
+      <div class="tile"><i class="c4"></i><h3>Learn to Code</h3><span>Courses and tutorials that end in a working app.</span></div>
+      <div class="tile"><i class="c3"></i><h3>Research</h3><span>All of Wikipedia, stored on the device.</span></div>
+      <div class="tile"><i class="c3"></i><h3>Flashcards</h3><span>Make decks, or load them from a USB stick.</span></div>
+      <div class="tile"><i class="c1"></i><h3>Quotes</h3><span>A dictionary and words worth keeping.</span></div>
+      <div class="tile"><i class="c2"></i><h3>PDF Reader</h3><span>Open worksheets and books from a USB stick.</span></div>
+      <div class="tile"><i class="c4"></i><h3>Printing</h3><span>Put their work on paper. <span class="todo">confirm before launch</span></span></div>
+    </div>
+  </section>
+</div>
+
+<hr class="rule">
+
+<div class="wrap">
+  <section id="privacy">
+    <div class="door">
+      <div class="door-copy">
+        <span class="eyebrow">Privacy</span>
+        <h2>Their work stays in your house.</h2>
+        <p>Everything a child makes on goji is stored on the device and nowhere else. We have no copy of it and no way to see it.</p>
+        <p class="soft">When goji is on Wi-Fi it sends us a short technical report so we can tell whether updates are installing. It has nothing about your child in it, and you can turn it off in Settings. goji keeps updating either way.</p>
+        <p><a href="#" class="todo">Read the full privacy policy</a></p>
+      </div>
+      <div class="ledger">
+        <h3>What stays, and what goes</h3>
+        <ul>
+          <li><span class="tag stays">Stays</span><span>Names and profiles</span></li>
+          <li><span class="tag stays">Stays</span><span>Writing, journals, notes and code</span></li>
+          <li><span class="tag stays">Stays</span><span>Reading, typing and math progress</span></li>
+          <li><span class="tag stays">Stays</span><span>Which apps were used, and when</span></li>
+          <li><span class="tag stays">Stays</span><span>Your Wi-Fi name and password</span></li>
+          <li><span class="tag goes">Goes</span><span>The software version, and whether the last update worked</span></li>
+          <li><span class="tag goes">Goes</span><span>A random number that tells one goji from another</span></li>
+          <li><span class="tag goes">Goes</span><span>The hardware model, memory and free storage</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<hr class="rule">
+
+<div class="wrap">
+  <section>
+    <div class="head">
+      <span class="eyebrow">Updates</span>
+      <h2>It gets better while it sits there.</h2>
+      <p class="soft">New features arrive over Wi-Fi at no charge. goji installs them when nobody is using it, saves any unfinished work first, and puts the old version back by itself if anything goes wrong. No Wi-Fi? It keeps working exactly as it is.</p>
+    </div>
+  </section>
+</div>
+
+<hr class="rule">
+
+<div class="wrap">
+  <section id="box">
+    <div class="box">
+      <div>
+        <div class="head"><span class="eyebrow">In the box</span><h2>Ready when it arrives.</h2></div>
+        <ul class="list">
+          <li><b>The goji computer</b><span>A Raspberry Pi 5 with 8 GB of memory, in its case, with a quiet cooling fan.</span></li>
+          <li><b>Memory card, already set up</b><span>64 GB, with goji, the books and Wikipedia installed.</span></li>
+          <li><b>Power supply</b><span>27 W, USB-C.</span></li>
+          <li><b>HDMI cable</b><span>Fits the computer on one end and a TV or monitor on the other.</span></li>
+          <li><b>Quickstart card</b><span>Four steps. About five minutes.</span></li>
+        </ul>
+      </div>
+      <div class="need">
+        <h3>You'll need</h3>
+        <p>A TV or monitor with an HDMI port. 1080p is recommended.</p>
+        <p>A USB keyboard and a USB mouse.</p>
+        <p class="soft">goji has no touchscreen and no built-in display. Wi-Fi is optional.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<hr class="rule">
+
+<div class="wrap">
+  <section id="questions">
+    <div class="head"><span class="eyebrow">Questions</span><h2>Before you buy</h2></div>
+    <details><summary>Does it need the internet?</summary><p>No. Every app works offline, including Wikipedia. Wi-Fi is only for updates, and you can skip it.</p></details>
+    <details><summary>Can my child get to a website, a game store or YouTube?</summary><p>No. There is no web browser and nothing to install. The part of goji your child uses cannot reach the internet at all.</p></details>
+    <details><summary>What ages is it for?</summary><p><span class="todo">Patrick to fill in: the age range you'll state.</span></p></details>
+    <details><summary>Can more than one child use it?</summary><p>Yes. Each child gets a profile with their own work and progress.</p></details>
+    <details><summary>What can I, as a parent, change?</summary><p>You choose a parent PIN during setup. Wi-Fi, updates, erasing the device and the technical report are behind that PIN.</p></details>
+    <details><summary>Is there a monthly fee?</summary><p>No. Updates are free.</p></details>
+    <details><summary>Is there a phone app?</summary><p>Not yet. A later update may add an optional parent app. If it does, nothing will leave the goji without your permission.</p></details>
+    <details><summary>What if we don't like it?</summary><p>Send it back within 30 days for a refund. You pay the return shipping.</p></details>
+    <details><summary>What if something breaks?</summary><p>Email us at <span class="todo">support email</span>. goji can save a log file to a USB stick for us to look at, and it can be erased and started fresh from Settings.</p></details>
+  </section>
+</div>
+
+<div class="close" id="buy">
+  <div class="wrap">
+    <section style="display:grid;gap:1.25rem;justify-items:start">
+      <h2>One price. Nothing to sign up for.</h2>
+      <p class="soft">$400, shipping included in the United States. <span class="todo">Confirm where you ship.</span> Sales tax is added where it applies.</p>
+      <div class="buy-row">
+        <a class="btn" href="#buy" aria-describedby="buy-note">Buy goji</a>
+        <span id="buy-note" class="todo">Stripe payment link goes here</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <span>goji is made by Narrow Road Studios.</span>
+    <span><span class="todo">Postal address</span> · <span class="todo">support email</span> · <a href="#" class="todo">Privacy policy</a> · <a href="#" class="todo">Terms of sale</a></span>
+    <span>Wikipedia content is used under the CC BY-SA licence. Raspberry Pi is a trademark of Raspberry Pi Ltd.</span>
+  </footer>
+
+  <section>
+    <div class="notes">
+      <h2>Draft notes for Patrick (not part of the page)</h2>
+      <ol>
+        <li><b>Every yellow highlight is a blank only you can fill:</b> age range, support email, postal address, shipping region, the Stripe link, and links to the published policy and terms.</li>
+        <li><b>The internet promise needs a lawyer's eye.</b> "No way for a child to get online" rests on the lockdown work (GTM decision D17, pull request #155), which is not merged or tested on a Pi 5 yet. Do not publish this wording until it is.</li>
+        <li><b>Printing is listed as a tile</b> because you decided it ships in v1 (D19). It has not been tested on a real printer. Remove the tile if it slips.</li>
+        <li><b>No photographs yet.</b> The page needs at least one picture of the real unit on a desk and one of the screen. The stamp is standing in for the hero image.</li>
+        <li><b>"What stays, what goes" is taken from the privacy policy draft</b> and the update contract. If the health report's contents change, this table has to change with it.</li>
+        <li><b>"Practice that adjusts" for Math and the one-line app descriptions</b> are my reading of the apps. Correct any that overstate what ships.</li>
+        <li><b>Price, returns and "1080p recommended"</b> are the locked commercial terms in the GTM plan.</li>
+      </ol>
+    </div>
+  </section>
+</div>
