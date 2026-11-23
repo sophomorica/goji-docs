@@ -27,6 +27,9 @@ Contracts: `goji-cloud/OTA_CONTRACT.md` (wire/manifest/signing SoT). Device desi
 | D14 | **Image 1.0.0 package promise** = everything the app uses today **plus what planned updates need** (CUPS for U2), frozen as the 1.0.0 list. |
 | D15 | **Halt = yank + fix forward.** A bad release is pulled by re-pointing the channel; units that installed it stay until a higher `x.y.z+1` ships. No server-driven downgrades. The only backwards move is the device's own automatic rollback after a failed install (contract §1, goji-cloud #9). |
 | D16 | **Updater code lives only in `updater/goji_updater/`.** The apply/rollback logic in `backend/sync/ota.py` (kodi-computer #77) is ported by task B5, then B17 deletes `ota.py`. No agent adds a second apply path. |
+| D17 | **A child cannot reach the internet from a Goji, and that is a ship requirement** (decided 2026-11-23). The firewall is default-deny by account: the kiosk user, which runs everything a child can touch, is allowed nothing out on any interface. Only root (the updater) and the clock daemon go online. The rules are by account and port, **not by server address**: no address allowlist, so a failed refresh can never stop units updating in the field. |
+| D18 | **Wired Ethernet stays enabled** (decided 2026-11-23). D17 blocks the kiosk user on every interface, so a cable gives a child nothing, and "plug in a cable" stays available as a support path when Wi-Fi setup is broken. |
+| D19 | **Local printing ships in v1** (decided 2026-11-23; was roadmap U2). Its system-side pieces (root helpers, permission rules, firewall openings) are image-owned and cannot be repaired by an update, so printing is tested on a Pi 5 against real USB and network printers **before image 1.0.0 is frozen**. |
 
 **Commercial terms (sell-now plan v6, locked):** $400, shipping included · 30-day returns, buyer pays return shipping · "Any HDMI monitor or TV, 1080p recommended" · no paid OTA plan until U3 ships · ex-dogfood units sold as "Refurbished".
 
@@ -36,13 +39,13 @@ Contracts: `goji-cloud/OTA_CONTRACT.md` (wire/manifest/signing SoT). Device desi
 
 ## 2. v1 product (what ships)
 
-Offline kid computer: Reading (+speed reading), Typing, Writing/Notebooks/Journal, Research (offline Wikipedia via Kiwix, `wikipedia_en_all_mini_2026-09` baked in), PDF Reader, Math, Coding (+tutorials), Flashcards (local + USB CSV import), Quotes/dictionary, local profiles.
+Offline kid computer: Reading (+speed reading), Typing, Writing/Notebooks/Journal, Research (offline Wikipedia via Kiwix, `wikipedia_en_all_mini_2026-09` baked in), PDF Reader, Math, Coding (+tutorials), Flashcards (local + USB CSV import), Quotes/dictionary, local profiles, local printing (D19).
 Plus: setup wizard, optional Wi-Fi, OTA updates, factory reset, log export, heartbeat opt-out.
 
 ## 3. Post-launch OTA roadmap (delivered to v1 owners as updates)
 
 - **U1** Better connect-to-internet wizard
-- **U2** Local print (CUPS pre-baked per D5/D14)
+- **U2** ~~Local print~~ moved into v1 (D19)
 - **U3** Parent app + device sync — requires the cloud hardening list: device-poll token loss, session expiry, device-register rate limit, multi-child attribution, unpair path, School Mode PIN setup + offline expiry
 - **U4** On-device lesson player + curriculum packs (K–12 path). goji-docs #9/#10 are design input for U3/U4, not v1 scope.
 - Ongoing: patches, content packs (books, decks, larger ZIMs)
