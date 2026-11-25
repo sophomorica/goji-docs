@@ -1,0 +1,129 @@
+<title>goji quickstart card</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  /* Layout: the two faces of one 5 x 7 inch printed card, shown side by side
+     at true proportion. The card is paper in both themes, because it is a
+     printed object; only the desk around it follows the viewer's theme. */
+  :root {
+    --desk: #E4DCCD;
+    --desk-ink: #2A211E;
+    --paper: #FBF6EE;
+    --ink: #2A211E;
+    --ink-soft: #4A4037;
+    --line: #D8CCB8;
+    --seal: #C6392F;
+    --leaf: #5A7C4C;
+    --draft: #8A5A00;
+    --draft-bg: #FBEFD0;
+    --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --desk: #1E1714; --desk-ink: #F3EBDD; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --desk: #1E1714; --desk-ink: #F3EBDD; color-scheme: dark; }
+
+  body { background: var(--desk); color: var(--desk-ink); font-family: var(--font); font-size: 1rem; line-height: 1.5; }
+  .wrap { max-width: 70rem; margin-inline: auto; padding-block: 2rem 3rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 1.5rem; }
+  .intro h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 0.35rem; letter-spacing: -0.01em; }
+  .intro p { margin: 0; max-width: 62ch; opacity: 0.8; }
+  .faces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+  .face-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.5rem; }
+
+  .card { background: var(--paper); color: var(--ink); aspect-ratio: 5 / 7; max-width: 100%; border-radius: 10px; padding: 7% 7.5%; display: flex; flex-direction: column; gap: 4%; box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.14); container-type: inline-size; overflow: hidden; }
+  .card * { margin: 0; }
+  .card h2 { font-size: 7.4cqw; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
+  .card h3 { font-size: 3.5cqw; font-weight: 700; }
+  .card p, .card li, .card dd, .card dt { font-size: 3.05cqw; line-height: 1.45; }
+  .mark { display: flex; align-items: center; justify-content: space-between; }
+  .mark svg.word { height: 9cqw; width: auto; }
+  .mark svg.seal { height: 11cqw; width: auto; transform: rotate(4deg); }
+  .mark span { font-size: 2.6cqw; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+
+  /* the four steps are a real sequence, so they are numbered */
+  .steps { list-style: none; padding: 0; display: grid; gap: 3.2cqw; counter-reset: s; }
+  .steps li { display: grid; grid-template-columns: 8cqw minmax(0, 1fr); gap: 3cqw; align-items: start; counter-increment: s; }
+  .steps li::before { content: counter(s); width: 8cqw; height: 8cqw; border-radius: 2cqw; background: var(--seal); color: var(--paper); font-weight: 800; font-size: 4.4cqw; display: grid; place-items: center; }
+  .steps b { display: block; font-size: 3.6cqw; }
+  .steps span { color: var(--ink-soft); }
+  .foot { margin-top: auto; border-top: 1px solid var(--line); padding-top: 3cqw; color: var(--ink-soft); }
+  .foot b { color: var(--ink); }
+
+  .fix { display: grid; gap: 2.4cqw; }
+  .fix div { display: grid; gap: 0.6cqw; padding-bottom: 2.4cqw; border-bottom: 1px solid var(--line); }
+  .fix div:last-child { border-bottom: 0; padding-bottom: 0; }
+  .fix dt { font-weight: 700; }
+  .fix dd { color: var(--ink-soft); }
+  .promise { background: var(--ink); color: var(--paper); border-radius: 2.4cqw; padding: 3.4cqw 4cqw; display: grid; gap: 1cqw; }
+  .promise p { color: var(--paper); }
+  .promise b { color: var(--paper); font-size: 3.5cqw; }
+  .todo { background: var(--draft-bg); color: var(--draft); border-radius: 3px; padding: 0 0.3em; font-weight: 600; }
+
+  .notes { background: var(--draft-bg); color: #2A211E; border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .notes h2 { font-size: 1.1rem; margin: 0 0 0.5rem; }
+  .notes ol { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.35rem; font-size: 0.95rem; }
+
+  @media (max-width: 46rem) { .faces { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>Quickstart card, first draft</h1>
+    <p>Both sides of the card that goes in the box, drawn at 5 × 7 inches. The yellow marks are blanks to fill before it goes to a printer.</p>
+  </div>
+
+  <div class="faces">
+    <div>
+      <div class="face-label">Front</div>
+      <div class="card">
+        <div class="mark">
+          <svg class="word" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 225 108" role="img" aria-label="goji"><g stroke="#2A211E" fill="none" stroke-width="11" stroke-linecap="butt" stroke-linejoin="round"><rect x="20" y="30" width="36" height="44" rx="10"></rect><path d="M 56 64 C 56 90 42 99 28 93"></path><circle cx="102" cy="52" r="19"></circle><path d="M 154 30 V 82 C 154 95 142 99 130 93"></path><path d="M 196 30 V 74"></path></g><rect x="190" y="8" width="12" height="12" fill="#C6392F"></rect></svg>
+          <span>Start here</span>
+        </div>
+        <h2>Four steps. About five minutes.</h2>
+        <ol class="steps">
+          <li><div><b>Connect the screen</b><span>Plug the small end of the HDMI cable into the port next to the power port on goji. Plug the other end into your TV or monitor.</span></div></li>
+          <li><div><b>Plug in a keyboard and mouse</b><span>Any USB keyboard and mouse. Use any of the four USB ports.</span></div></li>
+          <li><div><b>Plug in the power last</b><span>goji turns on by itself. Switch your TV to the HDMI input you used. A red stamp appears while it starts.</span></div></li>
+          <li><div><b>Answer three questions</b><span>Choose a parent PIN, type your child's name, and add Wi-Fi if you want updates. You can skip Wi-Fi.</span></div></li>
+        </ol>
+        <p class="foot"><b>Write your parent PIN down somewhere safe.</b> We can't look it up for you. It protects Wi-Fi, updates and erasing the device.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="face-label">Back</div>
+      <div class="card">
+        <div class="mark">
+          <span>Good to know</span>
+          <svg class="seal" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 126" aria-hidden="true"><path d="M 84 16 C 86 6 96 2 104 7 C 101 16 92 20 84 16" fill="#5A7C4C"></path><rect x="12" y="18" width="96" height="96" rx="14" fill="#C6392F"></rect><circle cx="44" cy="60" r="6.5" fill="#FBF6EE"></circle><circle cx="78" cy="60" r="6.5" fill="#FBF6EE"></circle><path d="M 61 60 V 76 C 61 86 53 89 46 84" fill="none" stroke="#FBF6EE" stroke-width="7" stroke-linecap="round"></path></svg>
+        </div>
+        <dl class="fix">
+          <div><dt>Turning it off</dt><dd>Choose the power button on the home screen and wait for the screen to go dark before unplugging.</dd></div>
+          <div><dt>No picture</dt><dd>Check the TV is on the right HDMI input. Then move the cable to goji's other small HDMI port.</dd></div>
+          <div><dt>Updates</dt><dd>With Wi-Fi, goji updates itself when nobody is using it. Unfinished work is saved first.</dd></div>
+          <div><dt>Adding Wi-Fi or a child later</dt><dd>Open Settings (the gear on the home screen). You'll need your parent PIN.</dd></div>
+          <div><dt>Starting over</dt><dd>Settings → Help and support → Erase this Goji. It removes every profile and cannot be undone.</dd></div>
+          <div><dt>Need help?</dt><dd>Email <span class="todo">support email</span>. If we ask for a log file: Settings → Help and support → Save logs to USB.</dd></div>
+        </dl>
+        <div class="promise">
+          <b>Their work stays on this device.</b>
+          <p>goji has no web browser, no accounts and no ads. The only place it connects is our update server. Full policy: <span class="todo">short link or QR code</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>Draft notes for Patrick (not part of the card)</h2>
+    <ol>
+      <li><b>Check step 1 against the real unit in its case.</b> I wrote "the port next to the power port" from the bare Pi 5 layout. If the case hides or relabels the ports, this wording has to change, and a small drawing of the back of the case would beat any sentence.</li>
+      <li><b>Step 4 matches the setup wizard on main today:</b> welcome, parent PIN, name, Wi-Fi, ready. If printing adds a printer step (it does on the printing branch), this becomes "four questions".</li>
+      <li><b>Nobody has timed "about five minutes".</b> The plan's exit test is under ten. Time it with the first person who isn't you, then set the number.</li>
+      <li><b>"A red stamp appears while it starts"</b> describes the boot splash. Confirm on the Pi 5 image.</li>
+      <li><b>The privacy panel</b> uses the same promise as the landing page, so the same caution applies: it depends on the lockdown work being merged and tested, and a lawyer should read it.</li>
+      <li><b>Blanks:</b> support email, and a short link or QR code to the policy.</li>
+      <li><b>For print:</b> this is a layout draft, not print-ready artwork. A printer will want a PDF with bleed and the fonts embedded.</li>
+    </ol>
+  </div>
+</div>
